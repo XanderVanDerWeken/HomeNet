@@ -25,10 +25,31 @@ const (
 )
 
 type RecipeDoc struct {
-	ID          int64    `bson:"_id"`
-	Name        string   `bson:"name"`
-	Ingredients []string `bson:"ingredients"`
-	Steps       []string `bson:"steps"`
+	ID          int64     `bson:"_id"`
+	Name        string    `bson:"name"`
+	Ingredients []string  `bson:"ingredients"`
+	Steps       []string  `bson:"steps"`
+	CreatedAt   time.Time `bson:"created_at"`
+}
+
+func (doc RecipeDoc) ToDomain() domain.Recipe {
+	return domain.Recipe{
+		ID:          doc.ID,
+		Name:        doc.Name,
+		Ingredients: doc.Ingredients,
+		Steps:       doc.Steps,
+		CreatedAt:   doc.CreatedAt,
+	}
+}
+
+func fromRecipe(recipe domain.Recipe) RecipeDoc {
+	return RecipeDoc{
+		ID:          recipe.ID,
+		Name:        recipe.Name,
+		Ingredients: recipe.Ingredients,
+		Steps:       recipe.Steps,
+		CreatedAt:   recipe.CreatedAt,
+	}
 }
 
 func (repo *recipeRepository) GetAll() ([]*domain.Recipe, error) {
@@ -43,14 +64,20 @@ func (repo *recipeRepository) GetAll() ([]*domain.Recipe, error) {
 		return nil, err
 	}
 
-	var results []*domain.Recipe
+	var results []*RecipeDoc
 	defer cursor.Close(ctx)
 	if err = cursor.All(ctx, &results); err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
 
-	return results, nil
+	fetchedRecipes := make([]*domain.Recipe, len(results))
+	for i, t := range results {
+		p := t.ToDomain()
+		fetchedRecipes[i] = &p
+	}
+
+	return fetchedRecipes, nil
 }
 
 func (repo *recipeRepository) GetByName(name string) (*domain.Recipe, error) {
@@ -59,7 +86,7 @@ func (repo *recipeRepository) GetByName(name string) (*domain.Recipe, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	var result domain.Recipe
+	var result RecipeDoc
 	filter := bson.D{{Key: "name", Value: name}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 
@@ -70,7 +97,9 @@ func (repo *recipeRepository) GetByName(name string) (*domain.Recipe, error) {
 		return nil, err
 	}
 
-	return &result, nil
+	foundRecipe := result.ToDomain()
+
+	return &foundRecipe, nil
 }
 
 func (repo *recipeRepository) GetById(id int64) (*domain.Recipe, error) {
@@ -79,7 +108,7 @@ func (repo *recipeRepository) GetById(id int64) (*domain.Recipe, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	var result domain.Recipe
+	var result RecipeDoc
 	filter := bson.D{{Key: "_id", Value: id}}
 	err := collection.FindOne(ctx, filter).Decode(&result)
 
@@ -90,7 +119,9 @@ func (repo *recipeRepository) GetById(id int64) (*domain.Recipe, error) {
 		return nil, err
 	}
 
-	return &result, nil
+	foundRecipe := result.ToDomain()
+
+	return &foundRecipe, nil
 }
 
 func (repo *recipeRepository) Create(recipe domain.Recipe) error {
@@ -99,7 +130,9 @@ func (repo *recipeRepository) Create(recipe domain.Recipe) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	_, err := collection.InsertOne(ctx, recipe)
+	document := fromRecipe(recipe)
+
+	_, err := collection.InsertOne(ctx, document)
 
 	return err
 }
