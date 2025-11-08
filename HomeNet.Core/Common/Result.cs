@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace HomeNet.Core.Common;
 
 public class Result
@@ -35,6 +33,4 @@ public class Result<TValue> : Result
     }
 
     public static Result<TValue> Success(TValue value) => new(true, Error.None, value);
-
-    //public static Result<TValue> Failure(Error error) => new(false, error, default);
 }
