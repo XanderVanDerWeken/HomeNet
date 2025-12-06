@@ -7,4 +7,9 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../HomeNet.Core/HomeNet.Core.csproj" />
+    <ProjectReference Include="../HomeNet.Data/HomeNet.Data.csproj" />
+  </ItemGroup>
+
 </Project>
