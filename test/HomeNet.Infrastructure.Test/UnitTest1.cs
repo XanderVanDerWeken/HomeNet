@@ -1,4 +1,4 @@
-﻿namespace HomNet.Data.Test;
+﻿namespace HomeNet.Infrastructure.Test;
 
 public class Tests
 {
