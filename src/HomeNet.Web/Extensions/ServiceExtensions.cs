@@ -1,5 +1,9 @@
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Modules.Cards.Abstractions;
+using HomeNet.Core.Modules.Cards.Commands;
+using HomeNet.Core.Modules.Cards.Queries;
 using HomeNet.Infrastructure.Events;
+using HomeNet.Infrastructure.Persistence.Modules.Cards;
 using Npgsql;
 using SqlKata.Compilers;
 using SqlKata.Execution;
@@ -9,17 +13,11 @@ namespace HomeNet.Web.Extensions;
 public static class ServiceExtensions
 {
     public static IServiceCollection AddCommonServices(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        IConfiguration config)
     {
         services.AddSingleton<IMediator, EventBus>();
 
-        return services;
-    }
-
-    public static IServiceCollection AddDatabase(
-        this IServiceCollection services, 
-        IConfiguration config)
-    {
         services.AddSingleton<QueryFactory>(sp =>
         {
             var connectionString = config.GetConnectionString("Default");
@@ -29,6 +27,20 @@ public static class ServiceExtensions
 
             return new QueryFactory(connection, compiler);
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddCardsModule(
+        this IServiceCollection services)
+    {
+        services.AddScoped<ICardRepository, CardRepository>();
+
+        services.AddScoped<AddCardCommandHandler>();
+        services.AddScoped<RemoveCardCommandHandler>();
+
+        services.AddScoped<CardsQueryHandler>();
+        services.AddScoped<CardsExpiringBeforeQueryHandler>();
 
         return services;
     }

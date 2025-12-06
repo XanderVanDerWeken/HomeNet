@@ -1,4 +1,5 @@
 using HomeNet.Web.Components;
+using HomeNet.Web.Extensions;
 
 namespace HomeNet.Web;
 
@@ -11,6 +12,10 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        
+        builder.Services.AddCommonServices(builder.Configuration);
+        
+        builder.Services.AddCardsModule();
 
         var app = builder.Build();
 
