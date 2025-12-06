@@ -1,4 +1,5 @@
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Infrastructure.Events;
 using Npgsql;
 using SqlKata.Compilers;
 using SqlKata.Execution;
