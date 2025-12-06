@@ -8,13 +8,20 @@ using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
 
-public sealed class CardRepository : ICardRepository
+public sealed class CardRepository : ICardRepository, IDisposable
 {
     private readonly QueryFactory _db;
+
+    private bool _disposed = false;
 
     public CardRepository(QueryFactory db)
     {
         _db = db;
+    }
+
+    ~CardRepository()
+    {
+        Dispose(false);
     }
 
     public async Task<Result> AddCardAsync(
@@ -88,5 +95,24 @@ public sealed class CardRepository : ICardRepository
         {
             return Result.Failure($"An error occurred while removing the card: {ex.Message}");
         }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool disposing)
+    {
+        if (_disposed)
+            return;
+        
+        if (disposing)
+        {
+            _db.Dispose();
+        }
+
+        _disposed = true;
     }
 }
