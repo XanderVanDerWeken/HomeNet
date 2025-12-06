@@ -6,9 +6,9 @@ using Npgsql;
 using SqlKata;
 using SqlKata.Execution;
 
-namespace HomeNet.Data.Modules.Cards;
+namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
 
-public class CardRepository : ICardRepository
+public sealed class CardRepository : ICardRepository
 {
     private readonly QueryFactory _db;
 
