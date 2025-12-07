@@ -1,9 +1,7 @@
 using HomeNet.Core.Modules.Cards.Abstractions;
-using HomeNet.Core.Modules.Cards.Commands;
 using HomeNet.Core.Modules.Cards.Models;
 using HomeNet.Core.Modules.Cards.Queries;
 using Moq;
-using NUnit.Framework;
 
 namespace HomeNet.Core.Test.Modules.Cards.Queries;
 
@@ -22,7 +20,7 @@ public class CardsExpiringBeforeQueryHandlerTest
     }
 
     [Test]
-    public async Task HandleAsync_ShouldReturnCards()
+    public async Task Should_HandleAsync()
     {
         // Arrange
         var expiryDate = DateTimeOffset.UtcNow.AddDays(30);

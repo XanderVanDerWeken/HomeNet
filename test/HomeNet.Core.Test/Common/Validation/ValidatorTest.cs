@@ -5,7 +5,7 @@ namespace HomeNet.Core.Test.Common.Validation;
 public class ValidatorTest
 {
     [Test]
-    public void Validate()
+    public void Should_Validate()
     {
         // Arrange
         var validEntity = new DummyEntity

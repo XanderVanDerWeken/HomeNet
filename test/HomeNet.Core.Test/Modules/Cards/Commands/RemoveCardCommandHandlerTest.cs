@@ -20,7 +20,7 @@ public class RemoveCardCommandHandlerTest
     }
 
     [Test]
-    public async Task HandleAsync_ShouldReturnSuccess()
+    public async Task Should_HandleAsync_ReturnsSuccess()
     {
         // Arrange
         var cardId = 1;

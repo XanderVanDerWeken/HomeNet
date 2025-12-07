@@ -29,7 +29,7 @@ public class EventBusTest
     }
 
     [Test]
-    public async Task SendAsync_ShouldCallCommandHandler()
+    public async Task Should_SendAsync_CallsCommandHandler()
     {
         // Arrange
         var command = new TestCommand();
@@ -53,7 +53,7 @@ public class EventBusTest
     }
 
     [Test]
-    public async Task SendAsync_ShouldCallMultipleCommandHandlers()
+    public async Task Should_SendAsync_CallsMultipleCommandHandlers()
     {
         // Arrange
         var command = new TestCommand();
@@ -80,7 +80,7 @@ public class EventBusTest
     }
 
     [Test]
-    public async Task SendAsync_ShouldCallQueryHandler()
+    public async Task Should_SendAsync_CallsQueryHandler()
     {
         // Arrange
         var query = new TestQuery();
@@ -108,7 +108,7 @@ public class EventBusTest
     }
 
     [Test]
-    public async Task SendAsync_ShouldFail_NoHandlerRegistered()
+    public async Task Should_SendAsync_ThrowsNoHandlerRegistered()
     {
         // Arrange
         var command = new TestCommand();
@@ -132,7 +132,7 @@ public class EventBusTest
     }
 
     [Test]
-    public void RegisterQueryHandler_CannotRegisterMultipeHandlersForSameQuery()
+    public void Should_RegisterQueryHandler_ThrowsCannotRegisterMultipeHandlersForSameQuery()
     {
         // Arrange
         var testQueryHandlerMock1 = new Mock<IQueryHandler<TestQuery, int>>();

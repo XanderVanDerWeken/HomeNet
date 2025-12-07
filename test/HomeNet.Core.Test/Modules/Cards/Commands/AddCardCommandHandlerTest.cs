@@ -20,7 +20,7 @@ public class AddCardCommandHandlerTest
     }
 
     [Test]
-    public async Task HandleAsync_ShouldReturnSuccess()
+    public async Task Should_HandleAsync_ReturnsSuccess()
     {
         // Arrange
         var command = new AddCardCommand
@@ -53,7 +53,7 @@ public class AddCardCommandHandlerTest
     }
 
     [Test]
-    public async Task HandleAsync_ShouldReturnFailure_InvalidCommand()
+    public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
         var commandInvalidName = new AddCardCommand
