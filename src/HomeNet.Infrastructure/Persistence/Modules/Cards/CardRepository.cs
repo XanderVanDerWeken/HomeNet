@@ -51,6 +51,17 @@ public sealed class CardRepository : ICardRepository, IDisposable
         }
     }
 
+    public async Task<Card?> GetCardByIdAsync(
+        int cardId, 
+        CancellationToken cancellationToken = default)
+    {
+        var query = new Query("cards")
+            .Where("id", cardId);
+        
+        var row = await _db.FirstOrDefaultAsync<Card>(query, cancellationToken: cancellationToken);
+        return row;
+    }
+
     public async Task<IReadOnlyList<Card>> GetAllCardsAsync(
         CancellationToken cancellationToken = default)
     {
@@ -70,6 +81,35 @@ public sealed class CardRepository : ICardRepository, IDisposable
 
         var rows = await _db.GetAsync<Card>(query, cancellationToken: cancellationToken);
         return rows.ToList();
+    }
+
+    public async Task<Result> UpdateCardAsync(
+        Card card, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query("cards")
+                .Where("id", card.Id)
+                .AsUpdate(new
+                {
+                    name = card.Name,
+                    expirationDate = card.ExpirationDate,
+                });
+
+            var compiled = _db.Compiler.Compile(query);
+
+            using var connection = new NpgsqlConnection(_db.Connection.ConnectionString);
+            var rows = await connection.ExecuteAsync(compiled.Sql, compiled.NamedBindings);
+
+            return rows > 0
+                ? Result.Success()
+                : Result.Failure("Failed to update card in database.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while updating the card: {ex.Message}");
+        }
     }
 
     public async Task<Result> RemoveCardAsync(

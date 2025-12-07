@@ -9,7 +9,15 @@ public interface ICardRepository
         Card card, 
         CancellationToken cancellationToken = default);
     
+    Task<Result> UpdateCardAsync(
+        Card card, 
+        CancellationToken cancellationToken = default);
+
     Task<Result> RemoveCardAsync(
+        int cardId, 
+        CancellationToken cancellationToken = default);
+
+    Task<Card?> GetCardByIdAsync(
         int cardId, 
         CancellationToken cancellationToken = default);
 
