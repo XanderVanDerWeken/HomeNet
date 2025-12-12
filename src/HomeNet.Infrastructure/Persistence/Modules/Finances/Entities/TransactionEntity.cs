@@ -17,10 +17,4 @@ public sealed class TransactionEntity
     public string? Store { get; set; }
 
     public string? IncomeSource { get; set; }
-
-    public enum TransactionType
-    {
-        Expense,
-        Income
-    }
 }
