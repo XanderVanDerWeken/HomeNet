@@ -1,8 +1,6 @@
-using Dapper;
 using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Models;
-using Npgsql;
 using SqlKata;
 using SqlKata.Execution;
 
@@ -36,10 +34,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                 expirationDate = card.ExpirationDate,
             });
 
-            var compiled = _db.Compiler.Compile(query);
-
-            using var connection = new NpgsqlConnection(_db.Connection.ConnectionString);
-            var rows = await connection.ExecuteAsync(compiled.Sql, compiled.NamedBindings);
+            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
@@ -97,10 +92,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                     expirationDate = card.ExpirationDate,
                 });
 
-            var compiled = _db.Compiler.Compile(query);
-
-            using var connection = new NpgsqlConnection(_db.Connection.ConnectionString);
-            var rows = await connection.ExecuteAsync(compiled.Sql, compiled.NamedBindings);
+            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
@@ -122,10 +114,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                 .Where("id", cardId)
                 .AsDelete();
 
-            var compiled = _db.Compiler.Compile(query);
-
-            using var connection = new NpgsqlConnection(_db.Connection.ConnectionString);
-            var rows = await connection.ExecuteAsync(compiled.Sql, compiled.NamedBindings);
+            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
