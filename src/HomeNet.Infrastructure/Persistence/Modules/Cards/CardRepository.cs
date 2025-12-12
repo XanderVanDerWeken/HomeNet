@@ -6,20 +6,11 @@ using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
 
-public sealed class CardRepository : ICardRepository, IDisposable
+public sealed class CardRepository : SqlKataRepository, ICardRepository
 {
-    private readonly QueryFactory _db;
-
-    private bool _disposed = false;
-
     public CardRepository(QueryFactory db)
+        : base(db)
     {
-        _db = db;
-    }
-
-    ~CardRepository()
-    {
-        Dispose(false);
     }
 
     public async Task<Result> AddCardAsync(
@@ -34,7 +25,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                 expirationDate = card.ExpirationDate,
             });
 
-            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
+            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
@@ -53,7 +44,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
         var query = new Query("cards")
             .Where("id", cardId);
         
-        var row = await _db.FirstOrDefaultAsync<Card>(query, cancellationToken: cancellationToken);
+        var row = await FirstOrDefaultAsync<Card>(query, cancellationToken: cancellationToken);
         return row;
     }
 
@@ -62,8 +53,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
     {
         var query = new Query("cards").OrderBy("id");
 
-        var rows = await _db.GetAsync<Card>(query, cancellationToken: cancellationToken);
-        return rows.ToList();
+        return await GetListAsync<Card>(query, cancellationToken: cancellationToken);
     }
 
     public async Task<IReadOnlyList<Card>> GetAllCardsWithExpiryBeforeAsync(
@@ -74,8 +64,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
             .Where("expiration_date", "<", expiryDate)
             .OrderBy("id");
 
-        var rows = await _db.GetAsync<Card>(query, cancellationToken: cancellationToken);
-        return rows.ToList();
+        return await GetListAsync<Card>(query, cancellationToken: cancellationToken);
     }
 
     public async Task<Result> UpdateCardAsync(
@@ -92,7 +81,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                     expirationDate = card.ExpirationDate,
                 });
 
-            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
+            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
@@ -114,7 +103,7 @@ public sealed class CardRepository : ICardRepository, IDisposable
                 .Where("id", cardId)
                 .AsDelete();
 
-            var rows = await _db.ExecuteAsync(query, cancellationToken: cancellationToken);
+            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
 
             return rows > 0
                 ? Result.Success()
@@ -124,24 +113,5 @@ public sealed class CardRepository : ICardRepository, IDisposable
         {
             return Result.Failure($"An error occurred while removing the card: {ex.Message}");
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    private void Dispose(bool disposing)
-    {
-        if (_disposed)
-            return;
-        
-        if (disposing)
-        {
-            _db.Dispose();
-        }
-
-        _disposed = true;
     }
 }
