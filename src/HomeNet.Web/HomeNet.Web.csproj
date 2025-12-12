@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../HomeNet.Core/HomeNet.Core.csproj" />
-    <ProjectReference Include="../HomeNet.Data/HomeNet.Data.csproj" />
+    <ProjectReference Include="../HomeNet.Infrastructure/HomeNet.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

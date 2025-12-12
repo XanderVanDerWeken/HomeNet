@@ -1,14 +1,37 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Modules.Cards.Abstractions;
+using HomeNet.Core.Modules.Cards.Models;
 
 namespace HomeNet.Core.Modules.Cards.Commands;
 
-public class AddCardCommandHandler : ICommandHandler<AddCardCommand>
+public sealed class AddCardCommandHandler : ICommandHandler<AddCardCommand>
 {
+    private readonly ICardRepository _cardRepository;
+
+    public AddCardCommandHandler(ICardRepository cardRepository)
+    {
+        _cardRepository = cardRepository;
+    }
+
     public Task<Result> HandleAsync(
         AddCardCommand command, 
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var validationResult = command.GetValidator().Validate(command);
+
+        if (!validationResult.IsValid)
+        {
+            var result = Result.Failure(validationResult.ErrorMessage!);
+            return Task.FromResult(result);
+        }
+
+        var newCard = new Card
+        {
+            Name = command.Name,
+            ExpirationDate = command.ExpirationDate,
+        };
+
+        return _cardRepository.AddCardAsync(newCard, cancellationToken);
     }
 }
