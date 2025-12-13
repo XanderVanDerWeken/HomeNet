@@ -37,7 +37,9 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         return row;
     }
 
-    public async Task<Result> AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
+    public async Task<Result> AddCategoryAsync(
+        Category category, 
+        CancellationToken cancellationToken = default)
     {
         try
         {

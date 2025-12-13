@@ -5,14 +5,6 @@ namespace HomeNet.Core.Modules.Finances.Abstractions;
 
 public interface ITransactionRepository
 {
-    // TODO: Check if really needed, else with date
-    Task<IReadOnlyList<Income>> GetAllIncomesAsync(
-        CancellationToken cancellationToken = default);
-    
-    // TODO: Check if really needed, else with date
-    Task<IReadOnlyList<Expense>> GetAllExpensesAsync(
-        CancellationToken cancellationToken = default);
-
     Task<IReadOnlyList<Income>> GetAllIncomesAsync(
         int year,
         int month,
