@@ -2,27 +2,14 @@ using HomeNet.Core.Common.Validation;
 
 namespace HomeNet.Core.Modules.Finances.Commands;
 
-public sealed class AddExpenseCommandValidator : IValidator<AddExpenseCommand>
+public sealed class AddExpenseCommandValidator : BaseValidator<AddExpenseCommand>
 {
-    public ValidationResult Validate(AddExpenseCommand entity)
+    protected override void ValidateInternal(AddExpenseCommand entity)
     {
-        List<string> errors = [];
+        IsGreaterThanZero(entity.Amount, "Amount must be greater than zero");
 
-        if (entity.Amount <= 0.0f)
-        {
-            errors.Add("Amount must be greater than zero");
-        }
+        IsNotEmpty(entity.CategoryName, "Category is required");
 
-        if (string.IsNullOrWhiteSpace(entity.CategoryName))
-        {
-            errors.Add("Category is required");
-        }
-
-        if (string.IsNullOrWhiteSpace(entity.StoreName))
-        {
-            errors.Add("Store Name is required");
-        }
-
-        return ValidationResult.FromErrors(errors);
+        IsNotEmpty(entity.StoreName, "Store Name is required");
     }
 }

@@ -2,27 +2,14 @@ using HomeNet.Core.Common.Validation;
 
 namespace HomeNet.Core.Modules.Finances.Commands;
 
-public sealed class AddIncomeCommandValidator : IValidator<AddIncomeCommand>
+public sealed class AddIncomeCommandValidator : BaseValidator<AddIncomeCommand>
 {
-    public ValidationResult Validate(AddIncomeCommand entity)
+    protected override void ValidateInternal(AddIncomeCommand entity)
     {
-        List<string> errors = [];
+        IsGreaterThanZero(entity.Amount, "Amount must be greater than zero");
 
-        if (entity.Amount <= 0.0f)
-        {
-            errors.Add("Amount must be greater than zero");
-        }
+        IsNotEmpty(entity.CategoryName, "Category is required");
 
-        if (string.IsNullOrWhiteSpace(entity.CategoryName))
-        {
-            errors.Add("Category is required");
-        }
-
-        if (string.IsNullOrWhiteSpace(entity.Source))
-        {
-            errors.Add("Source is required");
-        }
-
-        return ValidationResult.FromErrors(errors);
+        IsNotEmpty(entity.Source, "Source is required");
     }
 }
