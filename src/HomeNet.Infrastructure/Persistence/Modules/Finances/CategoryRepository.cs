@@ -23,6 +23,20 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
             cancellationToken);
     }
 
+    public async Task<Category?> GetCategoryByNameAsync(
+        string name, 
+        CancellationToken cancellationToken = default)
+    {
+        var query = new Query("categories")
+            .Where("name", name);
+        
+        var row = await FirstOrDefaultAsync<Category>(
+            query,
+            cancellationToken);
+        
+        return row;
+    }
+
     public async Task<Result> AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
     {
         try
