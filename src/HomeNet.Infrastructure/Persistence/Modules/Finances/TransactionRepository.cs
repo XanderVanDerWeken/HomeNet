@@ -41,6 +41,40 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             .ToList();
     }
 
+    public async Task<IReadOnlyList<Income>> GetAllIncomesAsync(
+        int year,
+        int month,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Check Columns are like this
+        var query = new Query(TableName)
+            .Where("type", TransactionType.Income)
+            .Where("year", year)
+            .Where("month", month);
+        
+        var transactionEntities = await GetListAsync<TransactionEntity>(query, cancellationToken);
+        return transactionEntities
+            .Select(e => e.ToIncome())
+            .ToList();
+    }
+    
+    public async Task<IReadOnlyList<Expense>> GetAllExpensesAsync(
+        int year,
+        int month,
+        CancellationToken cancellationToken = default)
+    {
+        // TODO: Check Columns are like this
+        var query = new Query(TableName)
+            .Where("type", TransactionType.Expense)
+            .Where("year", year)
+            .Where("month", month);
+        
+        var transactionEntities = await GetListAsync<TransactionEntity>(query, cancellationToken);
+        return transactionEntities
+            .Select(e => e.ToExpense())
+            .ToList();
+    }
+
     public async Task<Result> AddExpenseAsync(
         Expense expense, 
         CancellationToken cancellationToken = default)

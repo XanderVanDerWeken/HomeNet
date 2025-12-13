@@ -1,10 +1,10 @@
 using HomeNet.Core.Common.Validation;
 
-namespace HomeNet.Core.Modules.Finances.Commands;
+namespace HomeNet.Core.Modules.Finances.Queries;
 
-public class RecalculateMonthlyTimelineCommandValidator : BaseValidator<RecalculateMonthlyTimelineCommand>
+public sealed class MonthlyTimelineQueryValidator : BaseValidator<MonthlyTimelineQuery>
 {
-    protected override void ValidateInternal(RecalculateMonthlyTimelineCommand entity)
+    protected override void ValidateInternal(MonthlyTimelineQuery entity)
     {
         if (entity.Year < 2000 || entity.Year > 3000)
         {
