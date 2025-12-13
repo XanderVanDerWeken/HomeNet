@@ -19,8 +19,8 @@ public class ValidatorTest
         };
 
         // Act
-        var validResult = validEntity.GetValidator().Validate(validEntity);
-        var invalidResult = invalidEntity.GetValidator().Validate(invalidEntity);
+        var validResult = validEntity.Validate();
+        var invalidResult = invalidEntity.Validate();
         
         // Assert
         Assert.Multiple(() =>
@@ -39,8 +39,8 @@ public class ValidatorTest
     {
         public string? Value { get; set; }
 
-        public IValidator<DummyEntity> GetValidator()
-            => new DummyValidator();
+        public ValidationResult Validate()
+            => new DummyValidator().Validate(this);
     }
 
     public class DummyValidator : IValidator<DummyEntity>

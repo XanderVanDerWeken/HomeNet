@@ -18,7 +18,7 @@ public sealed class AddCategoryCommandHandler : ICommandHandler<AddCategoryComma
         AddCategoryCommand command,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = command.GetValidator().Validate(command);
+        var validationResult = command.Validate();
 
         if (!validationResult.IsValid)
         {

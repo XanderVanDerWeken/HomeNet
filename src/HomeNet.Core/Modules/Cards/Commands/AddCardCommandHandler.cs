@@ -18,7 +18,7 @@ public sealed class AddCardCommandHandler : ICommandHandler<AddCardCommand>
         AddCardCommand command, 
         CancellationToken cancellationToken = default)
     {
-        var validationResult = command.GetValidator().Validate(command);
+        var validationResult = command.Validate();
 
         if (!validationResult.IsValid)
         {

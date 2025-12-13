@@ -7,6 +7,6 @@ public sealed record AddCategoryCommand : ICommand, IValidatable<AddCategoryComm
 {
     public required string Name { get; init; }
 
-    public IValidator<AddCategoryCommand> GetValidator()
-        => new AddCategoryCommandValidator();
+    public ValidationResult Validate()
+        => new AddCategoryCommandValidator().Validate(this);
 }
