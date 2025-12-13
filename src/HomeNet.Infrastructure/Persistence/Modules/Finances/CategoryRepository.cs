@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using SqlKata;
@@ -20,5 +21,27 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         return await GetListAsync<Category>(
             query,
             cancellationToken);
+    }
+
+    public async Task<Result> AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query("categories")
+                .AsInsert(new
+                {
+                    name = category.Name,
+                });
+
+            var rows = await ExecuteAsync(query, cancellationToken);
+
+            return rows > 0
+                ? Result.Success()
+                : Result.Failure("Failed to insert category into database.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while adding the category: {ex.Message}");
+        }
     }
 }
