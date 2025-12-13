@@ -2,7 +2,7 @@ namespace HomeNet.Core.Common.Validation;
 
 public abstract class BaseValidator<T> : IValidator<T>
 {
-    private List<string> Errors { get; } = []; 
+    protected List<string> Errors { get; } = []; 
 
     public ValidationResult Validate(T entity)
     {
