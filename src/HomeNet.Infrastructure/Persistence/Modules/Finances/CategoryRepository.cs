@@ -8,6 +8,8 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
 public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
 {
+    private static readonly string TableName = "categories";
+
     public CategoryRepository(PostgresQueryFactory db)
         : base(db)
     {
@@ -16,7 +18,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
     public async Task<IReadOnlyList<Category>> GetAllCategoriesAsync(
         CancellationToken cancellationToken = default)
     {
-        var query = new Query("categories").OrderBy("id");
+        var query = new Query(TableName);
     
         return await GetListAsync<Category>(
             query,
@@ -27,7 +29,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         string name, 
         CancellationToken cancellationToken = default)
     {
-        var query = new Query("categories")
+        var query = new Query(TableName)
             .Where("name", name);
         
         var row = await FirstOrDefaultAsync<Category>(
@@ -43,7 +45,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
     {
         try
         {
-            var query = new Query("categories")
+            var query = new Query(TableName)
                 .AsInsert(new
                 {
                     name = category.Name,
