@@ -4,9 +4,9 @@ public abstract class Transaction
 {
     public int Id { get; set;}
 
-    public required float Amount { get; set; }
+    public required Money Amount { get; set; }
 
-    public required DateTimeOffset Date { get; set; }
+    public required DateOnly Date { get; set; }
 
     public required Category Category { get; set; }
 }

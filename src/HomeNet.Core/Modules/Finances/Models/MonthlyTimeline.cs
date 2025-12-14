@@ -6,9 +6,9 @@ public sealed class MonthlyTimeline
 
     public required int Month { get; set; }
 
-    public required float IncomeAmount { get; set; }
+    public required Money IncomeAmount { get; set; }
 
-    public required float ExpenseAmount { get; set; }
+    public required Money ExpenseAmount { get; set; }
 
-    public required float NetTotal { get; set; }
+    public required Money NetTotal { get; set; }
 }

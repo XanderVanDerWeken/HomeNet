@@ -6,8 +6,6 @@ public sealed class AddExpenseCommandValidator : BaseValidator<AddExpenseCommand
 {
     protected override void ValidateInternal(AddExpenseCommand entity)
     {
-        IsGreaterThanZero(entity.Amount, "Amount must be greater than zero");
-
         IsNotEmpty(entity.CategoryName, "Category is required");
 
         IsNotEmpty(entity.StoreName, "Store Name is required");

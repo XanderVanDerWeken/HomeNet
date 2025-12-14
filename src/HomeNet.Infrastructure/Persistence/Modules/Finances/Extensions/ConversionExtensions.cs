@@ -9,7 +9,7 @@ public static class ConversionExtensions
         => new TransactionEntity
         {
             Id = income.Id,
-            Amount = income.Amount,
+            Amount = income.Amount.Amount,
             Date = income.Date,
             Category = income.Category,
             Type = TransactionType.Income,
@@ -20,7 +20,7 @@ public static class ConversionExtensions
         => new TransactionEntity
         {
             Id = expense.Id,
-            Amount = expense.Amount,
+            Amount = expense.Amount.Amount,
             Date = expense.Date,
             Category = expense.Category,
             Type = TransactionType.Expense,
@@ -31,7 +31,7 @@ public static class ConversionExtensions
         => new Income
         {
             Id = entity.Id,
-            Amount = entity.Amount,
+            Amount = new Money(entity.Amount),
             Date = entity.Date,
             Category = entity.Category,
             Source = entity.IncomeSource!,
@@ -41,7 +41,7 @@ public static class ConversionExtensions
         => new Expense
         {
             Id = entity.Id,
-            Amount = entity.Amount,
+            Amount = new Money(entity.Amount),
             Date = entity.Date, 
             Category = entity.Category,
             Store = entity.Store!,

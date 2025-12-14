@@ -57,8 +57,8 @@ public sealed class TimelineBuilder : ITimelineBuilder
         var incomes = await _transactionRepository
             .GetAllIncomesAsync(year, month, cancellationToken);
         
-        var expensesAmount = expenses.Sum(e => e.Amount);
-        var incomesAmount = incomes.Sum(e => e.Amount);
+        var expensesAmount = expenses.Sum(e => e.Amount.Amount);
+        var incomesAmount = incomes.Sum(e => e.Amount.Amount);
 
         var netTotal = incomesAmount - expensesAmount;
 
@@ -66,9 +66,9 @@ public sealed class TimelineBuilder : ITimelineBuilder
         {
             Year = year,
             Month = month,
-            ExpenseAmount = expensesAmount,
-            IncomeAmount = incomesAmount,
-            NetTotal = netTotal,
+            ExpenseAmount = new Money(expensesAmount),
+            IncomeAmount = new Money(incomesAmount),
+            NetTotal = new Money(netTotal),
         };
     }
 }
