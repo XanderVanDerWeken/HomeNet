@@ -1,10 +1,10 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
+using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
 using HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 using SqlKata;
-using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
@@ -12,7 +12,7 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
 {
     private static readonly string TableName = "transactions";
 
-    public TransactionRepository(QueryFactory db)
+    public TransactionRepository(PostgresQueryFactory db)
         : base(db)
     {
     }

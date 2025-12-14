@@ -1,7 +1,7 @@
 using SqlKata;
 using SqlKata.Execution;
 
-namespace HomeNet.Infrastructure.Persistence;
+namespace HomeNet.Infrastructure.Persistence.Abstractions;
 
 public abstract class SqlKataRepository : IDisposable
 {

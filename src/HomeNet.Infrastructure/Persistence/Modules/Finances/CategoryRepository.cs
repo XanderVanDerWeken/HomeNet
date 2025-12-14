@@ -1,14 +1,14 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
+using HomeNet.Infrastructure.Persistence.Abstractions;
 using SqlKata;
-using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
 public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
 {
-    public CategoryRepository(QueryFactory db)
+    public CategoryRepository(PostgresQueryFactory db)
         : base(db)
     {
     }

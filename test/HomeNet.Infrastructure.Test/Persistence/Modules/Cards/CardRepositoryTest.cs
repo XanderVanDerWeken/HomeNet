@@ -1,7 +1,7 @@
+using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Cards;
 using Npgsql;
 using SqlKata.Compilers;
-using SqlKata.Execution;
 using Testcontainers.PostgreSql;
 
 namespace HomeNet.Infrastructure.Test.Persistence.Modules.Cards;
@@ -29,7 +29,7 @@ public class CardRepositoryTest
         var connection = new NpgsqlConnection(connectionString);
         var compiler = new PostgresCompiler();
 
-        var db = new QueryFactory(connection, compiler);
+        var db = new PostgresQueryFactory(connection, compiler);
 
         _cardRepository = new CardRepository(db);
     }

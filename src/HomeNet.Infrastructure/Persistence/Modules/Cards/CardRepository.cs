@@ -1,8 +1,8 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Models;
+using HomeNet.Infrastructure.Persistence.Abstractions;
 using SqlKata;
-using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
 
@@ -10,7 +10,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
 {
     private static readonly string TableName = "cards";
 
-    public CardRepository(QueryFactory db)
+    public CardRepository(PostgresQueryFactory db)
         : base(db)
     {
     }

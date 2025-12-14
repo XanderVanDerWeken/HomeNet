@@ -1,8 +1,10 @@
+using System.Data.SQLite;
 using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
 using HomeNet.Core.Modules.Cards.Queries;
 using HomeNet.Infrastructure.Events;
+using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Cards;
 using Npgsql;
 using SqlKata.Compilers;
@@ -18,14 +20,24 @@ public static class ServiceExtensions
     {
         services.AddSingleton<IMediator, EventBus>();
 
-        services.AddSingleton<QueryFactory>(sp =>
+        services.AddSingleton<PostgresQueryFactory>(sp =>
         {
             var connectionString = config.GetConnectionString("Default");
 
             var connection = new NpgsqlConnection(connectionString);
             var compiler = new PostgresCompiler();
 
-            return new QueryFactory(connection, compiler);
+            return new PostgresQueryFactory(connection, compiler);
+        });
+
+        services.AddSingleton<SqliteQueryFactory>(sp =>
+        {
+            var connectionString = config.GetConnectionString("Cache");
+
+            var connection = new SQLiteConnection(connectionString);
+            var compiler = new SqliteCompiler();
+
+            return new SqliteQueryFactory(connection, compiler);
         });
 
         return services;
