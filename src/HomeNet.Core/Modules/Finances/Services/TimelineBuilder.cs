@@ -29,7 +29,10 @@ public sealed class TimelineBuilder : ITimelineBuilder
             return loadedTimeline;
         }
 
-        return await RecalculateMonthlyTimelineAsync(year, month, cancellationToken);
+        return await RecalculateMonthlyTimelineAsync(
+            year, 
+            month, 
+            cancellationToken);
     }
 
     public async Task<MonthlyTimeline> RecalculateMonthlyTimelineAsync(
@@ -37,7 +40,10 @@ public sealed class TimelineBuilder : ITimelineBuilder
         int month,
         CancellationToken cancellationToken = default)
     {
-        var builtTimeline = await BuildMonthlyTimelineAsync(year, month, cancellationToken);
+        var builtTimeline = await BuildMonthlyTimelineAsync(
+            year, 
+            month, 
+            cancellationToken);
 
         await _monthlyTimelineRepository.SaveMonthlyTimelineAsync(
             builtTimeline, 

@@ -31,6 +31,8 @@ public sealed class AddCategoryCommandHandler : ICommandHandler<AddCategoryComma
             Name = command.Name,
         };
 
-        return _categoryRepository.AddCategoryAsync(newCategory, cancellationToken);
+        return _categoryRepository.AddCategoryAsync(
+            newCategory, 
+            cancellationToken);
     }
 }

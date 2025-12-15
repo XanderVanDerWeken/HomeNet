@@ -32,7 +32,9 @@ public class EventBus : IMediator
         foreach (var handlerType in handlerTypes)
         {
             dynamic handler = provider.GetRequiredService(handlerType);
-            Result result = await handler.HandleAsync((dynamic)command, cancellationToken);
+            Result result = await handler.HandleAsync(
+                (dynamic)command, 
+                cancellationToken);
 
             if (!result.IsSuccess)
                 totalResult = result;
@@ -54,7 +56,10 @@ public class EventBus : IMediator
         var provider = scope.ServiceProvider;
 
         dynamic handler = provider.GetRequiredService(handlerType);
-        var result = await handler.HandleAsync((dynamic)query, cancellationToken);
+        var result = await handler.HandleAsync(
+            (dynamic)query, 
+            cancellationToken);
+        
         return result;
     }
     

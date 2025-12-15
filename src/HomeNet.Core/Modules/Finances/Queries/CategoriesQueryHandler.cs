@@ -18,7 +18,9 @@ public sealed class CategoriesQueryHandler : IQueryHandler<CategoriesQuery, IRea
         CategoriesQuery query, 
         CancellationToken cancellationToken = default)
     {
-        var categories = await _categoryRepository.GetAllCategoriesAsync(cancellationToken);
+        var categories = await _categoryRepository
+            .GetAllCategoriesAsync(cancellationToken);
+        
         return Result<IReadOnlyList<Category>>.Success(categories);
     }
 }

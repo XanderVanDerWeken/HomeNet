@@ -22,7 +22,8 @@ public sealed class ExpensesQueryHandler : IQueryHandler<ExpensesQuery, IReadOnl
 
         if (!validationResult.IsValid)
         {
-            return Result<IReadOnlyList<Expense>>.Failure(validationResult.ErrorMessage!);
+            return Result<IReadOnlyList<Expense>>.Failure(
+                validationResult.ErrorMessage!);
         }
 
         var expenses = await _transactionRepository.GetAllExpensesAsync(

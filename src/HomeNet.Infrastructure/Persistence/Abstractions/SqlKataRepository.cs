@@ -21,17 +21,23 @@ public abstract class SqlKataRepository : IDisposable
     protected Task<int> ExecuteAsync(
         Query query, 
         CancellationToken cancellationToken = default)
-        => _db.ExecuteAsync(query, cancellationToken: cancellationToken);
+        => _db.ExecuteAsync(
+            query, 
+            cancellationToken: cancellationToken);
 
     protected Task<T> FirstOrDefaultAsync<T>(
         Query query, 
         CancellationToken cancellationToken = default)
-        => _db.FirstOrDefaultAsync<T>(query, cancellationToken: cancellationToken);
+        => _db.FirstOrDefaultAsync<T>(
+            query, 
+            cancellationToken: cancellationToken);
 
     protected Task<IEnumerable<T>> GetMultipleAsync<T>(
         Query query, 
         CancellationToken cancellationToken = default)
-        => _db.GetAsync<T>(query, cancellationToken: cancellationToken);
+        => _db.GetAsync<T>(
+            query, 
+            cancellationToken: cancellationToken);
 
     public void Dispose()
     {
