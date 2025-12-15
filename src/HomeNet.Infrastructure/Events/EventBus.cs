@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeNet.Infrastructure.Events;
 
-public class EventBus : IMediator
+public class EventBus : IEventBus
 {
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly Dictionary<Type, List<Type>> _commandHandlers = new();

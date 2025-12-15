@@ -1,6 +1,6 @@
 namespace HomeNet.Core.Common.Cqrs;
 
-public interface IMediator
+public interface IEventBus
 {
     Task<Result> SendAsync(
         ICommand command, 

@@ -18,7 +18,7 @@ public static class ServiceExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
-        services.AddSingleton<IMediator, EventBus>();
+        services.AddSingleton<IEventBus, EventBus>();
 
         services.AddSingleton<PostgresQueryFactory>(sp =>
         {
