@@ -1,6 +1,6 @@
-namespace HomeNet.Core.Modules.Cards.Models;
+namespace HomeNet.Infrastructure.Persistence.Modules.Cards.Entities;
 
-public sealed class Card
+public sealed class CardEntity
 {
     public int Id { get; set; }
 

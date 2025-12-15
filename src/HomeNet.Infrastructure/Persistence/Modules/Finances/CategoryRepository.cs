@@ -2,6 +2,8 @@ using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 using SqlKata;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
@@ -20,9 +22,13 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
     {
         var query = new Query(TableName);
     
-        return await GetListAsync<Category>(
-            query,
+        var entities = await GetMultipleAsync<CategoryEntity>(
+            query, 
             cancellationToken);
+        
+        return entities
+            .Select(e => e.ToCategory())
+            .ToList();
     }
 
     public async Task<Category?> GetCategoryByNameAsync(
@@ -32,11 +38,11 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         var query = new Query(TableName)
             .Where("name", name);
         
-        var row = await FirstOrDefaultAsync<Category>(
+        var row = await FirstOrDefaultAsync<CategoryEntity>(
             query,
             cancellationToken);
         
-        return row;
+        return row?.ToCategory();
     }
 
     public async Task<Result> AddCategoryAsync(
@@ -46,10 +52,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         try
         {
             var query = new Query(TableName)
-                .AsInsert(new
-                {
-                    name = category.Name,
-                });
+                .AsInsert(category.ToEntity());
 
             var rows = await ExecuteAsync(query, cancellationToken);
 

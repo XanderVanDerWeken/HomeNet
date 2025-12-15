@@ -28,13 +28,10 @@ public abstract class SqlKataRepository : IDisposable
         CancellationToken cancellationToken = default)
         => _db.FirstOrDefaultAsync<T>(query, cancellationToken: cancellationToken);
 
-    protected async Task<IReadOnlyList<T>> GetListAsync<T>(
+    protected Task<IEnumerable<T>> GetMultipleAsync<T>(
         Query query, 
         CancellationToken cancellationToken = default)
-    {
-        var rows = await _db.GetAsync<T>(query, cancellationToken: cancellationToken);
-        return rows.ToList();
-    }
+        => _db.GetAsync<T>(query, cancellationToken: cancellationToken);
 
     public void Dispose()
     {

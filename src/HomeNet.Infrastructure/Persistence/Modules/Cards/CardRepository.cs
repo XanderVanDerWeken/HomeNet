@@ -2,6 +2,8 @@ using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Cards.Entities;
+using HomeNet.Infrastructure.Persistence.Modules.Cards.Extensions;
 using SqlKata;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
@@ -21,15 +23,11 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
     {
         try
         {
-            var query = new Query(TableName).AsInsert(new
-            {
-                name = card.Name,
-                expirationDate = card.ExpirationDate,
-            });
+            var query = new Query(TableName).AsInsert(card.ToEntity());
 
-            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
 
-            return rows > 0
+            return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to insert card into database.");
         }
@@ -46,8 +44,11 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         var query = new Query(TableName)
             .Where("id", cardId);
         
-        var row = await FirstOrDefaultAsync<Card>(query, cancellationToken: cancellationToken);
-        return row;
+        var entity = await FirstOrDefaultAsync<CardEntity>(
+            query, 
+            cancellationToken);
+        
+        return entity?.ToCard();
     }
 
     public async Task<IReadOnlyList<Card>> GetAllCardsAsync(
@@ -55,7 +56,13 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
     {
         var query = new Query(TableName);
 
-        return await GetListAsync<Card>(query, cancellationToken: cancellationToken);
+        var entities = await GetMultipleAsync<CardEntity>(
+            query, 
+            cancellationToken);
+        
+        return entities
+            .Select(e => e.ToCard())
+            .ToList();
     }
 
     public async Task<IReadOnlyList<Card>> GetAllCardsWithExpiryBeforeAsync(
@@ -65,7 +72,13 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         var query = new Query(TableName)
             .Where("expiration_date", "<", expiryDate);
 
-        return await GetListAsync<Card>(query, cancellationToken: cancellationToken);
+        var entities = await GetMultipleAsync<CardEntity>(
+            query, 
+            cancellationToken);
+        
+        return entities
+            .Select(e => e.ToCard())
+            .ToList();
     }
 
     public async Task<Result> UpdateCardAsync(
@@ -76,15 +89,11 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         {
             var query = new Query(TableName)
                 .Where("id", card.Id)
-                .AsUpdate(new
-                {
-                    name = card.Name,
-                    expirationDate = card.ExpirationDate,
-                });
+                .AsUpdate(card.ToEntity());
 
-            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
 
-            return rows > 0
+            return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to update card in database.");
         }
@@ -104,9 +113,9 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
                 .Where("id", cardId)
                 .AsDelete();
 
-            var rows = await ExecuteAsync(query, cancellationToken: cancellationToken);
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
 
-            return rows > 0
+            return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to delete card from database.");
         }

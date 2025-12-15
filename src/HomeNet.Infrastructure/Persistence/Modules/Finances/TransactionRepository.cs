@@ -27,8 +27,11 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             .Where("year", year)
             .Where("month", month);
         
-        var transactionEntities = await GetListAsync<TransactionEntity>(query, cancellationToken);
-        return transactionEntities
+        var entities = await GetMultipleAsync<TransactionEntity>(
+            query, 
+            cancellationToken);
+        
+        return entities
             .Select(e => e.ToIncome())
             .ToList();
     }
@@ -43,8 +46,11 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             .Where("year", year)
             .Where("month", month);
         
-        var transactionEntities = await GetListAsync<TransactionEntity>(query, cancellationToken);
-        return transactionEntities
+        var entities = await GetMultipleAsync<TransactionEntity>(
+            query, 
+            cancellationToken);
+        
+        return entities
             .Select(e => e.ToExpense())
             .ToList();
     }
@@ -58,9 +64,9 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             var query = new Query(TableName)
                 .AsInsert(expense.ToEntity());
             
-            var rows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
 
-            return rows > 0
+            return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to insert expense into database.");
         }
@@ -79,9 +85,9 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             var query = new Query(TableName)
                 .AsInsert(income.ToEntity());
             
-            var rows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
 
-            return rows > 0
+            return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to insert income into database.");
         }

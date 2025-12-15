@@ -1,6 +1,8 @@
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 using SqlKata;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
@@ -23,9 +25,10 @@ public sealed class MonthlyTimelineRepository : SqlKataRepository, IMonthlyTimel
             .Where("year", year)
             .Where("month", month);
 
-        return await FirstOrDefaultAsync<MonthlyTimeline>(
+        var row = await FirstOrDefaultAsync<MonthlyTimelineEntity>(
             query, 
             cancellationToken);
+        return row?.ToMonthlyTimeline();
     }
 
     public async Task SaveMonthlyTimelineAsync(
@@ -41,28 +44,14 @@ public sealed class MonthlyTimelineRepository : SqlKataRepository, IMonthlyTimel
         if (existingTimeline == null)
         {
             query = new Query(TableName)
-                .AsInsert(new
-                {
-                    year = timeline.Year,
-                    month = timeline.Month,
-                    incomeAmount = timeline.IncomeAmount,
-                    expenseAmount = timeline.ExpenseAmount,
-                    netTotal = timeline.NetTotal
-                });
+                .AsInsert(timeline.ToEntity());
         }
         else
         {
             query = new Query(TableName)
                 .Where("year", timeline.Year)
                 .Where("month", timeline.Month)
-                .AsUpdate(new
-                {
-                    year = timeline.Year,
-                    month = timeline.Month,
-                    incomeAmount = timeline.IncomeAmount,
-                    expenseAmount = timeline.ExpenseAmount,
-                    netTotal = timeline.NetTotal
-                });
+                .AsUpdate(timeline.ToEntity());
         }
 
         await ExecuteAsync(

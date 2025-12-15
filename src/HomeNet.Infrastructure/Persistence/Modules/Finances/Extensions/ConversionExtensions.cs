@@ -5,6 +5,23 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 
 public static class ConversionExtensions
 {
+    public static CategoryEntity ToEntity(this Category category)
+        => new CategoryEntity
+        {
+            Id = category.Id,
+            Name = category.Name,
+        };
+
+    public static MonthlyTimelineEntity ToEntity(this MonthlyTimeline timeline)
+        => new MonthlyTimelineEntity
+        {
+            Year = timeline.Year,
+            Month = timeline.Month,
+            IncomeAmount = timeline.IncomeAmount.Amount,
+            ExpenseAmount = timeline.ExpenseAmount.Amount,
+            NetTotal = timeline.NetTotal.Amount,
+        };
+
     public static TransactionEntity ToEntity(this Income income)
         => new TransactionEntity
         {
@@ -27,6 +44,23 @@ public static class ConversionExtensions
             Store = expense.Store,
         };
     
+    public static Category ToCategory(this CategoryEntity entity)
+        => new Category
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+        };
+    
+    public static MonthlyTimeline ToMonthlyTimeline(this MonthlyTimelineEntity entity)
+        => new MonthlyTimeline
+        {
+            Year = entity.Year,
+            Month = entity.Month,
+            IncomeAmount = new Money(entity.IncomeAmount),
+            ExpenseAmount = new Money(entity.ExpenseAmount),
+            NetTotal = new Money(entity.NetTotal),
+        };
+
     public static Income ToIncome(this TransactionEntity entity)
         => new Income
         {

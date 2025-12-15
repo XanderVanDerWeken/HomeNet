@@ -33,7 +33,7 @@ public class CardsExpiringBeforeQueryHandlerTest
         {
             Id = 1,
             Name = "Test Card",
-            ExpirationDate = DateTimeOffset.UtcNow.AddDays(14),
+            ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(14)),
         };
 
         _cardRepositoryMock

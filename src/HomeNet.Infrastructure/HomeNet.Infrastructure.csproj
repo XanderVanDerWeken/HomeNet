@@ -19,4 +19,9 @@
     <PackageReference Include="System.Data.SQLite.Core" Version="1.0.119" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Persistence/Modules/Cards/Entities/" />
+    <Folder Include="Persistence/Modules/Cards/Extensions/" />
+  </ItemGroup>
+
 </Project>
