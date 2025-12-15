@@ -16,6 +16,13 @@ public sealed class IncomesQueryHandler : IQueryHandler<IncomesQuery, IReadOnlyL
 
     public async Task<Result<IReadOnlyList<Income>>> HandleAsync(IncomesQuery query, CancellationToken cancellationToken = default)
     {
+        var validationResult = query.Validate();
+
+        if (!validationResult.IsValid)
+        {
+            return Result<IReadOnlyList<Income>>.Failure(validationResult.ErrorMessage!);
+        }
+
         var incomes = await _transactionRepository.GetAllIncomesAsync(
             query.Year,
             query.Month,

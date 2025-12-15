@@ -18,6 +18,13 @@ public sealed class ExpensesQueryHandler : IQueryHandler<ExpensesQuery, IReadOnl
         ExpensesQuery query, 
         CancellationToken cancellationToken = default)
     {
+        var validationResult = query.Validate();
+
+        if (!validationResult.IsValid)
+        {
+            return Result<IReadOnlyList<Expense>>.Failure(validationResult.ErrorMessage!);
+        }
+
         var expenses = await _transactionRepository.GetAllExpensesAsync(
             query.Year,
             query.Month,
