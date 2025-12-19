@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageVersion Include="Dapper" Version="2.1.66" />
-    <PackageVersion Include="Npgsql" Version="3.1.7" />
+    <PackageVersion Include="Npgsql" Version="10.0.1" />
     <PackageVersion Include="SqlKata" Version="4.0.1" />
     <PackageVersion Include="SqlKata.Execution" Version="4.0.1" />
     <PackageVersion Include="System.Data.SQLite.Core" Version="1.0.119" />
