@@ -1,3 +1,4 @@
+using DotNet.Testcontainers.Builders;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Finances;
@@ -17,11 +18,19 @@ public class CategoryRepositoryTest
     [SetUp]
     public async Task Setup()
     {
+        var initdb = Path.GetFullPath("postgres.initdb.sql");
+
         _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:17")
-            .WithDatabase("homenet_test")
+            .WithImage("postgres:18")
+            .WithDatabase("homenet")
             .WithUsername("homenet_user")
             .WithPassword("homenet_password")
+            .WithResourceMapping(initdb, "/docker-entrypoint-initdb.d")
+            .WithCleanUp(true)
+            .WithWaitStrategy(
+                 Wait.ForUnixContainer()
+                    .UntilMessageIsLogged("PostgreSQL init process complete; ready for start up")
+                    .UntilMessageIsLogged("database system is ready to accept connections"))
             .Build();
 
         await _postgreSqlContainer.StartAsync();

@@ -10,7 +10,7 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
 public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
 {
-    private static readonly string TableName = "categories";
+    private static readonly string TableName = "finances.categories";
 
     public CategoryRepository(PostgresQueryFactory db)
         : base(db)
@@ -52,7 +52,10 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         try
         {
             var query = new Query(TableName)
-                .AsInsert(category.ToEntity());
+                .AsInsert(new
+                {
+                    name = category.Name,
+                });
 
             var rows = await ExecuteAsync(query, cancellationToken);
 
