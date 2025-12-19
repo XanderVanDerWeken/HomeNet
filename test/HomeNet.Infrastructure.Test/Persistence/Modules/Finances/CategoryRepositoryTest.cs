@@ -2,6 +2,7 @@ using DotNet.Testcontainers.Builders;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Finances;
+using HomeNet.Infrastructure.Test.Containers;
 using Npgsql;
 using NUnit.Framework;
 using SqlKata.Compilers;
@@ -13,29 +14,15 @@ public class CategoryRepositoryTest
 {
     private CategoryRepository _categoryRepository;
 
-    private PostgreSqlContainer _postgreSqlContainer;
+    private HomenetPgContainer _dbContainer;
 
     [SetUp]
     public async Task Setup()
     {
-        var initdb = Path.GetFullPath("postgres.initdb.sql");
+        _dbContainer = new HomenetPgContainer();
+        await _dbContainer.StartAsync();
 
-        _postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgres:18")
-            .WithDatabase("homenet")
-            .WithUsername("homenet_user")
-            .WithPassword("homenet_password")
-            .WithResourceMapping(initdb, "/docker-entrypoint-initdb.d")
-            .WithCleanUp(true)
-            .WithWaitStrategy(
-                 Wait.ForUnixContainer()
-                    .UntilMessageIsLogged("PostgreSQL init process complete; ready for start up")
-                    .UntilMessageIsLogged("database system is ready to accept connections"))
-            .Build();
-
-        await _postgreSqlContainer.StartAsync();
-
-        var connectionString = _postgreSqlContainer.GetConnectionString();
+        var connectionString = _dbContainer.GetConnectionString();
 
         var connection = new NpgsqlConnection(connectionString);
         var compiler = new PostgresCompiler();
@@ -50,8 +37,8 @@ public class CategoryRepositoryTest
     {
         _categoryRepository.Dispose();
 
-        await _postgreSqlContainer.StopAsync();
-        await _postgreSqlContainer.DisposeAsync();
+        await _dbContainer.StopAsync();
+        await _dbContainer.DisposeAsync();
     }
 
     [Test]
