@@ -4,5 +4,5 @@ namespace HomeNet.Core.Modules.Cards.Queries;
 
 public sealed record CardsExpiringBeforeQuery : IQuery
 {
-    public DateTimeOffset ExpiryDate { get; init; }
+    public DateOnly ExpiryDate { get; init; }
 }

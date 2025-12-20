@@ -10,7 +10,7 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Cards;
 
 public sealed class CardRepository : SqlKataRepository, ICardRepository
 {
-    private static readonly string TableName = "cards";
+    private static readonly string TableName = "cards.cards";
 
     public CardRepository(PostgresQueryFactory db)
         : base(db)
@@ -23,10 +23,15 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
     {
         try
         {
-            var query = new Query(TableName).AsInsert(card.ToEntity());
+            var query = new Query(TableName).AsInsert(new
+            {
+                name = card.Name,
+                expiration_date = card.ExpirationDate,
+            });
 
             var affectedRows = await ExecuteAsync(query, cancellationToken);
 
+            // TODO: Should maybe update ID on card object?
             return affectedRows > 0
                 ? Result.Success()
                 : Result.Failure("Failed to insert card into database.");
@@ -66,7 +71,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
     }
 
     public async Task<IReadOnlyList<Card>> GetAllCardsWithExpiryBeforeAsync(
-        DateTimeOffset expiryDate, 
+        DateOnly expiryDate, 
         CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName)
@@ -89,7 +94,12 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         {
             var query = new Query(TableName)
                 .Where("id", card.Id)
-                .AsUpdate(card.ToEntity());
+                .AsUpdate(new
+                {
+                    id = card.Id,
+                    name = card.Name,
+                    expiration_date = card.ExpirationDate,
+                });
 
             var affectedRows = await ExecuteAsync(query, cancellationToken);
 
