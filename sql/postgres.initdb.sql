@@ -22,7 +22,11 @@ CREATE TABLE IF NOT EXISTS finances.transactions (
     category_id INT REFERENCES finances.categories(id),
     transaction_type int NOT NULL CHECK (transaction_type IN (0, 1)),
     store VARCHAR(255) NULL,
-    income_source VARCHAR(255) NULL
+    income_source VARCHAR(255) NULL,
+
+    CONSTRAINT fk_category
+        FOREIGN KEY(category_id)
+        REFERENCES finances.categories(id)
 );
 
 COMMIT;

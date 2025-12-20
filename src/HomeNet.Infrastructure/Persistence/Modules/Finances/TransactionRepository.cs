@@ -31,8 +31,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             query, 
             cancellationToken);
         
+        var category = new Category { Id = 1, Name = "Sample Category" }; // TODO: Replace with actual category mapping
+
         return entities
-            .Select(e => e.ToIncome())
+            .Select(e => e.ToIncome(category)) // TODO: Add Category mapping
             .ToList();
     }
     
@@ -50,8 +52,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             query, 
             cancellationToken);
         
+        var category = new Category { Id = 1, Name = "Sample Category" }; // TODO: Replace with actual category mapping
+
         return entities
-            .Select(e => e.ToExpense())
+            .Select(e => e.ToExpense(category)) // TODO: Add Category mapping
             .ToList();
     }
 
@@ -62,7 +66,14 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
         try
         {
             var query = new Query(TableName)
-                .AsInsert(expense.ToEntity());
+                .AsInsert(new
+                {
+                    amount = expense.Amount.Amount,
+                    date = expense.Date,
+                    transaction_type = TransactionType.Expense,
+                    category_id = expense.Category.Id,
+                    store = expense.Store,
+                });
             
             var newExpenseId = await InsertAndReturnIdAsync(query);
             expense.Id = newExpenseId;
@@ -82,7 +93,14 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
         try
         {
             var query = new Query(TableName)
-                .AsInsert(income.ToEntity());
+                .AsInsert(new
+                {
+                    amount = income.Amount.Amount,
+                    date = income.Date,
+                    transaction_type = TransactionType.Income,
+                    category_id = income.Category.Id,
+                    income_source = income.Source,
+                });
             
             var newIncomeId = await InsertAndReturnIdAsync(query);
             income.Id = newIncomeId;

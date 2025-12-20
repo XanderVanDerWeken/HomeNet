@@ -1,5 +1,3 @@
-using HomeNet.Core.Modules.Finances.Models;
-
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
 
 public sealed class TransactionEntity
@@ -10,7 +8,7 @@ public sealed class TransactionEntity
 
     public required DateOnly Date { get; set; }
 
-    public required Category Category { get; set; }
+    public required int CategoryId { get; set; }
 
     public TransactionType Type { get; set; }
 
