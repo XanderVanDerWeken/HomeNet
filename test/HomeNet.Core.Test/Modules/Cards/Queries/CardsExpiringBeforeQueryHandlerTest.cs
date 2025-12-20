@@ -23,7 +23,7 @@ public class CardsExpiringBeforeQueryHandlerTest
     public async Task Should_HandleAsync()
     {
         // Arrange
-        var expiryDate = DateTimeOffset.UtcNow.AddDays(30);
+        var expiryDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
         var query = new CardsExpiringBeforeQuery
         {
             ExpiryDate = expiryDate,
