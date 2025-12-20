@@ -10,7 +10,7 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
 public sealed class TransactionRepository : SqlKataRepository, ITransactionRepository
 {
-    private static readonly string TableName = "transactions";
+    private static readonly string TableName = "finances.transactions";
 
     public TransactionRepository(PostgresQueryFactory db)
         : base(db)
@@ -64,11 +64,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             var query = new Query(TableName)
                 .AsInsert(expense.ToEntity());
             
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var newExpenseId = await InsertAndReturnIdAsync(query);
+            expense.Id = newExpenseId;
 
-            return affectedRows > 0
-                ? Result.Success()
-                : Result.Failure("Failed to insert expense into database.");
+            return Result.Success();
         }
         catch (Exception ex)
         {
@@ -85,11 +84,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             var query = new Query(TableName)
                 .AsInsert(income.ToEntity());
             
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var newIncomeId = await InsertAndReturnIdAsync(query);
+            income.Id = newIncomeId;
 
-            return affectedRows > 0
-                ? Result.Success()
-                : Result.Failure("Failed to insert income into database.");
+            return Result.Success();
         }
         catch (Exception ex)
         {

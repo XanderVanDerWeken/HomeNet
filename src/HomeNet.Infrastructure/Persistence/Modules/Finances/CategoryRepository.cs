@@ -57,11 +57,10 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
                     name = category.Name,
                 });
 
-            var rows = await ExecuteAsync(query, cancellationToken);
+            var newCategoryId = await InsertAndReturnIdAsync(query);
+            category.Id = newCategoryId;
 
-            return rows > 0
-                ? Result.Success()
-                : Result.Failure("Failed to insert category into database.");
+            return Result.Success();
         }
         catch (Exception ex)
         {
