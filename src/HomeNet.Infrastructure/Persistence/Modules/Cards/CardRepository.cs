@@ -29,12 +29,10 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
                 expiration_date = card.ExpirationDate,
             });
 
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var newCardId = await InsertAndReturnIdAsync(query);
+            card.Id = newCardId;
 
-            // TODO: Should maybe update ID on card object?
-            return affectedRows > 0
-                ? Result.Success()
-                : Result.Failure("Failed to insert card into database.");
+            return Result.Success();
         }
         catch (Exception ex)
         {

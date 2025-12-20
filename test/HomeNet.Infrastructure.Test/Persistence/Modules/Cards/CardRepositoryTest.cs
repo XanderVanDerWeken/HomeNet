@@ -63,6 +63,7 @@ public class CardRepositoryTest
         {
             Assert.That(result.IsSuccess, Is.True);
             Assert.That(result.Error, Is.Null);
+            Assert.That(_card1.Id, Is.EqualTo(1));
         });
     }
 
@@ -74,10 +75,12 @@ public class CardRepositoryTest
         var card1Added = await _cardRepository.AddCardAsync(_card1);
         var card2Added = await _cardRepository.AddCardAsync(_card2);
 
+        var invalidId = 3;
+
         // Act
-        var card1FromDb = await _cardRepository.GetCardByIdAsync(1);
-        var card2FromDb = await _cardRepository.GetCardByIdAsync(2);
-        var cardNonExistent = await _cardRepository.GetCardByIdAsync(3);
+        var card1FromDb = await _cardRepository.GetCardByIdAsync(_card1.Id);
+        var card2FromDb = await _cardRepository.GetCardByIdAsync(_card2.Id);
+        var cardNonExistent = await _cardRepository.GetCardByIdAsync(invalidId);
 
         // Assert
         Assert.Multiple(() =>
@@ -170,7 +173,6 @@ public class CardRepositoryTest
 
         // Act
         _card1.Name = card1NewName;
-        _card1.Id = 1; // TODO: Need to handle card id
         var card1UpdateResult = await _cardRepository.UpdateCardAsync(_card1);
 
         var updatedCard1FromDb = await _cardRepository.GetCardByIdAsync(1);

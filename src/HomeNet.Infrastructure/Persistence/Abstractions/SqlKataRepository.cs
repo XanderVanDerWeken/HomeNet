@@ -1,3 +1,4 @@
+using Dapper;
 using SqlKata;
 using SqlKata.Execution;
 
@@ -24,6 +25,18 @@ public abstract class SqlKataRepository : IDisposable
         => _db.ExecuteAsync(
             query, 
             cancellationToken: cancellationToken);
+    
+    protected Task<int> InsertAndReturnIdAsync(
+        Query query)
+    {
+        var compiled = _db.Compiler.Compile(query);
+
+        var id = _db.Connection.QuerySingleAsync<int>(
+            compiled.Sql + " RETURNING id",
+            compiled.NamedBindings);
+        
+        return id;
+    }
 
     protected Task<T> FirstOrDefaultAsync<T>(
         Query query, 
