@@ -1,7 +1,8 @@
+using Dapper;
 using SqlKata;
 using SqlKata.Execution;
 
-namespace HomeNet.Infrastructure.Persistence;
+namespace HomeNet.Infrastructure.Persistence.Abstractions;
 
 public abstract class SqlKataRepository : IDisposable
 {
@@ -21,20 +22,35 @@ public abstract class SqlKataRepository : IDisposable
     protected Task<int> ExecuteAsync(
         Query query, 
         CancellationToken cancellationToken = default)
-        => _db.ExecuteAsync(query, cancellationToken: cancellationToken);
+        => _db.ExecuteAsync(
+            query, 
+            cancellationToken: cancellationToken);
+    
+    protected Task<int> InsertAndReturnIdAsync(
+        Query query)
+    {
+        var compiled = _db.Compiler.Compile(query);
+
+        var id = _db.Connection.QuerySingleAsync<int>(
+            compiled.Sql + " RETURNING id",
+            compiled.NamedBindings);
+        
+        return id;
+    }
 
     protected Task<T> FirstOrDefaultAsync<T>(
         Query query, 
         CancellationToken cancellationToken = default)
-        => _db.FirstOrDefaultAsync<T>(query, cancellationToken: cancellationToken);
+        => _db.FirstOrDefaultAsync<T>(
+            query, 
+            cancellationToken: cancellationToken);
 
-    protected async Task<IReadOnlyList<T>> GetListAsync<T>(
+    protected Task<IEnumerable<T>> GetMultipleAsync<T>(
         Query query, 
         CancellationToken cancellationToken = default)
-    {
-        var rows = await _db.GetAsync<T>(query, cancellationToken: cancellationToken);
-        return rows.ToList();
-    }
+        => _db.GetAsync<T>(
+            query, 
+            cancellationToken: cancellationToken);
 
     public void Dispose()
     {

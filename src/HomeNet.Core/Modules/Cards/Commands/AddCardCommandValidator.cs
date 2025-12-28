@@ -13,7 +13,7 @@ public sealed class AddCardCommandValidator : IValidator<AddCardCommand>
             errors.Add("Name is required.");
         }
 
-        if (entity.ExpirationDate <= DateTime.UtcNow)
+        if (entity.ExpirationDate <= DateOnly.FromDateTime(DateTime.UtcNow))
         {
             errors.Add("Expiration date must be in the future.");
         }

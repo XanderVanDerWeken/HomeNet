@@ -18,7 +18,9 @@ public sealed class CardsExpiringBeforeQueryHandler : IQueryHandler<CardsExpirin
         CardsExpiringBeforeQuery query, 
         CancellationToken cancellationToken = default)
     {
-        var cards = await _cardRepository.GetAllCardsWithExpiryBeforeAsync(query.ExpiryDate, cancellationToken);
+        var cards = await _cardRepository.GetAllCardsWithExpiryBeforeAsync(
+            query.ExpiryDate, 
+            cancellationToken);
 
         return Result<IReadOnlyList<Card>>.Success(cards);
     }

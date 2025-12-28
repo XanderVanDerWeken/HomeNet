@@ -13,9 +13,12 @@ public class UpdateCardExpiryCommandHandler : ICommandHandler<UpdateCardExpiryCo
         _cardRepository = cardRepository;
     }
 
-    public async Task<Result> HandleAsync(UpdateCardExpiryCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result> HandleAsync(
+        UpdateCardExpiryCommand command, 
+        CancellationToken cancellationToken = default)
     {
-        var cardToUpdate = await _cardRepository.GetCardByIdAsync(command.CardId, cancellationToken);
+        var cardToUpdate = await _cardRepository
+            .GetCardByIdAsync(command.CardId, cancellationToken);
 
         if (cardToUpdate is null)
         {
@@ -23,6 +26,7 @@ public class UpdateCardExpiryCommandHandler : ICommandHandler<UpdateCardExpiryCo
         }
 
         cardToUpdate.ExpirationDate = command.NewExpiryDate;
-        return await _cardRepository.UpdateCardAsync(cardToUpdate, cancellationToken);
+        return await _cardRepository
+            .UpdateCardAsync(cardToUpdate, cancellationToken);
     }
 }

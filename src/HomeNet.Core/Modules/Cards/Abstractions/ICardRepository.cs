@@ -25,6 +25,6 @@ public interface ICardRepository
         CancellationToken cancellationToken = default);
     
     Task<IReadOnlyList<Card>> GetAllCardsWithExpiryBeforeAsync(
-        DateTimeOffset expiryDate, 
+        DateOnly expiryDate, 
         CancellationToken cancellationToken = default);
 }

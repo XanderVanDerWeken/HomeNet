@@ -6,5 +6,5 @@ public sealed record UpdateCardExpiryCommand : ICommand
 {
     public required int CardId { get; init; }
 
-    public required DateTimeOffset NewExpiryDate { get; init; }
+    public required DateOnly NewExpiryDate { get; init; }
 }
