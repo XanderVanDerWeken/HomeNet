@@ -92,7 +92,48 @@ public class CategoryRepositoryTest
 
     [Test]
     [Explicit("Needs Docker running")]
-    public async Task Should_GetCategoryAsync()
+    public async Task Should_GetCategoryByIdAsync()
+    {
+        // Arrange
+        var notFoundId = 500;
+
+        var category1 = new Category
+        {
+            Name = "Groceries",
+        };
+
+        var category2 = new Category
+        {
+            Name = "Utilities",
+        };
+
+        await _categoryRepository.AddCategoryAsync(category1);
+        await _categoryRepository.AddCategoryAsync(category2);
+
+        // Act
+        var foundCategory1 = await _categoryRepository
+            .GetCategoryByIdAsync(category1.Id);
+        var foundCategory2 = await _categoryRepository
+            .GetCategoryByIdAsync(category2.Id);
+        var notFoundCategory = await _categoryRepository
+            .GetCategoryByIdAsync(notFoundId);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(foundCategory1, Is.Not.Null);
+            Assert.That(foundCategory1!.Name, Is.EqualTo(category1.Name));
+
+            Assert.That(foundCategory2, Is.Not.Null);
+            Assert.That(foundCategory2!.Name, Is.EqualTo(category2.Name));
+
+            Assert.That(notFoundCategory, Is.Null);
+        });
+    }
+
+    [Test]
+    [Explicit("Needs Docker running")]
+    public async Task Should_GetCategoryByNameAsync()
     {
         // Arrange
         var notFoundName = "not found";

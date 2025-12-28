@@ -8,6 +8,10 @@ public interface ICategoryRepository
     Task<IReadOnlyList<Category>> GetAllCategoriesAsync(
         CancellationToken cancellationToken = default);
 
+    Task<Category?> GetCategoryByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default);
+
     Task<Category?> GetCategoryByNameAsync(
         string name, 
         CancellationToken cancellationToken = default);

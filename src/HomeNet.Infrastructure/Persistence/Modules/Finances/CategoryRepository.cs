@@ -31,6 +31,20 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
             .ToList();
     }
 
+    public async Task<Category?> GetCategoryByIdAsync(
+        int id,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new Query(TableName)
+            .Where("id", id);
+        
+        var row = await FirstOrDefaultAsync<CategoryEntity>(
+            query,
+            cancellationToken);
+        
+        return row?.ToCategory();
+    }
+
     public async Task<Category?> GetCategoryByNameAsync(
         string name, 
         CancellationToken cancellationToken = default)

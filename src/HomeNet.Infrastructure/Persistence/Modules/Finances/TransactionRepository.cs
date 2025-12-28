@@ -11,10 +11,15 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 public sealed class TransactionRepository : SqlKataRepository, ITransactionRepository
 {
     private static readonly string TableName = "finances.transactions";
+    
+    private readonly ICategoryRepository _categoryRepository;
 
-    public TransactionRepository(PostgresQueryFactory db)
+    public TransactionRepository(
+        PostgresQueryFactory db, 
+        ICategoryRepository categoryRepository)
         : base(db)
     {
+        _categoryRepository = categoryRepository;
     }
 
     public async Task<IReadOnlyList<Income>> GetAllIncomesAsync(
@@ -23,7 +28,7 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
         CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName)
-            .Where("type", TransactionType.Income)
+            .Where("transaction_type", TransactionType.Income)
             .Where("year", year)
             .Where("month", month);
         
@@ -31,10 +36,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             query, 
             cancellationToken);
         
-        var category = new Category { Id = 1, Name = "Sample Category" }; // TODO: Replace with actual category mapping
+        var category = await _categoryRepository.GetCategoryByIdAsync(1, cancellationToken);
 
         return entities
-            .Select(e => e.ToIncome(category)) // TODO: Add Category mapping
+            .Select(e => e.ToIncome(category!))
             .ToList();
     }
     
@@ -44,7 +49,7 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
         CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName)
-            .Where("type", TransactionType.Expense)
+            .Where("transaction_type", TransactionType.Expense)
             .Where("year", year)
             .Where("month", month);
         
@@ -52,10 +57,10 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
             query, 
             cancellationToken);
         
-        var category = new Category { Id = 1, Name = "Sample Category" }; // TODO: Replace with actual category mapping
+        var category = await _categoryRepository.GetCategoryByIdAsync(1, cancellationToken);
 
         return entities
-            .Select(e => e.ToExpense(category)) // TODO: Add Category mapping
+            .Select(e => e.ToExpense(category!))
             .ToList();
     }
 
@@ -69,7 +74,8 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
                 .AsInsert(new
                 {
                     amount = expense.Amount.Amount,
-                    date = expense.Date,
+                    year = expense.Date.Year,
+                    month = expense.Date.Month,
                     transaction_type = TransactionType.Expense,
                     category_id = expense.Category.Id,
                     store = expense.Store,
@@ -96,7 +102,8 @@ public sealed class TransactionRepository : SqlKataRepository, ITransactionRepos
                 .AsInsert(new
                 {
                     amount = income.Amount.Amount,
-                    date = income.Date,
+                    year = income.Date.Year,
+                    month = income.Date.Month,
                     transaction_type = TransactionType.Income,
                     category_id = income.Category.Id,
                     income_source = income.Source,

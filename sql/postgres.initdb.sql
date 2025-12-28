@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS finances.categories (
 CREATE TABLE IF NOT EXISTS finances.transactions (
     id SERIAL PRIMARY KEY,
     amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
-    date DATE NOT NULL,
+    year int NOT NULL,
+    month int NOT NULL,
     category_id INT REFERENCES finances.categories(id),
     transaction_type int NOT NULL CHECK (transaction_type IN (0, 1)),
     store VARCHAR(255) NULL,
@@ -26,7 +27,13 @@ CREATE TABLE IF NOT EXISTS finances.transactions (
 
     CONSTRAINT fk_category
         FOREIGN KEY(category_id)
-        REFERENCES finances.categories(id)
+        REFERENCES finances.categories(id),
+
+    CONSTRAINT check_year
+        CHECK (year >= 2000 AND year <= 3000),
+    
+    CONSTRAINT check_month
+        CHECK (month >= 1 AND month <= 12)
 );
 
 COMMIT;
