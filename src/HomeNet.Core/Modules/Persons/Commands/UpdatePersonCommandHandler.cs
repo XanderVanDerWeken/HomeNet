@@ -17,6 +17,13 @@ public sealed class UpdatePersonCommandHandler : ICommandHandler<UpdatePersonCom
         UpdatePersonCommand command, 
         CancellationToken cancellationToken = default)
     {
+        var validationResult = command.Validate();
+
+        if (!validationResult.IsValid)
+        {
+            return Result.Failure(validationResult.ErrorMessage!);
+        }
+
         var person = await _personRepository.GetPersonByIdAsync(command.PersonId);
 
         if (person == null)

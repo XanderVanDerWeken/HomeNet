@@ -22,7 +22,7 @@ public class AddPersonCommandHandlerTest
 
     [TestCase("JD")]
     [TestCase(null)]
-    public async Task Should_HandleAsync_ReturnsSuccessAsync(string? aliasName)
+    public async Task Should_HandleAsync_ReturnsSuccess(string? aliasName)
     {
         // Arrange
         var command = new AddPersonCommand
