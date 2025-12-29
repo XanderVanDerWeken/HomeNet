@@ -18,7 +18,9 @@ public sealed class PersonsQueryHandler : IQueryHandler<PersonsQuery, IReadOnlyL
         PersonsQuery query, 
         CancellationToken cancellationToken = default)
     {
-        var persons = await _personRepository.GetAllPersonsAsync(cancellationToken);
+        var persons = await _personRepository.GetAllPersonsAsync(
+            query.includeInactivePersons,
+            cancellationToken);
 
         return Result<IReadOnlyList<Person>>.Success(persons);
     }

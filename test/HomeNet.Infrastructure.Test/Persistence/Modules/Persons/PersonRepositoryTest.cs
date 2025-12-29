@@ -14,6 +14,7 @@ public class PersonRepositoryTest
         FirstName = "John",
         LastName = "Doe",
         AliasName = "JD",
+        IsInactive = false,
     };
 
     private static readonly Person _person2 = new Person
@@ -21,6 +22,7 @@ public class PersonRepositoryTest
         FirstName = "Jane",
         LastName = "Smith",
         AliasName = null,
+        IsInactive = false,
     };
 
     private PersonRepository _personRepository;
@@ -116,11 +118,14 @@ public class PersonRepositoryTest
     public async Task Should_GetAllPersonsAsync()
     {
         // Arrange
+        _person2.IsInactive = true;
+
         var person1Added = await _personRepository.AddPersonAsync(_person1);
         var person2Added = await _personRepository.AddPersonAsync(_person2);
 
         // Act
-        var result = await _personRepository.GetAllPersonsAsync();
+        var resultActives = await _personRepository.GetAllPersonsAsync();
+        var resultAll = await _personRepository.GetAllPersonsAsync(includeInactive: true);
 
         // Assert
         Assert.Multiple(() =>
@@ -128,9 +133,13 @@ public class PersonRepositoryTest
             Assert.That(person1Added.IsSuccess, Is.True);
             Assert.That(person2Added.IsSuccess, Is.True);
 
-            Assert.That(result, Has.Count.EqualTo(2));
-            Assert.That(result.Any(p => p.Id == _person1.Id), Is.True);
-            Assert.That(result.Any(p => p.Id == _person2.Id), Is.True);
+            Assert.That(resultActives, Has.Count.EqualTo(1));
+            Assert.That(resultActives.Any(p => p.Id == _person1.Id), Is.True);
+            Assert.That(resultActives.Any(p => p.Id == _person2.Id), Is.False);
+
+            Assert.That(resultAll, Has.Count.EqualTo(2));
+            Assert.That(resultAll.Any(p => p.Id == _person1.Id), Is.True);
+            Assert.That(resultAll.Any(p => p.Id == _person2.Id), Is.True);
         });
     }
 }

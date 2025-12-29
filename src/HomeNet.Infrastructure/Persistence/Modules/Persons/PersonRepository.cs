@@ -28,6 +28,7 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
                 first_name = person.FirstName,
                 last_name = person.LastName,
                 alias_name = person.AliasName,
+                is_inactive = person.IsInactive,
             });
 
             var newPersonId = await InsertAndReturnIdAsync(query);
@@ -56,9 +57,15 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
     }
 
     public async Task<IReadOnlyList<Person>> GetAllPersonsAsync(
+        bool includeInactive = false,
         CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName);
+
+        if (!includeInactive)
+        {
+            query.Where("is_inactive", false);
+        }
 
         var entities = await GetMultipleAsync<PersonEntity>(
             query, 

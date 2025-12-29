@@ -24,12 +24,17 @@ public class PersonsQueryHandlerTest
     {
         // Arrange
         var query = new PersonsQuery();
+        var queryWithInactive = new PersonsQuery
+        {
+            includeInactivePersons = true,
+        };
 
         var person1 = new Person
         {
             Id = 1,
             FirstName = "John",
             LastName = "Doe",
+            IsInactive = false,
         };
 
         var person2 = new Person
@@ -37,27 +42,45 @@ public class PersonsQueryHandlerTest
             Id = 2,
             FirstName = "Jane",
             LastName = "Smith",
+            IsInactive = true,
         };
 
         _personRepositoryMock
-            .Setup(p => p.GetAllPersonsAsync(It.IsAny<CancellationToken>()))
+            .Setup(p => p.GetAllPersonsAsync(true, It.IsAny<CancellationToken>()))
             .ReturnsAsync([person1, person2]);
+        
+        _personRepositoryMock
+            .Setup(p => p.GetAllPersonsAsync(false, It.IsAny<CancellationToken>()))
+            .ReturnsAsync([person1]);
 
         // Act
-        var result = await _handler.HandleAsync(query);
+        var resultOnlyActive = await _handler.HandleAsync(query);
+        var resultWithInactive = await _handler.HandleAsync(queryWithInactive);
 
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(result.IsSuccess, Is.True);
-            Assert.That(result.Value, Has.Count.EqualTo(2));
+            Assert.That(resultOnlyActive.IsSuccess, Is.True);
+            Assert.That(resultOnlyActive.Value, Has.Count.EqualTo(1));
 
-            Assert.That(result.Value![0], Is.EqualTo(person1));
-            Assert.That(result.Value![1], Is.EqualTo(person2));
+            Assert.That(resultOnlyActive.Value![0], Is.EqualTo(person1));
+
+            Assert.That(resultWithInactive.IsSuccess, Is.True);
+            Assert.That(resultWithInactive.Value, Has.Count.EqualTo(2));
+
+            Assert.That(resultWithInactive.Value![0], Is.EqualTo(person1));
+            Assert.That(resultWithInactive.Value![1], Is.EqualTo(person2));
         });
 
         _personRepositoryMock.Verify(
             r => r.GetAllPersonsAsync(
+                true,
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+        
+        _personRepositoryMock.Verify(
+            r => r.GetAllPersonsAsync(
+                false,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
