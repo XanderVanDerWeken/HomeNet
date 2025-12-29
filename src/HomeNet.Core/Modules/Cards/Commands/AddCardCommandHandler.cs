@@ -22,8 +22,7 @@ public sealed class AddCardCommandHandler : ICommandHandler<AddCardCommand>
 
         if (!validationResult.IsValid)
         {
-            var result = Result.Failure(validationResult.ErrorMessage!);
-            return Task.FromResult(result);
+            return Result.Failure(validationResult.ErrorMessage!);
         }
 
         var newCard = new Card

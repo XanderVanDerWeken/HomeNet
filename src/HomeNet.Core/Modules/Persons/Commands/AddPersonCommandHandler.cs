@@ -22,8 +22,7 @@ public sealed class AddPersonCommandHandler : ICommandHandler<AddPersonCommand>
 
         if (!validationResult.IsValid)
         {
-            var result = Result.Failure(validationResult.ErrorMessage!);
-            return Task.FromResult(result);
+            return Result.Failure(validationResult.ErrorMessage!);
         }
 
         var newPerson = new Person

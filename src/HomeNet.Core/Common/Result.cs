@@ -14,6 +14,8 @@ public class Result
     public static Result Success() => new Result(true, null);
 
     public static Result Failure(string error) => new Result(false, error);
+
+    public static implicit operator Task<Result>(Result result) => Task.FromResult(result);
 }
 
 public sealed class Result<T> : Result
