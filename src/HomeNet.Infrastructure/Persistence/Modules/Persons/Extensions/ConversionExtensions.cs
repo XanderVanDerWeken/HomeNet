@@ -12,7 +12,8 @@ public static class ConversionExtensions
             Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
-            AliasName = entity.AliasName
+            AliasName = entity.AliasName,
+            IsInactive = entity.IsInactive,
         };
     }
 }

@@ -9,4 +9,6 @@ public sealed class Person
     public required string LastName { get; set; }
 
     public string? AliasName { get; set; }
+
+    public bool IsInactive { get; set; } = false;
 }

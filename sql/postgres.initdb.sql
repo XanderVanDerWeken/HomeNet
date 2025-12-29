@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS persons.persons (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
-    alias_name VARCHAR(100) NULL
+    alias_name VARCHAR(100) NULL,
+    is_inactive BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 CREATE SCHEMA IF NOT EXISTS cards;
