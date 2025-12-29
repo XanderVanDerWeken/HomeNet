@@ -9,6 +9,10 @@ public interface IPersonRepository
         Person person, 
         CancellationToken cancellationToken = default);
     
+    Task<Person?> GetPersonByIdAsync(
+        int personId, 
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Person>> GetAllPersonsAsync(
         CancellationToken cancellationToken = default);
 }
