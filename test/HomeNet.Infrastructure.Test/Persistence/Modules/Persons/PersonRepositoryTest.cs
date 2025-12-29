@@ -142,4 +142,35 @@ public class PersonRepositoryTest
             Assert.That(resultAll.Any(p => p.Id == _person2.Id), Is.True);
         });
     }
+
+    [Test]
+    [Explicit("Needs Docker running")]
+    public async Task Should_UpdatePersonAsync()
+    {
+        // Arrange
+        var person1Added = await _personRepository.AddPersonAsync(_person1);
+        var person2Added = await _personRepository.AddPersonAsync(_person2);
+
+        var newFirstName = "Johnny";
+        var newLastName = "Smith";
+        var newAliasName = "Johnster";
+        var newInactive = true;
+
+        _person1.FirstName = newFirstName;
+        _person1.LastName = newLastName;
+        _person1.AliasName = newAliasName;
+        _person1.IsInactive = newInactive;
+
+        // Act
+        var result = await _personRepository.UpdatePersonAsync(_person1);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(person1Added.IsSuccess, Is.True);
+            Assert.That(person2Added.IsSuccess, Is.True);
+
+            Assert.That(result.IsSuccess, Is.True);
+        });
+    }
 }
