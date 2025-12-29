@@ -29,6 +29,7 @@ public sealed class AddCardCommandHandler : ICommandHandler<AddCardCommand>
         {
             Name = command.Name,
             ExpirationDate = command.ExpirationDate,
+            PersonId = command.PersonId,
         };
 
         return _cardRepository.AddCardAsync(newCard, cancellationToken);

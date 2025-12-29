@@ -27,6 +27,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
             {
                 name = card.Name,
                 expiration_date = card.ExpirationDate,
+                person_id = card.PersonId,
             });
 
             var newCardId = await InsertAndReturnIdAsync(query);
@@ -94,7 +95,6 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
                 .Where("id", card.Id)
                 .AsUpdate(new
                 {
-                    id = card.Id,
                     name = card.Name,
                     expiration_date = card.ExpirationDate,
                 });

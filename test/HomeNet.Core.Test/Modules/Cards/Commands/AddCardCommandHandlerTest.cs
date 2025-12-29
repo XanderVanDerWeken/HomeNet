@@ -27,6 +27,7 @@ public class AddCardCommandHandlerTest
         {
             Name = "Test Card",
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
+            PersonId = 1,
         };
 
         _cardRepositoryMock
@@ -60,11 +61,13 @@ public class AddCardCommandHandlerTest
         {
             Name = string.Empty,
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow),
+            PersonId = 1,
         };
         var commandInvalidDate = new AddCardCommand
         {
             Name = "Valid Name",
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
+            PersonId = 1,
         };
 
         _cardRepositoryMock
