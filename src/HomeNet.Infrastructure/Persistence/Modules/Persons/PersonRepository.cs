@@ -75,4 +75,32 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
             .Select(entity => entity.ToPerson())
             .ToList();
     }
+
+    public async Task<Result> UpdatePersonAsync(
+        Person person, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query(TableName)
+                .Where("id", person.Id)
+                .AsUpdate(new
+                {
+                    first_name = person.FirstName,
+                    last_name = person.LastName,
+                    alias_name = person.AliasName,
+                    is_inactive = person.IsInactive,
+                });
+
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
+
+            return affectedRows > 0
+                ? Result.Success()
+                : Result.Failure("Failed to update card in database.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while updating the person: {ex.Message}");
+        }
+    }
 }

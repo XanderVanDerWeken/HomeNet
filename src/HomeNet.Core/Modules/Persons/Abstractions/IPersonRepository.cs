@@ -16,4 +16,8 @@ public interface IPersonRepository
     Task<IReadOnlyList<Person>> GetAllPersonsAsync(
         bool includeInactive = false,
         CancellationToken cancellationToken = default);
+
+    Task<Result> UpdatePersonAsync(
+        Person person, 
+        CancellationToken cancellationToken = default);
 }
