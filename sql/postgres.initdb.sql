@@ -1,5 +1,14 @@
 BEGIN;
 
+CREATE SCHEMA IF NOT EXISTS persons;
+
+CREATE TABLE IF NOT EXISTS persons.persons (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    alias_name VARCHAR(100) NULL
+);
+
 CREATE SCHEMA IF NOT EXISTS cards;
 
 CREATE TABLE IF NOT EXISTS cards.cards (
