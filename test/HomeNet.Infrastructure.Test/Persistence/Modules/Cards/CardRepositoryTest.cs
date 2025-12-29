@@ -1,6 +1,8 @@
 using HomeNet.Core.Modules.Cards.Models;
+using HomeNet.Core.Modules.Persons.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Cards;
+using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Infrastructure.Test.Containers;
 using Npgsql;
 using SqlKata.Compilers;
@@ -13,15 +15,18 @@ public class CardRepositoryTest
     {
         Name = "My Visa Card",
         ExpirationDate = new DateOnly(2026, 12, 31),
+        PersonId = 1,
     };
     private static readonly Card _card2 = new Card
     {
         Name = "My Driver License",
         ExpirationDate = new DateOnly(2030, 6, 30),
+        PersonId = 1,
     };
 
     private CardRepository _cardRepository;
 
+    private PersonRepository _personRepository;
     private HomenetPgContainer _dbContainer;
 
     [SetUp]
@@ -38,13 +43,21 @@ public class CardRepositoryTest
         var db = new PostgresQueryFactory(connection, compiler);
 
         _cardRepository = new CardRepository(db);
+
+        _personRepository = new PersonRepository(db);
+        await _personRepository.AddPersonAsync(new Person
+        {
+            FirstName = "John",
+            LastName = "Doe",
+        });
     }
 
     [TearDown]
     public async Task Teardown()
     {
         _cardRepository.Dispose();
-
+        _personRepository.Dispose();
+    
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
     }

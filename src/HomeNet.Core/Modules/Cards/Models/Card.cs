@@ -7,4 +7,6 @@ public sealed class Card
     public required string Name { get; set; }
 
     public required DateOnly ExpirationDate { get; set; }
+
+    public required int PersonId { get; set; }
 }

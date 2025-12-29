@@ -22,14 +22,14 @@ public sealed class AddCardCommandHandler : ICommandHandler<AddCardCommand>
 
         if (!validationResult.IsValid)
         {
-            var result = Result.Failure(validationResult.ErrorMessage!);
-            return Task.FromResult(result);
+            return Result.Failure(validationResult.ErrorMessage!);
         }
 
         var newCard = new Card
         {
             Name = command.Name,
             ExpirationDate = command.ExpirationDate,
+            PersonId = command.PersonId,
         };
 
         return _cardRepository.AddCardAsync(newCard, cancellationToken);

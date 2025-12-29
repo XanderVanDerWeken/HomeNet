@@ -30,6 +30,7 @@ public class CardsQueryHandlerTest
             Id = 1,
             Name = "Test Card",
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(14)),
+            PersonId = 1,
         };
 
         _cardRepositoryMock

@@ -9,6 +9,8 @@ public sealed record AddCardCommand : ICommand, IValidatable<AddCardCommand>
 
     public required DateOnly ExpirationDate { get; init; }
 
+    public required int PersonId { get; init; }
+
     public ValidationResult Validate()
         => new AddCardCommandValidator().Validate(this);
 }

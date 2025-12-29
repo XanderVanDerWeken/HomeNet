@@ -19,5 +19,6 @@ public static class ConversionExtensions
             Id = entity.Id,
             Name = entity.Name,
             ExpirationDate = entity.ExpirationDate,
+            PersonId = entity.PersonId,
         };
 }

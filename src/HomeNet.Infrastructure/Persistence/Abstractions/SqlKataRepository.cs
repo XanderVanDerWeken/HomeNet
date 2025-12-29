@@ -11,6 +11,8 @@ public abstract class SqlKataRepository : IDisposable
 
     protected SqlKataRepository(QueryFactory db)
     {
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
         _db = db;
     }
 

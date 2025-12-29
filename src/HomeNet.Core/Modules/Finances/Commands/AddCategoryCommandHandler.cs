@@ -22,8 +22,7 @@ public sealed class AddCategoryCommandHandler : ICommandHandler<AddCategoryComma
 
         if (!validationResult.IsValid)
         {
-            var result = Result.Failure(validationResult.ErrorMessage!);
-            return Task.FromResult(result);
+            return Result.Failure(validationResult.ErrorMessage!);
         }
 
         var newCategory = new Category
