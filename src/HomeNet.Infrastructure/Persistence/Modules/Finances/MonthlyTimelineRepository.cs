@@ -1,3 +1,4 @@
+using Dapper;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -35,27 +36,16 @@ public sealed class MonthlyTimelineRepository : SqlKataRepository, IMonthlyTimel
         MonthlyTimeline timeline, 
         CancellationToken cancellationToken = default)
     {
-        var existingTimeline = await GetMonthlyTimelineAsync(
-            timeline.Year, 
-            timeline.Month, 
-            cancellationToken);
-
-        Query query;
-        if (existingTimeline == null)
-        {
-            query = new Query(TableName)
-                .AsInsert(timeline.ToEntity());
-        }
-        else
-        {
-            query = new Query(TableName)
-                .Where("year", timeline.Year)
-                .Where("month", timeline.Month)
-                .AsUpdate(timeline.ToEntity());
-        }
-
-        await ExecuteAsync(
-            query, 
-            cancellationToken);
+        await _db.Connection.ExecuteAsync(UpsertMonthlyTimelineSql, timeline.ToEntity());
     }
+
+    private const string UpsertMonthlyTimelineSql = """
+INSERT INTO monthly_timelines (year, month, income_amount, expense_amount, net_total)
+VALUES (@Year, @Month, @IncomeAmount, @ExpenseAmount, @NetTotal)
+ON CONFLICT (year, month)
+DO UPDATE SET
+    income_amount = excluded.income_amount,
+    expense_amount = excluded.expense_amount,
+    net_total = excluded.net_total;    
+""";
 }
