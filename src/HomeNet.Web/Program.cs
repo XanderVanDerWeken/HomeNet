@@ -3,6 +3,7 @@ using HomeNet.Web.Configurations;
 using HomeNet.Web.Database;
 using HomeNet.Web.Extensions;
 using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace HomeNet.Web;
 
@@ -11,6 +12,14 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(Log.Logger);
 
         builder.Services.Configure<CacheInitializerConfiguration>(
             builder.Configuration.GetSection(nameof(CacheInitializerConfiguration)));
@@ -26,6 +35,7 @@ public class Program
         builder.Services.AddScoped<SqliteCacheInitializer>(sp =>
         {
             return new SqliteCacheInitializer(
+                sp.GetRequiredService<ILogger<SqliteCacheInitializer>>(),
                 builder.Configuration.GetConnectionString("Cache")!,
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
@@ -56,5 +66,7 @@ public class Program
         }
 
         app.Run();
+
+        Log.Logger.Information("After Run");
     }
 }
