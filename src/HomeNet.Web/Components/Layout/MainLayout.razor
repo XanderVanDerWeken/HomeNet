@@ -1,23 +1,48 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="@_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
+        <MudText Typo="Typo.h5" Class="ml-3">HomeNet</MudText>
+        <MudSpacer />
+        <MudToggleIconButton Toggled="_isDarkMode" 
+                     ToggledChanged="() =>ToggleDarkMode()"
+                     Icon="@Icons.Material.Filled.DarkMode" 
+                     Color="@Color.Error" 
+                     ToggledIcon="@Icons.Material.Filled.LightMode" 
+                     ToggledColor="@Color.Success"
+                     title="@GetDarkModeTitle()" />
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </div>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+@code {
+    private MudTheme _theme = new MudTheme();
+    private bool _isDarkMode = false;
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    private bool _drawerOpen = true;
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private string GetDarkModeTitle() 
+        => _isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode";
+}

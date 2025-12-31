@@ -3,6 +3,7 @@ using HomeNet.Web.Configurations;
 using HomeNet.Web.Database;
 using HomeNet.Web.Extensions;
 using Microsoft.Extensions.Options;
+using MudBlazor.Services;
 using Serilog;
 
 namespace HomeNet.Web;
@@ -27,6 +28,7 @@ public class Program
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
+        builder.Services.AddMudServices();
         
         builder.Services.AddCommonServices(builder.Configuration);
         
