@@ -4,6 +4,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+    <PackageVersion Include="MudBlazor" Version="8.15.0" />
   </ItemGroup>
   <ItemGroup>
     <PackageVersion Include="Serilog" Version="4.3.0" />
