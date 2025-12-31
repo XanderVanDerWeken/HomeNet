@@ -1,5 +1,9 @@
 using HomeNet.Web.Components;
+using HomeNet.Web.Configurations;
+using HomeNet.Web.Database;
 using HomeNet.Web.Extensions;
+using Microsoft.Extensions.Options;
+using Serilog;
 
 namespace HomeNet.Web;
 
@@ -9,6 +13,17 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .WriteTo.Console()
+            .CreateLogger();
+
+        builder.Logging.ClearProviders();
+        builder.Logging.AddSerilog(Log.Logger);
+
+        builder.Services.Configure<CacheInitializerConfiguration>(
+            builder.Configuration.GetSection(nameof(CacheInitializerConfiguration)));
+
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
@@ -16,6 +31,14 @@ public class Program
         builder.Services.AddCommonServices(builder.Configuration);
         
         builder.Services.AddCardsModule();
+
+        builder.Services.AddScoped<SqliteCacheInitializer>(sp =>
+        {
+            return new SqliteCacheInitializer(
+                sp.GetRequiredService<ILogger<SqliteCacheInitializer>>(),
+                builder.Configuration.GetConnectionString("Cache")!,
+                sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
+        });
 
         var app = builder.Build();
 
@@ -36,6 +59,14 @@ public class Program
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
 
+        using (var scope = app.Services.CreateScope())
+        {
+            var initializer = scope.ServiceProvider.GetRequiredService<SqliteCacheInitializer>();
+            initializer.Initialize();
+        }
+
         app.Run();
+
+        Log.Logger.Information("After Run");
     }
 }
