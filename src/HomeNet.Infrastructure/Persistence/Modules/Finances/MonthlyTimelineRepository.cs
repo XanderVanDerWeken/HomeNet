@@ -40,12 +40,12 @@ public sealed class MonthlyTimelineRepository : SqlKataRepository, IMonthlyTimel
     }
 
     private const string UpsertMonthlyTimelineSql = """
-INSERT INTO monthly_timelines (year, month, income_amount, expense_amount, net_amount)
-VALUES (@Year, @Month, @IncomeAmount, @ExpenseAmount, @NetAmount)
+INSERT INTO monthly_timelines (year, month, income_amount, expense_amount, net_total)
+VALUES (@Year, @Month, @IncomeAmount, @ExpenseAmount, @NetTotal)
 ON CONFLICT (year, month)
 DO UPDATE SET
     income_amount = excluded.income_amount,
     expense_amount = excluded.expense_amount,
-    net_amount = excluded.net_amount;    
+    net_total = excluded.net_total;    
 """;
 }
