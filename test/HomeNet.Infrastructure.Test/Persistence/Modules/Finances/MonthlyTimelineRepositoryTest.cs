@@ -19,6 +19,8 @@ public class MonthlyTimelineRepositoryTest
         var connectionString = "Data Source=:memory:;Cache=Shared";
 
         var connection = new SQLiteConnection(connectionString);
+        connection.Open();
+
         var compiler = new SqliteCompiler();
 
         _db = new SqliteQueryFactory(connection, compiler);
@@ -34,13 +36,42 @@ public class MonthlyTimelineRepositoryTest
     }
 
     [Test]
-    public void Should_GetMonthlyTimelineAsync()
+    public async Task Should_GetMonthlyTimelineAsync()
     {
         // Arrange
+        ExecuteSchema();
+
+        var year = 2024;
+        int month1 = 6;
+        int month2 = 7;
+
+        var timeline1 = new MonthlyTimeline
+        {
+            Year = year,
+            Month = month1,
+            IncomeAmount = new Money(2000),
+            ExpenseAmount = new Money(1500),
+            NetTotal = new Money(500),
+        };
+
+        await _monthlyTimelineRepository.SaveMonthlyTimelineAsync(timeline1);
 
         // Act
+        var retrievedTimeline = await _monthlyTimelineRepository.GetMonthlyTimelineAsync(year, month1);
+        var missingTimeline = await _monthlyTimelineRepository.GetMonthlyTimelineAsync(year, month2);
 
         // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(retrievedTimeline, Is.Not.Null);
+            Assert.That(retrievedTimeline!.Year, Is.EqualTo(timeline1.Year));
+            Assert.That(retrievedTimeline.Month, Is.EqualTo(timeline1.Month));
+            Assert.That(retrievedTimeline.IncomeAmount, Is.EqualTo(timeline1.IncomeAmount));
+            Assert.That(retrievedTimeline.ExpenseAmount, Is.EqualTo(timeline1.ExpenseAmount));
+            Assert.That(retrievedTimeline.NetTotal, Is.EqualTo(timeline1.NetTotal));
+
+            Assert.That(missingTimeline, Is.Null);
+        });
     }
 
     [Test]
@@ -59,8 +90,16 @@ public class MonthlyTimelineRepositoryTest
         };
 
         // Act
-        await _monthlyTimelineRepository.SaveMonthlyTimelineAsync(timeline);
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await _monthlyTimelineRepository.SaveMonthlyTimelineAsync(timeline);
 
+            timeline.ExpenseAmount = new Money(1600);
+            timeline.NetTotal = new Money(400);
+
+            await _monthlyTimelineRepository.SaveMonthlyTimelineAsync(timeline);
+        });
+        
         // Assert
     }
 
