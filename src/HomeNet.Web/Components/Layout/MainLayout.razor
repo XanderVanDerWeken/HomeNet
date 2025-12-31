@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="@_theme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -10,6 +10,13 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => ToggleDrawer())" />
         <MudText Typo="Typo.h5" Class="ml-3">HomeNet</MudText>
         <MudSpacer />
+        <MudToggleIconButton Toggled="_isDarkMode" 
+                     ToggledChanged="() =>ToggleDarkMode()"
+                     Icon="@Icons.Material.Filled.DarkMode" 
+                     Color="@Color.Error" 
+                     ToggledIcon="@Icons.Material.Filled.LightMode" 
+                     ToggledColor="@Color.Success"
+                     title="@GetDarkModeTitle()" />
         <MudIconButton Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" />
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
@@ -21,10 +28,21 @@
 </MudLayout>
 
 @code {
+    private MudTheme _theme = new MudTheme();
+    private bool _isDarkMode = false;
+
     private bool _drawerOpen = true;
 
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
     }
+
+    private void ToggleDarkMode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    private string GetDarkModeTitle() 
+        => _isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode";
 }
