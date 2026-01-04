@@ -10,6 +10,10 @@ public interface IEventBus
         IQuery query,
         CancellationToken cancellationToken = default);
     
+    Task PublishAsync(
+        IEvent @event,
+        CancellationToken cancellationToken = default);
+    
     void RegisterCommandHandler<TCommand>(
         ICommandHandler<TCommand> handler)
         where TCommand : ICommand;
@@ -17,4 +21,8 @@ public interface IEventBus
     void RegisterQueryHandler<TQuery, TResult>(
         IQueryHandler<TQuery, TResult> handler)
         where TQuery : IQuery;
+    
+    void RegisterEventHandler<TEvent>(
+        IEventHandler<TEvent> handler)
+        where TEvent : IEvent;
 }

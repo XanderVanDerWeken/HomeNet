@@ -9,6 +9,7 @@ public class EventBus : IEventBus
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly Dictionary<Type, List<Type>> _commandHandlers = new();
     private readonly Dictionary<Type, Type> _queryHandlers = new();
+    private readonly Dictionary<Type, List<Type>> _eventHandlers = new();
 
     public EventBus(IServiceScopeFactory scopeFactory)
     {
@@ -62,6 +63,27 @@ public class EventBus : IEventBus
         
         return result;
     }
+
+    public async Task PublishAsync(
+        IEvent @event,
+        CancellationToken cancellationToken = default)
+    {
+        var eventType = @event.GetType();
+
+        if (!_eventHandlers.TryGetValue(eventType, out var handlerTypes))
+            return;
+
+        using var scope = _scopeFactory.CreateScope();
+        var provider = scope.ServiceProvider;
+
+        foreach (var handlerType in handlerTypes)
+        {
+            dynamic handler = provider.GetRequiredService(handlerType);
+            await handler.HandleAsync(
+                (dynamic)@event, 
+                cancellationToken);
+        }
+    }
     
     public void RegisterCommandHandler<TCommand>(
         ICommandHandler<TCommand> handler) 
@@ -94,5 +116,21 @@ public class EventBus : IEventBus
 
         var queryHandlerType = handler.GetType();
         _queryHandlers[queryType] = queryHandlerType;
+    }
+
+    public void RegisterEventHandler<TEvent>(
+        IEventHandler<TEvent> handler)
+        where TEvent : IEvent
+    {
+        var eventType = typeof(TEvent);
+
+        if (!_eventHandlers.TryGetValue(eventType, out var list))
+        {
+            list = [];
+            _eventHandlers[eventType] = list;
+        }
+
+        var eventHandlerType = handler.GetType();
+        list.Add(eventHandlerType);
     }
 }
