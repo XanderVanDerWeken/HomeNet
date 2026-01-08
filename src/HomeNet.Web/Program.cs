@@ -42,6 +42,18 @@ public class Program
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
 
+        builder.Services.AddAuthentication("HomeNetCookie")
+            .AddCookie("HomeNetCookie", options =>
+            {
+                options.LoginPath = "/login";
+                options.LogoutPath = "/logout";
+                options.AccessDeniedPath = "/forbidden";
+                options.SlidingExpiration = true;
+                options.ExpireTimeSpan = TimeSpan.FromHours(8);
+            });
+        
+        builder.Services.AddAuthorization();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -56,6 +68,9 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAntiforgery();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapStaticAssets();
         app.MapRazorComponents<App>()
