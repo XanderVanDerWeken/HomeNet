@@ -1,10 +1,12 @@
-using HomeNet.Core.Modules.Auth.Models;
-
 namespace HomeNet.Web.Auth;
 
 public interface IAuthService
 {
-    Task SignInAsync(HttpContext context, User user);
+    Task<bool> LoginAsync(
+        HttpContext context, 
+        string username, 
+        string password);
 
-    Task LogoutAsync(HttpContext context);
+    Task LogoutAsync(
+        HttpContext context);
 }
