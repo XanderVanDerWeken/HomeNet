@@ -1,3 +1,4 @@
+using HomeNet.Web.Auth;
 using HomeNet.Web.Components;
 using HomeNet.Web.Configurations;
 using HomeNet.Web.Database;
@@ -42,12 +43,18 @@ public class Program
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
 
+        builder.Services.AddSingleton<IAuthService, AuthService>();
+
         builder.Services.AddAuthentication("HomeNetCookie")
             .AddCookie("HomeNetCookie", options =>
             {
                 options.LoginPath = "/login";
                 options.LogoutPath = "/logout";
                 options.AccessDeniedPath = "/forbidden";
+
+                options.Cookie.Name = "HomeNet.Auth";
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 options.SlidingExpiration = true;
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
             });

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 
 namespace HomeNet.Web.Auth;
 
-public sealed class UserService
+public sealed class AuthService : IAuthService
 {
     public async Task SignInAsync(HttpContext context, User user)
     {
@@ -18,6 +18,18 @@ public sealed class UserService
         var claimsIdentity = new ClaimsIdentity(claims, "HomeNetCookie");
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-        await context.SignInAsync("HomeNetCookie", claimsPrincipal);
+        await context.SignInAsync(
+            "HomeNetCookie", 
+            claimsPrincipal,
+            new AuthenticationProperties
+            {
+                IsPersistent = true,
+                IssuedUtc = DateTimeOffset.UtcNow,
+            });
+    }
+
+    public async Task LogoutAsync(HttpContext context)
+    {
+        await context.SignOutAsync("HomeNetCookie");
     }
 }
