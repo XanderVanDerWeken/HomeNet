@@ -53,33 +53,6 @@ public class EventBusTest
     }
 
     [Test]
-    public async Task Should_SendAsync_CallsMultipleCommandHandlers()
-    {
-        // Arrange
-        var command = new TestCommand();
-        var testCommandHandler1 = new TestCommandHandler();
-        var testCommandHandler2 = new OtherTestCommandHandler();
-        
-        _serviceCollection.AddSingleton<TestCommandHandler>(testCommandHandler1);
-        _serviceCollection.AddSingleton<OtherTestCommandHandler>(testCommandHandler2);
-        
-        var serviceProvider = _serviceCollection.BuildServiceProvider();
-        _serviceScopeMock
-            .Setup(s => s.ServiceProvider)
-            .Returns(serviceProvider);
-
-        _eventBus.RegisterCommandHandler(testCommandHandler1);
-        _eventBus.RegisterCommandHandler(testCommandHandler2);
-
-        // Act
-        var result = await _eventBus.SendAsync(command);
-
-        // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.IsSuccess, Is.True);
-    }
-
-    [Test]
     public async Task Should_SendAsync_CallsQueryHandler()
     {
         // Arrange
@@ -108,6 +81,49 @@ public class EventBusTest
     }
 
     [Test]
+    public async Task Should_PublishAsync_CallsEventHandler()
+    {
+        // Arrange
+        var @event = new TestEvent();
+        var testEventHandler = new TestEventHandler();
+
+        _serviceCollection.AddSingleton<TestEventHandler>(testEventHandler);
+
+        var serviceProvider = _serviceCollection.BuildServiceProvider();
+        _serviceScopeMock
+            .Setup(s => s.ServiceProvider)
+            .Returns(serviceProvider);
+
+        _eventBus.RegisterEventHandler(testEventHandler);
+
+        // Act
+        await _eventBus.PublishAsync(@event);
+    }
+
+    [Test]
+    public async Task Should_PublishAsync_CallsMultipleEventHandlers()
+    {
+        // Arrange
+        var @event = new TestEvent();
+        var testEventHandler1 = new TestEventHandler();
+        var testEventHandler2 = new OtherTestEventHandler();
+        
+        _serviceCollection.AddSingleton<TestEventHandler>(testEventHandler1);
+        _serviceCollection.AddSingleton<OtherTestEventHandler>(testEventHandler2);
+        
+        var serviceProvider = _serviceCollection.BuildServiceProvider();
+        _serviceScopeMock
+            .Setup(s => s.ServiceProvider)
+            .Returns(serviceProvider);
+
+        _eventBus.RegisterEventHandler(testEventHandler1);
+        _eventBus.RegisterEventHandler(testEventHandler2);
+
+        // Act
+        await _eventBus.PublishAsync(@event);
+    }
+
+    [Test]
     public async Task Should_SendAsync_ThrowsNoHandlerRegistered()
     {
         // Arrange
@@ -132,6 +148,37 @@ public class EventBusTest
     }
 
     [Test]
+    public async Task Should_PublishAsync_WithoutRegisteredHandler()
+    {
+        // Arrange
+        var @event = new TestEvent();
+
+        // Act & Assert
+        Assert.DoesNotThrowAsync(async () =>
+        {
+            await _eventBus.PublishAsync(@event);
+        });
+    }
+
+    [Test]
+    public void Should_RegisterCommandHandler_ThrowsCannotRegisterMultipeHandlersForSameCommand()
+    {
+        // Arrange
+        var testCommandHandlerMock1 = new Mock<ICommandHandler<TestCommand>>();
+        var testCommandHandlerMock2 = new Mock<ICommandHandler<TestCommand>>();
+
+        // Act & Assert
+        Assert.DoesNotThrow(() =>
+        {
+            _eventBus.RegisterCommandHandler(testCommandHandlerMock1.Object);
+        });
+        Assert.Throws<InvalidOperationException>(() =>
+        {
+            _eventBus.RegisterCommandHandler(testCommandHandlerMock2.Object);
+        });
+    }
+
+    [Test]
     public void Should_RegisterQueryHandler_ThrowsCannotRegisterMultipeHandlersForSameQuery()
     {
         // Arrange
@@ -149,32 +196,18 @@ public class EventBusTest
         });
     }
 
-    public class TestCommand : ICommand
-    {
-    }
+    public class TestCommand : ICommand;
+
+    public class TestQuery : IQuery;
+
+    public class TestEvent : IEvent;
 
     public class TestCommandHandler : ICommandHandler<TestCommand>
     {
         public Task<Result> HandleAsync(
             TestCommand command, 
             CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(Result.Success());
-        }
-    }
-
-    public class OtherTestCommandHandler : ICommandHandler<TestCommand>
-    {
-        public Task<Result> HandleAsync(
-            TestCommand command, 
-            CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(Result.Success());
-        }
-    }
-
-    public class TestQuery : IQuery
-    {
+            => Result.Success();
     }
 
     public class TestQueryHandler : IQueryHandler<TestQuery, int>
@@ -189,8 +222,22 @@ public class EventBusTest
         public Task<Result<int>> HandleAsync(
             TestQuery query, 
             CancellationToken cancellationToken = default)
-        {
-            return Task.FromResult(Result<int>.Success(_expectedResult));
-        }
+            => Result<int>.Success(_expectedResult);
+    }
+
+    public class TestEventHandler : IEventHandler<TestEvent>
+    {
+        public Task HandleAsync(
+            TestEvent @event, 
+            CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
+    }
+
+    public class OtherTestEventHandler : IEventHandler<TestEvent>
+    {
+        public Task HandleAsync(
+            TestEvent @event, 
+            CancellationToken cancellationToken = default)
+            => Task.CompletedTask;
     }
 }
