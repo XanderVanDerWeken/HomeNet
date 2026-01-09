@@ -72,7 +72,7 @@ public class UserRepositoryTest
 
     [Test]
     [Explicit("Needs Docker running")]
-    public async Task Should_GetUserByUsername()
+    public async Task Should_GetUserByUsernameAsync()
     {
         // Arrange
         var user1Added = await _userRepository.AddUserAsync(_user1);
@@ -81,9 +81,9 @@ public class UserRepositoryTest
         var invalidUsername = "invalid";
 
         // Act
-        var user1FromDb = await _userRepository.GetUserByUsername(_user1.Username);
-        var user2FromDb = await _userRepository.GetUserByUsername(_user2.Username);
-        var invalidUserFromDb = await _userRepository.GetUserByUsername(invalidUsername);
+        var user1FromDb = await _userRepository.GetUserByUsernameAsync(_user1.Username);
+        var user2FromDb = await _userRepository.GetUserByUsernameAsync(_user2.Username);
+        var invalidUserFromDb = await _userRepository.GetUserByUsernameAsync(invalidUsername);
 
         // Assert
         Assert.Multiple(() =>

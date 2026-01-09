@@ -25,7 +25,7 @@ public sealed class UserWithUsernameQueryHandler : IQueryHandler<UserWithUsernam
             return Result<User?>.Failure(validationResult.ErrorMessage!);
         }
 
-        var user = await _userRepository.GetUserByUsername(
+        var user = await _userRepository.GetUserByUsernameAsync(
             query.Username, 
             cancellationToken);
 

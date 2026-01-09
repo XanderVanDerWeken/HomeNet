@@ -45,11 +45,11 @@ public class UserWithUsernameQueryHandlerTest
         };
 
         _userRepositoryMock
-            .Setup(r => r.GetUserByUsername(foundUsername, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetUserByUsernameAsync(foundUsername, It.IsAny<CancellationToken>()))
             .ReturnsAsync(foundUser);
         
         _userRepositoryMock
-            .Setup(r => r.GetUserByUsername(notFoundUsername, It.IsAny<CancellationToken>()))
+            .Setup(r => r.GetUserByUsernameAsync(notFoundUsername, It.IsAny<CancellationToken>()))
             .ReturnsAsync((User?)null);
 
         // Act
@@ -68,13 +68,13 @@ public class UserWithUsernameQueryHandlerTest
         });
 
         _userRepositoryMock.Verify(
-            r => r.GetUserByUsername(
+            r => r.GetUserByUsernameAsync(
                 foundUsername,
                 It.IsAny<CancellationToken>()),
             Times.Once);
         
         _userRepositoryMock.Verify(
-            r => r.GetUserByUsername(
+            r => r.GetUserByUsernameAsync(
                 notFoundUsername,
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -100,7 +100,7 @@ public class UserWithUsernameQueryHandlerTest
         });
 
         _userRepositoryMock.Verify(
-            r => r.GetUserByUsername(
+            r => r.GetUserByUsernameAsync(
                 It.IsAny<string>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);

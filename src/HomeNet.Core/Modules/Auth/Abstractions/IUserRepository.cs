@@ -9,7 +9,7 @@ public interface IUserRepository
         User user, 
         CancellationToken cancellationToken = default);
 
-    Task<User?> GetUserByUsername(
+    Task<User?> GetUserByUsernameAsync(
         string username, 
         CancellationToken cancellationToken = default);
 }

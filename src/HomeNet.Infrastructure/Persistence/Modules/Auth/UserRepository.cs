@@ -42,7 +42,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
         }
     }
 
-    public async Task<User?> GetUserByUsername(
+    public async Task<User?> GetUserByUsernameAsync(
         string username, 
         CancellationToken cancellationToken = default)
     {
