@@ -31,7 +31,7 @@ public sealed class AddUserCommandHandler : ICommandHandler<AddUserCommand>
             Role = command.Role
         };
 
-        await _userRepository.CreateAsync(
+        await _userRepository.AddUserAsync(
             newUser, 
             cancellationToken);
 

@@ -1,14 +1,15 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Auth.Models;
 
 namespace HomeNet.Core.Modules.Auth.Abstractions;
 
 public interface IUserRepository
 {
-    Task<User?> GetByUsernameAsync(
-        string username, 
+    Task<Result> AddUserAsync(
+        User user, 
         CancellationToken cancellationToken = default);
 
-    Task CreateAsync(
-        User user, 
+    Task<User?> GetUserByUsername(
+        string username, 
         CancellationToken cancellationToken = default);
 }

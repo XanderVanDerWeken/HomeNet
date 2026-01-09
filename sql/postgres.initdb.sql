@@ -47,4 +47,13 @@ CREATE TABLE IF NOT EXISTS finances.transactions (
         CHECK (month >= 1 AND month <= 12)
 );
 
+CREATE SCHEMA IF NOT EXISTS auth;
+
+CREATE TABLE IF NOT EXISTS auth.users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) NOT NULL
+);
+
 COMMIT;

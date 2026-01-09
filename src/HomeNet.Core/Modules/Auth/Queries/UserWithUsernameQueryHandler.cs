@@ -18,7 +18,7 @@ public sealed class UserWithUsernameQueryHandler : IQueryHandler<UserWithUsernam
         UserWithUsernameQuery query, 
         CancellationToken cancellationToken = default)
     {
-        var user = await _userRepository.GetByUsernameAsync(
+        var user = await _userRepository.GetUserByUsername(
             query.Username, 
             cancellationToken);
 
