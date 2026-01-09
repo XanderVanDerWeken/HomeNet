@@ -18,6 +18,13 @@ public sealed class UserWithUsernameQueryHandler : IQueryHandler<UserWithUsernam
         UserWithUsernameQuery query, 
         CancellationToken cancellationToken = default)
     {
+        var validationResult = query.Validate();
+
+        if (!validationResult.IsValid)
+        {
+            return Result<User?>.Failure(validationResult.ErrorMessage!);
+        }
+
         var user = await _userRepository.GetUserByUsername(
             query.Username, 
             cancellationToken);
