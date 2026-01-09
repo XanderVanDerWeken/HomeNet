@@ -43,24 +43,8 @@ public class Program
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
 
-        builder.Services.AddSingleton<IAuthService, AuthService>();
-
-        builder.Services.AddAuthentication("HomeNetCookie")
-            .AddCookie("HomeNetCookie", options =>
-            {
-                options.LoginPath = "/login";
-                options.LogoutPath = "/logout";
-                options.AccessDeniedPath = "/forbidden";
-
-                options.Cookie.Name = "HomeNet.Auth";
-                options.Cookie.HttpOnly = true;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.SlidingExpiration = true;
-                options.ExpireTimeSpan = TimeSpan.FromHours(8);
-            });
+        builder.Services.AddHomeNetAuth();
         
-        builder.Services.AddAuthorization();
-
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
