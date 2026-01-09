@@ -1,4 +1,4 @@
-namespace HomeNet.Core.Common.Cqrs;
+namespace HomeNet.Core.Common.Events;
 
 public interface IEventHandler<in TEvent>
     where TEvent : IEvent

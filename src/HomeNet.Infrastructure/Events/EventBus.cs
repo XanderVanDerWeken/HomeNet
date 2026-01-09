@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeNet.Infrastructure.Events;

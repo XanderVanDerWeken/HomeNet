@@ -1,4 +1,6 @@
-namespace HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Cqrs;
+
+namespace HomeNet.Core.Common.Events;
 
 public interface IEventBus
 {
