@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Events;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HomeNet.Infrastructure.Events;
@@ -7,8 +8,9 @@ namespace HomeNet.Infrastructure.Events;
 public class EventBus : IEventBus
 {
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly Dictionary<Type, List<Type>> _commandHandlers = new();
+    private readonly Dictionary<Type, Type> _commandHandlers = new();
     private readonly Dictionary<Type, Type> _queryHandlers = new();
+    private readonly Dictionary<Type, List<Type>> _eventHandlers = new();
 
     public EventBus(IServiceScopeFactory scopeFactory)
     {
@@ -21,26 +23,18 @@ public class EventBus : IEventBus
     {
         var commandType = command.GetType();
 
-        if (!_commandHandlers.TryGetValue(commandType, out var handlerTypes))
+        if (!_commandHandlers.TryGetValue(commandType, out var handlerType))
             return Result.Failure("No command handler registered.");
-
-        var totalResult = Result.Success();
 
         using var scope = _scopeFactory.CreateScope();
         var provider = scope.ServiceProvider;
 
-        foreach (var handlerType in handlerTypes)
-        {
-            dynamic handler = provider.GetRequiredService(handlerType);
-            Result result = await handler.HandleAsync(
-                (dynamic)command, 
-                cancellationToken);
-
-            if (!result.IsSuccess)
-                totalResult = result;
-        }
-
-        return totalResult;
+        dynamic handler = provider.GetRequiredService(handlerType);
+        var result = await handler.HandleAsync(
+            (dynamic)command, 
+            cancellationToken);
+        
+        return result;
     }
 
     public async Task<Result<TResult>> SendAsync<TResult>(
@@ -62,6 +56,27 @@ public class EventBus : IEventBus
         
         return result;
     }
+
+    public async Task PublishAsync(
+        IEvent @event,
+        CancellationToken cancellationToken = default)
+    {
+        var eventType = @event.GetType();
+
+        if (!_eventHandlers.TryGetValue(eventType, out var handlerTypes))
+            return;
+
+        using var scope = _scopeFactory.CreateScope();
+        var provider = scope.ServiceProvider;
+
+        foreach (var handlerType in handlerTypes)
+        {
+            dynamic handler = provider.GetRequiredService(handlerType);
+            await handler.HandleAsync(
+                (dynamic)@event, 
+                cancellationToken);
+        }
+    }
     
     public void RegisterCommandHandler<TCommand>(
         ICommandHandler<TCommand> handler) 
@@ -69,14 +84,14 @@ public class EventBus : IEventBus
     {
         var commandType = typeof(TCommand);
 
-        if (!_commandHandlers.TryGetValue(commandType, out var list))
+        if (_commandHandlers.ContainsKey(commandType))
         {
-            list = [];
-            _commandHandlers[commandType] = list;
+            throw new InvalidOperationException(
+                $"A handler for command '{commandType.Name}' is already registered.");
         }
 
         var commandHandlerType = handler.GetType();
-        list.Add(commandHandlerType);
+        _commandHandlers[commandType] = commandHandlerType;
     }
 
     public void RegisterQueryHandler<TQuery, TResult>(
@@ -88,11 +103,26 @@ public class EventBus : IEventBus
         if (_queryHandlers.ContainsKey(queryType))
         {
             throw new InvalidOperationException(
-                $"A handler for query '{queryType.Name}' is already registered."
-            );
+                $"A handler for query '{queryType.Name}' is already registered.");
         }
 
         var queryHandlerType = handler.GetType();
         _queryHandlers[queryType] = queryHandlerType;
+    }
+
+    public void RegisterEventHandler<TEvent>(
+        IEventHandler<TEvent> handler)
+        where TEvent : IEvent
+    {
+        var eventType = typeof(TEvent);
+
+        if (!_eventHandlers.TryGetValue(eventType, out var list))
+        {
+            list = [];
+            _eventHandlers[eventType] = list;
+        }
+
+        var eventHandlerType = handler.GetType();
+        list.Add(eventHandlerType);
     }
 }

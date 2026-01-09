@@ -1,5 +1,5 @@
 using System.Data.SQLite;
-using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Events;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
 using HomeNet.Core.Modules.Cards.Queries;
@@ -8,7 +8,6 @@ using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Cards;
 using Npgsql;
 using SqlKata.Compilers;
-using SqlKata.Execution;
 
 namespace HomeNet.Web.Extensions;
 
