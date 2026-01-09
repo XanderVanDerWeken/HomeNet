@@ -1,0 +1,53 @@
+﻿@page "/login"
+
+@using HomeNet.Web.Auth
+@using System.ComponentModel.DataAnnotations
+@inject IAuthService authService;
+
+<MudText Typo="Typo.h3">Login</MudText>
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator />
+
+    <MudCard>
+        <MudCardContent>
+            <MudTextField 
+                Label="Username" 
+                @bind-Value=model.Username 
+                For="@(() => model.Username)" />
+
+            <MudTextField 
+                InputType="InputType.Password"
+                Label="Password" 
+                @bind-Value=model.Password 
+                For="@(() => model.Password)" />
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="ClearForm">Clear</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@code {
+    LoginForm model = new LoginForm();
+
+    public async Task OnValidSubmit()
+    {
+        // TODO: Handle login logic
+    }
+
+    public void ClearForm()
+    {
+        model = new LoginForm();
+    }
+
+    public class LoginForm
+    {
+        [Required]
+        public string Username { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+}
