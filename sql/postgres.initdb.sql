@@ -1,5 +1,15 @@
 BEGIN;
 
+CREATE SCHEMA IF NOT EXISTS auth;
+
+CREATE TABLE IF NOT EXISTS auth.users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(10) NOT NULL,
+    CONSTRAINT role_check CHECK (role IN ('Admin', 'User'))
+);
+
 CREATE SCHEMA IF NOT EXISTS persons;
 
 CREATE TABLE IF NOT EXISTS persons.persons (
