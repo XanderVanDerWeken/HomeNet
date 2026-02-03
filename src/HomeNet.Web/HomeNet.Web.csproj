@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" />
     <PackageReference Include="MudBlazor" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Serilog.AspNetCore" />
