@@ -1,6 +1,6 @@
 using HomeNet.Core.Modules.Auth.Abstractions;
 
-namespace HomeNet.Web.Auth;
+namespace HomeNet.Infrastructure.Security;
 
 public sealed class PasswordService : IPasswordService
 {
