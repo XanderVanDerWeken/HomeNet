@@ -3,6 +3,7 @@ using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Auth.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Auth.Entities;
 using HomeNet.Infrastructure.Persistence.Modules.Auth.Extensions;
 using SqlKata;
 
@@ -48,7 +49,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
         var query = new Query(TableName)
             .Where("username", username);
         
-        var entity = await FirstOrDefaultAsync<Entities.UserEntity>(
+        var entity = await FirstOrDefaultAsync<UserEntity>(
             query, 
             cancellationToken);
         
