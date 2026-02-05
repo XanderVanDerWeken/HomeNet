@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Auth.Models;
 
@@ -22,7 +23,7 @@ public sealed class AddUserCommandHandler : ICommandHandler<AddUserCommand>
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var newUser = new User

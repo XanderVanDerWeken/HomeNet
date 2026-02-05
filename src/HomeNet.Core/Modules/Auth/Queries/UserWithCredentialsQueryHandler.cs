@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 
 namespace HomeNet.Core.Modules.Auth.Queries;
@@ -23,8 +24,7 @@ public sealed class UserWithCredentialsQueryHandler : IQueryHandler<UserWithCred
 
         if (!validationResult.IsValid)
         {
-            return Result<bool>.Failure(
-                validationResult.ErrorMessage!);
+            return validationResult.ToFailure<bool>();
         }
 
         var userWithUsername = await _userRepository

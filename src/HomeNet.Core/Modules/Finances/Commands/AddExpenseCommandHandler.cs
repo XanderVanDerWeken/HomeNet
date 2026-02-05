@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 
@@ -26,7 +27,7 @@ public sealed class AddExpenseCommandHandler : ICommandHandler<AddExpenseCommand
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var foundCategory = await _categoryRepository.GetCategoryByNameAsync(

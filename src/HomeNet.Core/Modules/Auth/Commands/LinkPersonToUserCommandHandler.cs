@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Persons.Abstractions;
 
@@ -26,7 +27,7 @@ public sealed class LinkPersonToUserCommandHandler : ICommandHandler<LinkPersonT
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var userToLink = await _userRepository.GetUserByUsernameAsync(command.UserName);

@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 
 namespace HomeNet.Core.Modules.Auth.Commands;
@@ -21,7 +22,7 @@ public sealed class UnlinkPersonFromUserCommandHandler : ICommandHandler<UnlinkP
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var user = await _userRepository.GetUserByUsernameAsync(command.UserName);

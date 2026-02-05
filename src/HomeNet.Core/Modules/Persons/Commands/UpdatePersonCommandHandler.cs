@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Persons.Abstractions;
 
 namespace HomeNet.Core.Modules.Persons.Commands;
@@ -21,7 +22,7 @@ public sealed class UpdatePersonCommandHandler : ICommandHandler<UpdatePersonCom
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var person = await _personRepository.GetPersonByIdAsync(command.PersonId);
