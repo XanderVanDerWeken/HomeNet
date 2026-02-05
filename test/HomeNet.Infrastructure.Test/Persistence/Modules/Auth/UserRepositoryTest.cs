@@ -1,6 +1,8 @@
 using HomeNet.Core.Modules.Auth.Models;
+using HomeNet.Core.Modules.Persons.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Auth;
+using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Infrastructure.Test.Containers;
 using Npgsql;
 using SqlKata.Compilers;
@@ -23,6 +25,7 @@ public class UserRepositoryTest
     };
 
     private UserRepository _userRepository;
+    private PersonRepository _personRepository;
 
     private HomenetPgContainer _dbContainer;
 
@@ -39,6 +42,8 @@ public class UserRepositoryTest
 
         var db = new PostgresQueryFactory(connection, compiler);
 
+        _personRepository = new PersonRepository(db);
+
         _userRepository = new UserRepository(db);
     }
 
@@ -46,6 +51,7 @@ public class UserRepositoryTest
     public async Task Teardown()
     {
         _userRepository.Dispose();
+        _personRepository.Dispose();
 
         await _dbContainer.StopAsync();
         await _dbContainer.DisposeAsync();
@@ -116,6 +122,49 @@ public class UserRepositoryTest
             Assert.That(user2?.Role, Is.EqualTo(_user2.Role));
 
             Assert.That(notFoundUser, Is.Null);
+        });
+    }
+
+    [Test]
+    [Explicit("Needs Docker running")]
+    public async Task Should_UpdatePersonLinkAsync()
+    {
+        // Arrange
+        var invalidUserId = 999;
+
+        var person = new Person
+        {
+            FirstName = "John",
+            LastName = "Doe",
+            AliasName = "JD",
+            IsInactive = false,
+        };
+
+        var personAddedResult = await _personRepository.AddPersonAsync(person);
+
+        var addResult1 = await _userRepository.AddUserAsync(_user1);
+        var addResult2 = await _userRepository.AddUserAsync(_user2);
+        
+        // Act
+        var resultAddedLink = await _userRepository.UpdatePersonLinkAsync(_user1.Id, 1);
+        var resultRemovedLink = await _userRepository.UpdatePersonLinkAsync(_user1.Id, null);
+        var resultInvalidUserId = await _userRepository.UpdatePersonLinkAsync(invalidUserId, 1);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(personAddedResult.IsSuccess, Is.True);
+            Assert.That(addResult1.IsSuccess, Is.True);
+            Assert.That(addResult2.IsSuccess, Is.True);
+
+            Assert.That(resultAddedLink.IsSuccess, Is.True);
+            Assert.That(resultAddedLink.Error, Is.Null);
+
+            Assert.That(resultRemovedLink.IsSuccess, Is.True);
+            Assert.That(resultRemovedLink.Error, Is.Null);
+
+            Assert.That(resultInvalidUserId.IsSuccess, Is.False);
+            Assert.That(resultInvalidUserId.Error, Is.Not.Null);
         });
     }
 }

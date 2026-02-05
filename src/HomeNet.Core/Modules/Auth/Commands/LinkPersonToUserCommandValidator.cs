@@ -8,6 +8,9 @@ public sealed class LinkPersonToUserCommandValidator : BaseValidator<LinkPersonT
     {
         IsNotEmpty(entity.UserName, "Username cannot be empty.");
 
-        IsGreaterThanZero(entity.PersonId, "PersonId must be greater than zero.");
+        if (entity.PersonId <= 0)
+        {
+            Errors.Add("PersonId must be greater than zero.");
+        }
     }
 }

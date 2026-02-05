@@ -71,8 +71,10 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
                     person_id = personId
                 });
 
-            await ExecuteAsync(query, cancellationToken);
-            return Result.Success();
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            return affectedRows > 0 
+                ? Result.Success()
+                : Result.Failure("No user found with the specified ID.");
         }
         catch (Exception ex)
         {
