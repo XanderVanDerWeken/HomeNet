@@ -12,4 +12,9 @@ public interface IUserRepository
     Task<User?> GetUserByUsernameAsync(
         string username,
         CancellationToken cancellationToken = default);
+    
+    Task<Result> UpdatePersonLinkAsync(
+        int userId, 
+        int? personId, 
+        CancellationToken cancellationToken = default);
 }

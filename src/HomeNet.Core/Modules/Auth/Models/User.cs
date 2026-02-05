@@ -9,4 +9,6 @@ public sealed class User
     public required string PasswordHash { get; set; }
 
     public string Role { get; set; } = "User";
+
+    public int? PersonId { get; set; }
 }

@@ -29,6 +29,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
                 username = user.UserName,
                 password_hash = user.PasswordHash,
                 role = user.Role,
+                person_id = user.PersonId,
             });
 
             var userId = await InsertAndReturnIdAsync(query);
@@ -54,5 +55,28 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
             cancellationToken);
         
         return entity?.ToUser();
+    }
+
+    public async Task<Result> UpdatePersonLinkAsync(
+        int userId, 
+        int? personId, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query(TableName)
+                .Where("id", userId)
+                .AsUpdate(new
+                {
+                    person_id = personId
+                });
+
+            await ExecuteAsync(query, cancellationToken);
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while updating the user: {ex.Message}");
+        }
     }
 }
