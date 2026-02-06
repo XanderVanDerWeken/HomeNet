@@ -2,6 +2,7 @@ using HomeNet.Web.Components;
 using HomeNet.Web.Configurations;
 using HomeNet.Web.Database;
 using HomeNet.Web.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Serilog;
@@ -42,6 +43,19 @@ public class Program
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
 
+        // Authentication and Authorization
+        builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/login";
+                options.LogoutPath = "/logout";
+                options.AccessDeniedPath = "/access-denied";
+                options.ExpireTimeSpan = TimeSpan.FromHours(8);
+                options.SlidingExpiration = true;
+            });
+        
+        builder.Services.AddAuthorization();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -56,6 +70,10 @@ public class Program
         app.UseHttpsRedirection();
 
         app.UseAntiforgery();
+
+        // Authentication and Authorization Middlewares
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapStaticAssets();
         app.MapRazorComponents<App>()
