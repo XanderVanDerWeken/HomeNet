@@ -16,15 +16,15 @@ public interface IEventBus
         IEvent @event,
         CancellationToken cancellationToken = default);
     
-    void RegisterCommandHandler<TCommand>(
-        ICommandHandler<TCommand> handler)
-        where TCommand : ICommand;
+    void RegisterCommandHandler<TCommand, TCommandHandler>()
+        where TCommand : ICommand
+        where TCommandHandler : ICommandHandler<TCommand>;
 
-    void RegisterQueryHandler<TQuery, TResult>(
-        IQueryHandler<TQuery, TResult> handler)
-        where TQuery : IQuery;
+    void RegisterQueryHandler<TQuery, TQueryHandler, TResult>()
+        where TQuery : IQuery
+        where TQueryHandler : IQueryHandler<TQuery, TResult>;
     
-    void RegisterEventHandler<TEvent>(
-        IEventHandler<TEvent> handler)
-        where TEvent : IEvent;
+    void RegisterEventHandler<TEvent, TEventHandler>()
+        where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>;
 }

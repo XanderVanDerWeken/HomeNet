@@ -78,9 +78,9 @@ public class EventBus : IEventBus
         }
     }
     
-    public void RegisterCommandHandler<TCommand>(
-        ICommandHandler<TCommand> handler) 
+    public void RegisterCommandHandler<TCommand, TCommandHandler>()
         where TCommand : ICommand
+        where TCommandHandler : ICommandHandler<TCommand>
     {
         var commandType = typeof(TCommand);
 
@@ -90,13 +90,12 @@ public class EventBus : IEventBus
                 $"A handler for command '{commandType.Name}' is already registered.");
         }
 
-        var commandHandlerType = handler.GetType();
-        _commandHandlers[commandType] = commandHandlerType;
+        _commandHandlers[commandType] = typeof(TCommandHandler);
     }
 
-    public void RegisterQueryHandler<TQuery, TResult>(
-        IQueryHandler<TQuery, TResult> handler) 
+    public void RegisterQueryHandler<TQuery, TQueryHandler, TResult>() 
         where TQuery : IQuery
+        where TQueryHandler : IQueryHandler<TQuery, TResult>
     {
         var queryType = typeof(TQuery);
 
@@ -106,13 +105,12 @@ public class EventBus : IEventBus
                 $"A handler for query '{queryType.Name}' is already registered.");
         }
 
-        var queryHandlerType = handler.GetType();
-        _queryHandlers[queryType] = queryHandlerType;
+        _queryHandlers[queryType] = typeof(TQueryHandler);
     }
 
-    public void RegisterEventHandler<TEvent>(
-        IEventHandler<TEvent> handler)
+    public void RegisterEventHandler<TEvent, TEventHandler>()
         where TEvent : IEvent
+        where TEventHandler : IEventHandler<TEvent>
     {
         var eventType = typeof(TEvent);
 
@@ -122,7 +120,6 @@ public class EventBus : IEventBus
             _eventHandlers[eventType] = list;
         }
 
-        var eventHandlerType = handler.GetType();
-        list.Add(eventHandlerType);
+        list.Add(typeof(TEventHandler));
     }
 }
