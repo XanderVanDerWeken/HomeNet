@@ -9,10 +9,14 @@ namespace HomeNet.Core.Modules.Auth.Commands;
 public sealed class AddUserCommandHandler : ICommandHandler<AddUserCommand>
 {
     private readonly IUserRepository _userRepository;
+    private readonly IPasswordService _passwordService;
 
-    public AddUserCommandHandler(IUserRepository userRepository)
+    public AddUserCommandHandler(
+        IUserRepository userRepository, 
+        IPasswordService passwordService)
     {
         _userRepository = userRepository;
+        _passwordService = passwordService;
     }
 
     public Task<Result> HandleAsync(
@@ -26,10 +30,12 @@ public sealed class AddUserCommandHandler : ICommandHandler<AddUserCommand>
             return validationResult.ToFailure();
         }
 
+        var hashedPassword = _passwordService.HashPassword(command.Password);
+
         var newUser = new User
         {
             UserName = command.UserName,
-            PasswordHash = command.PasswordHash,
+            PasswordHash = hashedPassword,
             Role = command.Role,
         };
 

@@ -7,9 +7,9 @@ public sealed record AddUserCommand : ICommand, IValidatable<AddUserCommand>
 {
     public required string UserName { get; init; }
 
-    public required string PasswordHash { get; init; }
+    public required string Password { get; init; }
 
-    public required string Role { get; init; }
+    public string Role { get; init; } = "User";
 
     public ValidationResult Validate()
         => new AddUserCommandValidator().Validate(this);

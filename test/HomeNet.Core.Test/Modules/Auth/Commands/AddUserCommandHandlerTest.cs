@@ -27,13 +27,13 @@ public class AddUserCommandHandlerTest
         var command1 = new AddUserCommand
         {
             UserName = "testuser",
-            PasswordHash = "hashedpassword",
+            Password = "hashedpassword",
             Role = "User",
         };
         var command2 = new AddUserCommand
         {
             UserName = "otherUser",
-            PasswordHash = "otherHashedpassword",
+            Password = "otherHashedpassword",
             Role = "Admin",
         };
 
@@ -59,7 +59,7 @@ public class AddUserCommandHandlerTest
             x => x.AddUserAsync(
                 It.Is<User>(u =>
                     u.UserName == command1.UserName &&
-                    u.PasswordHash == command1.PasswordHash &&
+                    u.PasswordHash == command1.Password &&
                     u.Role == command1.Role),
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -68,7 +68,7 @@ public class AddUserCommandHandlerTest
             x => x.AddUserAsync(
                 It.Is<User>(u =>
                     u.UserName == command2.UserName &&
-                    u.PasswordHash == command2.PasswordHash &&
+                    u.PasswordHash == command2.Password &&
                     u.Role == command2.Role),
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -81,19 +81,19 @@ public class AddUserCommandHandlerTest
         var commandInvalidUserName = new AddUserCommand
         {
             UserName = string.Empty,
-            PasswordHash = "hashedpassword",
+            Password = "hashedpassword",
             Role = "User",
         };
         var commandInvalidPassword = new AddUserCommand
         {
             UserName = "testuser",
-            PasswordHash = string.Empty,
+            Password = string.Empty,
             Role = "User",
         };
         var commandInvalidRole = new AddUserCommand
         {
             UserName = "testuser",
-            PasswordHash = "hashedpassword",
+            Password = "hashedpassword",
             Role = "SuperUser",
         };
 
