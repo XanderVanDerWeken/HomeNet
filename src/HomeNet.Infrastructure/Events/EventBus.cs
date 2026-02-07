@@ -17,6 +17,18 @@ public class EventBus : IEventBus
         _scopeFactory = scopeFactory;
     }
 
+    public EventBus(
+        IServiceScopeFactory scopeFactory, 
+        Dictionary<Type, Type> commandHandlers,
+        Dictionary<Type, Type> queryHandlers,
+        Dictionary<Type, List<Type>> eventHandlers)
+    {
+        _scopeFactory = scopeFactory;
+        _commandHandlers = commandHandlers;
+        _queryHandlers = queryHandlers;
+        _eventHandlers = eventHandlers;
+    }
+
     public async Task<Result> SendAsync(
         ICommand command, 
         CancellationToken cancellationToken = default)

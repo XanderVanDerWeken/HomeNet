@@ -4,13 +4,16 @@ using HomeNet.Core.Modules.Auth.Commands;
 using HomeNet.Core.Modules.Auth.Queries;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
+using HomeNet.Core.Modules.Cards.Models;
 using HomeNet.Core.Modules.Cards.Queries;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Commands;
+using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Core.Modules.Finances.Queries;
 using HomeNet.Core.Modules.Finances.Services;
 using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Commands;
+using HomeNet.Core.Modules.Persons.Models;
 using HomeNet.Core.Modules.Persons.Queries;
 using HomeNet.Infrastructure.Cache.Modules.Finances;
 using HomeNet.Infrastructure.Events;
@@ -20,6 +23,7 @@ using HomeNet.Infrastructure.Persistence.Modules.Cards;
 using HomeNet.Infrastructure.Persistence.Modules.Finances;
 using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Infrastructure.Security;
+using HomeNet.Web.Cqrs;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Npgsql;
 using SqlKata.Compilers;
@@ -32,7 +36,17 @@ public static class ServiceExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
-        services.AddSingleton<IEventBus, EventBus>();
+        services.AddSingleton<CqrsBuilder>();
+
+        services.AddSingleton<IEventBus>(sp =>
+        {
+            var builder = sp.GetRequiredService<CqrsBuilder>();
+            return new EventBus(
+                sp.GetRequiredService<IServiceScopeFactory>(),
+                builder.Commands,
+                builder.Queries,
+                builder.Events);
+        });
 
         services.AddSingleton<PostgresQueryFactory>(sp =>
         {
@@ -60,7 +74,14 @@ public static class ServiceExtensions
             .AddTransient<CardsQueryHandler>()
             .AddTransient<CardsExpiringBeforeQueryHandler>();
 
-        // TODO: Register Handlers with EventBus
+        services.PostConfigure<CqrsBuilder>(builder =>
+        {
+            builder.AddCommand<AddCardCommand, AddCardCommandHandler>();
+            builder.AddCommand<RemoveCardCommand, RemoveCardCommandHandler>();
+
+            builder.AddQuery<CardsQuery, CardsQueryHandler, IReadOnlyList<Card>>();
+            builder.AddQuery<CardsExpiringBeforeQuery, CardsExpiringBeforeQueryHandler, IReadOnlyList<Card>>();
+        });
 
         return services;
     }
@@ -81,7 +102,14 @@ public static class ServiceExtensions
 
         services.AddTransient<UserWithCredentialsQueryHandler>();
 
-        // TODO: Register Handlers with EventBus
+        services.PostConfigure<CqrsBuilder>(builder =>
+        {
+            builder.AddCommand<AddUserCommand, AddUserCommandHandler>();
+            builder.AddCommand<LinkPersonToUserCommand, LinkPersonToUserCommandHandler>();
+            builder.AddCommand<UnlinkPersonFromUserCommand, UnlinkPersonFromUserCommandHandler>();
+
+            builder.AddQuery<UserWithCredentialsQuery, UserWithCredentialsQueryHandler, bool>();
+        });
 
         return services;
     }
@@ -107,7 +135,17 @@ public static class ServiceExtensions
             .AddTransient<IncomesQueryHandler>()
             .AddTransient<MonthlyTimelineQueryHandler>();
 
-        // TODO: Register Handlers with EventBus
+        services.PostConfigure<CqrsBuilder>(builder =>
+        {
+            builder.AddCommand<AddCategoryCommand, AddCategoryCommandHandler>();
+            builder.AddCommand<AddExpenseCommand, AddExpenseCommandHandler>();
+            builder.AddCommand<AddIncomeCommand, AddIncomeCommandHandler>();
+
+            builder.AddQuery<CategoriesQuery, CategoriesQueryHandler, IReadOnlyList<Category>>();
+            builder.AddQuery<ExpensesQuery, ExpensesQueryHandler, IReadOnlyList<Expense>>();
+            builder.AddQuery<IncomesQuery, IncomesQueryHandler, IReadOnlyList<Income>>();
+            builder.AddQuery<MonthlyTimelineQuery, MonthlyTimelineQueryHandler, MonthlyTimeline>();
+        });
 
         return services;
     }
@@ -124,7 +162,13 @@ public static class ServiceExtensions
         services
             .AddTransient<PersonsQueryHandler>();
 
-        // TODO: Register Handlers with EventBus
+        services.PostConfigure<CqrsBuilder>(builder =>
+        {
+            builder.AddCommand<AddPersonCommand, AddPersonCommandHandler>();
+            builder.AddCommand<UpdatePersonCommand, UpdatePersonCommandHandler>();
+
+            builder.AddQuery<PersonsQuery, PersonsQueryHandler, IReadOnlyList<Person>>();
+        });
 
         return services;
     }
