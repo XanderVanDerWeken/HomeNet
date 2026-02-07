@@ -79,11 +79,9 @@ public class UserRepositoryTest
         {
             Assert.That(resultUser1.IsSuccess, Is.True);
             Assert.That(resultUser1.Error, Is.Null);
-            Assert.That(_user1.Id, Is.EqualTo(1));
 
             Assert.That(resultUser2.IsSuccess, Is.True);
             Assert.That(resultUser2.Error, Is.Null);
-            Assert.That(_user2.Id, Is.EqualTo(2));
 
             Assert.That(resultInvalidRole.IsSuccess, Is.False);
             Assert.That(resultInvalidRole.Error, Is.Not.Null);
@@ -146,9 +144,9 @@ public class UserRepositoryTest
         var addResult2 = await _userRepository.AddUserAsync(_user2);
         
         // Act
-        var resultAddedLink = await _userRepository.UpdatePersonLinkAsync(_user1.Id, 1);
+        var resultAddedLink = await _userRepository.UpdatePersonLinkAsync(_user1.Id, person.Id);
         var resultRemovedLink = await _userRepository.UpdatePersonLinkAsync(_user1.Id, null);
-        var resultInvalidUserId = await _userRepository.UpdatePersonLinkAsync(invalidUserId, 1);
+        var resultInvalidUserId = await _userRepository.UpdatePersonLinkAsync(invalidUserId, person.Id);
 
         // Assert
         Assert.Multiple(() =>
