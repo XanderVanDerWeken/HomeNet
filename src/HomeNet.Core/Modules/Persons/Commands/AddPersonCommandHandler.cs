@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Models;
 
@@ -22,7 +23,7 @@ public sealed class AddPersonCommandHandler : ICommandHandler<AddPersonCommand>
 
         if (!validationResult.IsValid)
         {
-            return Result.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure();
         }
 
         var newPerson = new Person

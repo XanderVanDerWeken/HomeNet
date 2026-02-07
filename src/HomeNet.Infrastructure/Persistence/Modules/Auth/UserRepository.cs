@@ -1,0 +1,84 @@
+using System;
+using HomeNet.Core.Common;
+using HomeNet.Core.Modules.Auth.Abstractions;
+using HomeNet.Core.Modules.Auth.Models;
+using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Auth.Entities;
+using HomeNet.Infrastructure.Persistence.Modules.Auth.Extensions;
+using SqlKata;
+
+namespace HomeNet.Infrastructure.Persistence.Modules.Auth;
+
+public sealed class UserRepository : SqlKataRepository, IUserRepository
+{
+    private static readonly string TableName = "auth.users";
+
+    public UserRepository(PostgresQueryFactory db)
+        : base(db)
+    {
+    }
+    
+    public async Task<Result> AddUserAsync(
+        User user,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query(TableName).AsInsert(new
+            {
+                username = user.UserName,
+                password_hash = user.PasswordHash,
+                role = user.Role,
+                person_id = user.PersonId,
+            });
+
+            var userId = await InsertAndReturnIdAsync(query);
+            user.Id = userId;
+
+            return Result.Success();
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while adding the user: {ex.Message}");
+        }
+    }
+
+    public async Task<User?> GetUserByUsernameAsync(
+        string username,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new Query(TableName)
+            .Where("username", username);
+        
+        var entity = await FirstOrDefaultAsync<UserEntity>(
+            query, 
+            cancellationToken);
+        
+        return entity?.ToUser();
+    }
+
+    public async Task<Result> UpdatePersonLinkAsync(
+        int userId, 
+        int? personId, 
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new Query(TableName)
+                .Where("id", userId)
+                .AsUpdate(new
+                {
+                    person_id = personId
+                });
+
+            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            return affectedRows > 0 
+                ? Result.Success()
+                : Result.Failure("No user found with the specified ID.");
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure($"An error occurred while updating the user: {ex.Message}");
+        }
+    }
+}

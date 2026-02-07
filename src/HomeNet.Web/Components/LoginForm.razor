@@ -1,0 +1,13 @@
+﻿<MudCard>
+    <MudCardHeader>
+        <MudText Typo="Typo.h4">Login</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        <form method="post" action="/api/auth/login">
+            <MudInput Label="Username" Name="username" Id="username" T="string" /><br />
+            <MudInput Label="Password" Name="password" Id="password" T="string" InputType="InputType.Password" /><br />
+            
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
+        </form>
+    </MudCardContent>
+</MudCard>

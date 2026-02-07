@@ -42,6 +42,9 @@ public class Program
                 sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
         });
 
+        // Authentication and Authorization
+        builder.Services.AddCookieAuthentication();
+
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
@@ -57,9 +60,15 @@ public class Program
 
         app.UseAntiforgery();
 
+        // Authentication and Authorization Middlewares
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         app.MapStaticAssets();
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
+
+        app.MapAuthEndpoints();
 
         using (var scope = app.Services.CreateScope())
         {

@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 
@@ -20,7 +21,7 @@ public sealed class IncomesQueryHandler : IQueryHandler<IncomesQuery, IReadOnlyL
 
         if (!validationResult.IsValid)
         {
-            return Result<IReadOnlyList<Income>>.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure<IReadOnlyList<Income>>();
         }
 
         var incomes = await _transactionRepository.GetAllIncomesAsync(

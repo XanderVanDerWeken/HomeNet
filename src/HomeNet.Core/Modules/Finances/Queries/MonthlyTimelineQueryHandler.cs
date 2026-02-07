@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 
@@ -22,7 +23,7 @@ public class MonthlyTimelineQueryHandler : IQueryHandler<MonthlyTimelineQuery, M
 
         if (!validationResult.IsValid)
         {
-            return Result<MonthlyTimeline>.Failure(validationResult.ErrorMessage!);
+            return validationResult.ToFailure<MonthlyTimeline>();
         }
 
         var timeline = await _timelineBuilder.GetOrCreateMonthlyTimelineAsync(
