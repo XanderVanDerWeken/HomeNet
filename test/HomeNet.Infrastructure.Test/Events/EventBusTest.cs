@@ -43,7 +43,7 @@ public class EventBusTest
             .Setup(s => s.ServiceProvider)
             .Returns(serviceProvider);
 
-        _eventBus.RegisterCommandHandler(testCommandHandler);
+        _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
 
         // Act
         var result = await _eventBus.SendAsync(command);
@@ -67,7 +67,7 @@ public class EventBusTest
             .Setup(s => s.ServiceProvider)
             .Returns(serviceProvider);
 
-        _eventBus.RegisterQueryHandler(testQueryHandler);
+        _eventBus.RegisterQueryHandler<TestQuery, TestQueryHandler, int>();
 
         // Act
         var result = await _eventBus.SendAsync<int>(query);
@@ -95,7 +95,7 @@ public class EventBusTest
             .Setup(s => s.ServiceProvider)
             .Returns(serviceProvider);
 
-        _eventBus.RegisterEventHandler(testEventHandler);
+        _eventBus.RegisterEventHandler<TestEvent, TestEventHandler>();
 
         // Act
         await _eventBus.PublishAsync(@event);
@@ -117,8 +117,8 @@ public class EventBusTest
             .Setup(s => s.ServiceProvider)
             .Returns(serviceProvider);
 
-        _eventBus.RegisterEventHandler(testEventHandler1);
-        _eventBus.RegisterEventHandler(testEventHandler2);
+        _eventBus.RegisterEventHandler<TestEvent, TestEventHandler>();
+        _eventBus.RegisterEventHandler<TestEvent, OtherTestEventHandler>();
 
         // Act
         await _eventBus.PublishAsync(@event);
@@ -165,17 +165,15 @@ public class EventBusTest
     public void Should_RegisterCommandHandler_ThrowsCannotRegisterMultipeHandlersForSameCommand()
     {
         // Arrange
-        var testCommandHandlerMock1 = new Mock<ICommandHandler<TestCommand>>();
-        var testCommandHandlerMock2 = new Mock<ICommandHandler<TestCommand>>();
 
         // Act & Assert
         Assert.DoesNotThrow(() =>
         {
-            _eventBus.RegisterCommandHandler(testCommandHandlerMock1.Object);
+            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
         });
         Assert.Throws<InvalidOperationException>(() =>
         {
-            _eventBus.RegisterCommandHandler(testCommandHandlerMock2.Object);
+            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
         });
     }
 
@@ -183,17 +181,15 @@ public class EventBusTest
     public void Should_RegisterQueryHandler_ThrowsCannotRegisterMultipeHandlersForSameQuery()
     {
         // Arrange
-        var testQueryHandlerMock1 = new Mock<IQueryHandler<TestQuery, int>>();
-        var testQueryHandlerMock2 = new Mock<IQueryHandler<TestQuery, int>>();
 
         // Act & Assert
         Assert.DoesNotThrow(() =>
         {
-            _eventBus.RegisterQueryHandler(testQueryHandlerMock1.Object);
+            _eventBus.RegisterQueryHandler<TestQuery, TestQueryHandler, int>();
         });
         Assert.Throws<InvalidOperationException>(() =>
         {
-            _eventBus.RegisterQueryHandler(testQueryHandlerMock2.Object);
+            _eventBus.RegisterQueryHandler<TestQuery, TestQueryHandler, int>();
         });
     }
 

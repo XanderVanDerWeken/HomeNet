@@ -24,9 +24,15 @@ public class Program
             .AddInteractiveServerComponents();
         builder.Services.AddMudServices();
         
+        builder.Services.AddMemoryCache();
+
         builder.Services.AddCommonServices(builder.Configuration);
         
-        builder.Services.AddCardsModule();
+        builder.Services
+            .AddCardsModule()
+            .AddFinancesModule()
+            .AddPersonsModule()
+            .AddAuthModule();
 
         // Authentication and Authorization
         builder.Services.AddCookieAuthentication();
