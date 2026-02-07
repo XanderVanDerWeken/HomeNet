@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Events;
 using HomeNet.Core.Modules.Auth.Queries;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

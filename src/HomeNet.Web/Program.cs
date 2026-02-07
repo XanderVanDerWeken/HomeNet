@@ -1,8 +1,5 @@
 using HomeNet.Web.Components;
-using HomeNet.Web.Configurations;
-using HomeNet.Web.Database;
 using HomeNet.Web.Extensions;
-using Microsoft.Extensions.Options;
 using MudBlazor.Services;
 using Serilog;
 
@@ -22,9 +19,6 @@ public class Program
         builder.Logging.ClearProviders();
         builder.Logging.AddSerilog(Log.Logger);
 
-        builder.Services.Configure<CacheInitializerConfiguration>(
-            builder.Configuration.GetSection(nameof(CacheInitializerConfiguration)));
-
         // Add services to the container.
         builder.Services.AddRazorComponents()
             .AddInteractiveServerComponents();
@@ -33,14 +27,6 @@ public class Program
         builder.Services.AddCommonServices(builder.Configuration);
         
         builder.Services.AddCardsModule();
-
-        builder.Services.AddScoped<SqliteCacheInitializer>(sp =>
-        {
-            return new SqliteCacheInitializer(
-                sp.GetRequiredService<ILogger<SqliteCacheInitializer>>(),
-                builder.Configuration.GetConnectionString("Cache")!,
-                sp.GetRequiredService<IOptions<CacheInitializerConfiguration>>());
-        });
 
         // Authentication and Authorization
         builder.Services.AddCookieAuthentication();
@@ -69,12 +55,6 @@ public class Program
             .AddInteractiveServerRenderMode();
 
         app.MapAuthEndpoints();
-
-        using (var scope = app.Services.CreateScope())
-        {
-            var initializer = scope.ServiceProvider.GetRequiredService<SqliteCacheInitializer>();
-            initializer.Initialize();
-        }
 
         app.Run();
 

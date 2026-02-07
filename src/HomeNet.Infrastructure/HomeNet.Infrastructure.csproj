@@ -20,7 +20,6 @@
     <PackageReference Include="Npgsql" />
     <PackageReference Include="SqlKata" />
     <PackageReference Include="SqlKata.Execution" />
-    <PackageReference Include="System.Data.SQLite.Core" />
   </ItemGroup>
 
 </Project>

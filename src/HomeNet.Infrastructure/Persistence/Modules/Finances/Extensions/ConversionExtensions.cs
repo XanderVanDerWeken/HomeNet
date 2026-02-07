@@ -4,32 +4,12 @@ using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 
 public static class ConversionExtensions
-{
-    public static MonthlyTimelineEntity ToEntity(this MonthlyTimeline timeline)
-        => new MonthlyTimelineEntity
-        {
-            Year = timeline.Year,
-            Month = timeline.Month,
-            IncomeAmount = timeline.IncomeAmount.Amount,
-            ExpenseAmount = timeline.ExpenseAmount.Amount,
-            NetTotal = timeline.NetTotal.Amount,
-        };
-    
+{   
     public static Category ToCategory(this CategoryEntity entity)
         => new Category
         {
             Id = entity.Id,
             Name = entity.Name,
-        };
-    
-    public static MonthlyTimeline ToMonthlyTimeline(this MonthlyTimelineEntity entity)
-        => new MonthlyTimeline
-        {
-            Year = entity.Year,
-            Month = entity.Month,
-            IncomeAmount = new Money(entity.IncomeAmount),
-            ExpenseAmount = new Money(entity.ExpenseAmount),
-            NetTotal = new Money(entity.NetTotal),
         };
 
     public static Income ToIncome(this TransactionEntity entity, Category category)

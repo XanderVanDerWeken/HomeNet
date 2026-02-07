@@ -1,4 +1,3 @@
-using System.Data.SQLite;
 using HomeNet.Core.Common.Events;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
@@ -27,16 +26,6 @@ public static class ServiceExtensions
             var compiler = new PostgresCompiler();
 
             return new PostgresQueryFactory(connection, compiler);
-        });
-
-        services.AddSingleton<SqliteQueryFactory>(sp =>
-        {
-            var connectionString = config.GetConnectionString("Cache");
-
-            var connection = new SQLiteConnection(connectionString);
-            var compiler = new SqliteCompiler();
-
-            return new SqliteQueryFactory(connection, compiler);
         });
 
         return services;
