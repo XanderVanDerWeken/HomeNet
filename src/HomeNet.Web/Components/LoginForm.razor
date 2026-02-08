@@ -4,8 +4,8 @@
     </MudCardHeader>
     <MudCardContent>
         <form method="post" action="/api/auth/login">
-            <MudInput Label="Username" Name="username" Id="username" T="string" /><br />
-            <MudInput Label="Password" Name="password" Id="password" T="string" InputType="InputType.Password" /><br />
+            <MudInput Label="Username" name="username" id="username" T="string" Clearable /><br />
+            <MudInput Label="Password" name="password" id="password" T="string" Clearable InputType="InputType.Password" /><br />
             
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Login</MudButton>
         </form>
