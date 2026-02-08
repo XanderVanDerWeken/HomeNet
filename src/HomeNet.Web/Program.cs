@@ -26,13 +26,22 @@ public class Program
         
         builder.Services.AddMemoryCache();
 
-        builder.Services.AddCommonServices(builder.Configuration);
+        builder.Services.AddDatabase(builder.Configuration);
         
         builder.Services
             .AddCardsModule()
             .AddFinancesModule()
             .AddPersonsModule()
             .AddAuthModule();
+
+        builder.Services.AddCqrs(builder =>
+        {
+            builder
+                .AddAuthModule()
+                .AddCardsModule()
+                .AddFinancesModule()
+                .AddPersonsModule();
+        });
 
         // Authentication and Authorization
         builder.Services.AddCookieAuthentication();
