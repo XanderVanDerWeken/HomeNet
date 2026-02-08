@@ -11,13 +11,17 @@ public class AddUserCommandHandlerTest
     private AddUserCommandHandler _handler;
 
     private Mock<IUserRepository> _userRepositoryMock;
+    private Mock<IPasswordService> _passwordServiceMock;
 
     [SetUp]
     public void Setup()
     {
         _userRepositoryMock = new Mock<IUserRepository>();
+        _passwordServiceMock = new Mock<IPasswordService>();
 
-        _handler = new AddUserCommandHandler(_userRepositoryMock.Object);
+        _handler = new AddUserCommandHandler(
+            _userRepositoryMock.Object, 
+            _passwordServiceMock.Object);
     }
 
     [Test]
