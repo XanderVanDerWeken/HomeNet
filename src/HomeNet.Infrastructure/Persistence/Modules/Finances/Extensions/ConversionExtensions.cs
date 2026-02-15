@@ -31,4 +31,13 @@ public static class ConversionExtensions
             Category = category,
             Store = entity.Store!,
         };
+    
+    public static FixedCostInterval ToFixedCostInterval(this FixedCostIntervalEntity entity)
+        => new FixedCostInterval
+        {
+            Id = entity.Id,
+            Amount = new Money(entity.Amount),
+            BeginDate = entity.BeginDate,
+            EndDate = entity.EndDate,
+        };
 }
