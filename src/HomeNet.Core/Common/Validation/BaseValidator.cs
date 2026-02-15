@@ -27,4 +27,12 @@ public abstract class BaseValidator<T> : IValidator<T>
             Errors.Add(errorMessage);
         }
     }
+
+    protected void IsValidDateInterval(DateOnly start, DateOnly? end, string errorMessage)
+    {
+        if (end.HasValue && end.Value < start)
+        {
+            Errors.Add(errorMessage);
+        }
+    }
 }
