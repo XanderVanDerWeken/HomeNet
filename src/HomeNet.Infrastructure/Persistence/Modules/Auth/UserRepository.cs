@@ -1,10 +1,10 @@
-using System;
 using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Auth.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Auth.Entities;
 using HomeNet.Infrastructure.Persistence.Modules.Auth.Extensions;
+using Microsoft.Extensions.Logging;
 using SqlKata;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Auth;
@@ -13,9 +13,14 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
 {
     private static readonly string TableName = "auth.users";
 
-    public UserRepository(PostgresQueryFactory db)
+    private readonly ILogger _logger;
+
+    public UserRepository(
+        ILogger<UserRepository> logger, 
+        PostgresQueryFactory db)
         : base(db)
     {
+        _logger = logger;
     }
     
     public async Task<Result> AddUserAsync(
@@ -24,6 +29,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
     {
         try
         {
+            _logger.LogInformation("Inserting new user with username: {Username}", user.UserName);
             var query = new Query(TableName).AsInsert(new
             {
                 username = user.UserName,
@@ -35,10 +41,13 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
             var userId = await InsertAndReturnIdAsync(query);
             user.Id = userId;
 
+            _logger.LogInformation("User inserted successfully with ID: {UserId}", userId);
+
             return Result.Success();
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Error occurred while adding user with username: {Username}", user.UserName);
             return Result.Failure($"An error occurred while adding the user: {ex.Message}");
         }
     }

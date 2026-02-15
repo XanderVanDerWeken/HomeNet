@@ -4,6 +4,7 @@ using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Auth;
 using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Infrastructure.Test.Containers;
+using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
 using SqlKata.Compilers;
 
@@ -44,7 +45,9 @@ public class UserRepositoryTest
 
         _personRepository = new PersonRepository(db);
 
-        _userRepository = new UserRepository(db);
+        _userRepository = new UserRepository(
+            NullLogger<UserRepository>.Instance, 
+            db);
     }
 
     [TearDown]

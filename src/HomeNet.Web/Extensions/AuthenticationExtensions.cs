@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using HomeNet.Core.Common.Events;
+using HomeNet.Core.Modules.Auth.Commands;
 using HomeNet.Core.Modules.Auth.Queries;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -29,6 +30,39 @@ public static class AuthenticationExtensions
 
     public static WebApplication MapAuthEndpoints(this WebApplication app)
     {
+        // Signup endpoint
+        app.MapPost("/api/auth/signup", async (HttpContext context, HttpRequest request, IEventBus bus) =>
+        {
+            var command = new AddUserCommand
+            {
+                UserName = request.Form["username"]!,
+                Password = request.Form["password"]!,
+            };
+
+            var commandResult = await bus.SendAsync(command);
+
+            if (commandResult.IsSuccess)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, command.UserName),
+                    new Claim(ClaimTypes.Role, command.Role),
+                };
+
+                var identity = new ClaimsIdentity(
+                    claims, 
+                    CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                await context.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, 
+                    new ClaimsPrincipal(identity));
+                
+                return Results.Redirect("/");
+            }
+
+            return Results.Redirect("/login?error=1");
+        });
+
         // Login endpoint
         app.MapPost("/api/auth/login", async (HttpContext context, HttpRequest request, IEventBus bus) =>
         {

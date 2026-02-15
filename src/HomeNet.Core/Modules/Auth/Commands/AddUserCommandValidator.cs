@@ -8,7 +8,7 @@ public sealed class AddUserCommandValidator : BaseValidator<AddUserCommand>
     {
         IsNotEmpty(entity.UserName, "User name must not be empty.");
         
-        IsNotEmpty(entity.PasswordHash, "Password hash must not be empty.");
+        IsNotEmpty(entity.Password, "Password must not be empty.");
         
         if (entity.Role != "User" && entity.Role != "Admin")
         {
