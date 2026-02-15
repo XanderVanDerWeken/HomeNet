@@ -58,4 +58,17 @@ CREATE TABLE IF NOT EXISTS finances.transactions (
         CHECK (month >= 1 AND month <= 12)
 );
 
+CREATE TABLE IF NOT EXISTS finances.fixed_costs (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS finances.fixed_costs_intervals (
+    id SERIAL PRIMARY KEY,
+    fixed_cost_id INT REFERENCES finances.fixed_costs(id),
+    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
+    begin_date DATE NOT NULL,
+    end_date DATE NULL
+);
+
 COMMIT;
