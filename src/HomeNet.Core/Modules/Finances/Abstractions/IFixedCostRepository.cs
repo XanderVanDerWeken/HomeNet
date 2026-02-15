@@ -5,6 +5,9 @@ namespace HomeNet.Core.Modules.Finances.Abstractions;
 
 public interface IFixedCostRepository
 {
+    Task<IReadOnlyList<FixedCost>> GetAllFixedCostsAsync(
+        CancellationToken cancellationToken = default);
+
     Task<FixedCost?> GetFixedCostByIdAsync(
         int id,
         CancellationToken cancellationToken = default);
