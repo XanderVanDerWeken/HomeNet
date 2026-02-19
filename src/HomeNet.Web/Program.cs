@@ -26,6 +26,7 @@ public class Program
         
         builder.Services.AddMemoryCache();
 
+        builder.AddNpgsqlDataSource(connectionName: "homenetdb");
         builder.Services.AddDatabase(builder.Configuration);
         
         builder.Services

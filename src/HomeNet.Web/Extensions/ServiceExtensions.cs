@@ -1,3 +1,4 @@
+using System.Data.Common;
 using HomeNet.Core.Common.Events;
 using HomeNet.Infrastructure.Events;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -15,9 +16,9 @@ public static class ServiceExtensions
     {
         services.AddSingleton<PostgresQueryFactory>(sp =>
         {
-            var connectionString = config.GetConnectionString("Default");
+            var dataSource = sp.GetRequiredService<NpgsqlDataSource>();
 
-            var connection = new NpgsqlConnection(connectionString);
+            var connection = new NpgsqlConnection(dataSource.ConnectionString);
             var compiler = new PostgresCompiler();
 
             return new PostgresQueryFactory(connection, compiler);
