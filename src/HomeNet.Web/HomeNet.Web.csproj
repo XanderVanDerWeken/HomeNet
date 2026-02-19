@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="../HomeNet.Core/HomeNet.Core.csproj" />
     <ProjectReference Include="../HomeNet.Infrastructure/HomeNet.Infrastructure.csproj" />
+    <ProjectReference Include="../HomeNet.ServiceDefaults/HomeNet.ServiceDefaults.csproj" />
   </ItemGroup>
 
   <ItemGroup>
