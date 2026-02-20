@@ -1,4 +1,5 @@
 using HomeNet.Core.Common;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -78,7 +79,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while adding the category: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 }

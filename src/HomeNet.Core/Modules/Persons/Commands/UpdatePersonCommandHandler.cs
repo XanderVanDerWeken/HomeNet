@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Persons.Abstractions;
 
@@ -29,7 +30,7 @@ public sealed class UpdatePersonCommandHandler : ICommandHandler<UpdatePersonCom
 
         if (person == null)
         {
-            return Result.Failure($"Person with ID {command.PersonId} not found.");
+            return new NotFoundError("Person", command.PersonId).ToFailure();
         }
 
         if (command.UpdatedFirstName != null)
