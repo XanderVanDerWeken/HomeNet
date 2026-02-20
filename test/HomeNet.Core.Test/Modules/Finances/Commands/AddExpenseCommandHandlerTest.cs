@@ -1,3 +1,4 @@
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Commands;
 using HomeNet.Core.Modules.Finances.Models;
@@ -170,7 +171,7 @@ public class AddExpenseCommandHandlerTest
         {
             Assert.That(result.IsSuccess, Is.False);
             Assert.That(result.Error, Is.Not.Null);
-            Assert.That(result.Error, Is.EqualTo($"Category '{_categoryName}' not found."));
+            Assert.That(result.Error, Is.InstanceOf<NotFoundError>());
         });
 
         _categoryRepositoryMock.Verify(

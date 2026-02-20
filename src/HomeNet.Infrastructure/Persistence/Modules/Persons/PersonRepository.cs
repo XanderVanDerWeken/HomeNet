@@ -1,4 +1,5 @@
 using HomeNet.Core.Common;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -38,7 +39,7 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while adding the person: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 
@@ -96,11 +97,11 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
 
             return affectedRows > 0
                 ? Result.Success()
-                : Result.Failure("Failed to update card in database.");
+                : new NotFoundError("Person", person.Id).ToFailure();
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while updating the person: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 }

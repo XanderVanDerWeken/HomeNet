@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 
@@ -29,7 +30,7 @@ public sealed class UnlinkPersonFromUserCommandHandler : ICommandHandler<UnlinkP
 
         if (user is null)
         {
-            return Result.Failure("User not found.");
+            return new NotFoundError("User", command.UserName).ToFailure();
         }
 
         return await _userRepository.UpdatePersonLinkAsync(
