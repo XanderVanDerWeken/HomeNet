@@ -1,4 +1,5 @@
 using HomeNet.Core.Common;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -37,7 +38,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while adding the card: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 
@@ -103,11 +104,11 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
 
             return affectedRows > 0
                 ? Result.Success()
-                : Result.Failure("Failed to update card in database.");
+                : new NotFoundError("Card", card.Id).ToFailure();
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while updating the card: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 
@@ -125,11 +126,11 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
 
             return affectedRows > 0
                 ? Result.Success()
-                : Result.Failure("Failed to delete card from database.");
+                : new NotFoundError("Card", cardId).ToFailure();
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while removing the card: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 }

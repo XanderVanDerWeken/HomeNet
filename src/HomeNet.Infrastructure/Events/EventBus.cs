@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Events;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -36,7 +37,7 @@ public class EventBus : IEventBus
         var commandType = command.GetType();
 
         if (!_commandHandlers.TryGetValue(commandType, out var handlerType))
-            return Result.Failure("No command handler registered.");
+            return new EventBusError("No command handler registered.").ToFailure();
 
         using var scope = _scopeFactory.CreateScope();
         var provider = scope.ServiceProvider;
@@ -56,7 +57,7 @@ public class EventBus : IEventBus
         var queryType = query.GetType();
 
         if (!_queryHandlers.TryGetValue(queryType, out var handlerType))
-            return Result<TResult>.Failure("No query handler registered.");
+            return Result<TResult>.Failure(new EventBusError("No query handler registered."));
 
         using var scope = _scopeFactory.CreateScope();
         var provider = scope.ServiceProvider;

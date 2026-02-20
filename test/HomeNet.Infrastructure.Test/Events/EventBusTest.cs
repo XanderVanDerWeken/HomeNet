@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Events;
 using HomeNet.Infrastructure.Events;
 using Microsoft.Extensions.DependencyInjection;
@@ -140,11 +141,11 @@ public class EventBusTest
         {
             Assert.That(resultSendCommand, Is.Not.Null);
             Assert.That(resultSendCommand.IsSuccess, Is.False);
-            Assert.That(resultSendCommand.Error, Is.EqualTo("No command handler registered."));
+            Assert.That(resultSendCommand.Error, Is.InstanceOf<EventBusError>());
 
             Assert.That(resultSendQuery, Is.Not.Null);
             Assert.That(resultSendQuery.IsSuccess, Is.False);
-            Assert.That(resultSendQuery.Error, Is.EqualTo("No query handler registered."));
+            Assert.That(resultSendQuery.Error, Is.InstanceOf<EventBusError>());
         });
     }
 

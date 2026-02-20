@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
@@ -36,7 +37,7 @@ public sealed class AddIncomeCommandHandler : ICommandHandler<AddIncomeCommand>
 
         if (foundCategory == null)
         {
-            return Result.Failure($"Category '{command.CategoryName}' not found.");
+            return new NotFoundError("Category", command.CategoryName).ToFailure();
         }
 
         var newIncome = new Income

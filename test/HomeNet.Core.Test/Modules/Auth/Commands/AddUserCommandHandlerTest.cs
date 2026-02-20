@@ -31,15 +31,25 @@ public class AddUserCommandHandlerTest
         var command1 = new AddUserCommand
         {
             UserName = "testuser",
-            Password = "hashedpassword",
+            Password = "password",
             Role = "User",
         };
         var command2 = new AddUserCommand
         {
             UserName = "otherUser",
-            Password = "otherHashedpassword",
+            Password = "otherPassword",
             Role = "Admin",
         };
+
+        var hashedPassword1 = "hashedpassword1";
+        var hashedPassword2 = "hashedpassword2";
+
+        _passwordServiceMock
+            .Setup(x => x.HashPassword(command1.Password))
+            .Returns(hashedPassword1);
+        _passwordServiceMock
+            .Setup(x => x.HashPassword(command2.Password))
+            .Returns(hashedPassword2);
 
         _userRepositoryMock
             .Setup(x => x.AddUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
@@ -63,7 +73,7 @@ public class AddUserCommandHandlerTest
             x => x.AddUserAsync(
                 It.Is<User>(u =>
                     u.UserName == command1.UserName &&
-                    u.PasswordHash == command1.Password &&
+                    u.PasswordHash == hashedPassword1 &&
                     u.Role == command1.Role),
                 It.IsAny<CancellationToken>()),
             Times.Once);
@@ -72,7 +82,7 @@ public class AddUserCommandHandlerTest
             x => x.AddUserAsync(
                 It.Is<User>(u =>
                     u.UserName == command2.UserName &&
-                    u.PasswordHash == command2.Password &&
+                    u.PasswordHash == hashedPassword2 &&
                     u.Role == command2.Role),
                 It.IsAny<CancellationToken>()),
             Times.Once);

@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Persons.Abstractions;
@@ -33,13 +34,13 @@ public sealed class LinkPersonToUserCommandHandler : ICommandHandler<LinkPersonT
         var userToLink = await _userRepository.GetUserByUsernameAsync(command.UserName);
         if (userToLink is null)
         {
-            return Result.Failure("User not found.");
+            return new NotFoundError("User", command.UserName).ToFailure();
         }
 
         var personToLink = await _personRepository.GetPersonByIdAsync(command.PersonId, cancellationToken);
         if (personToLink is null)
         {
-            return Result.Failure("Person not found.");
+            return new NotFoundError("Person", command.PersonId).ToFailure();
         }
 
         return await _userRepository.UpdatePersonLinkAsync(

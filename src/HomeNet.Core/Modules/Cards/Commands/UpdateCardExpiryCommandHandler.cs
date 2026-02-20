@@ -1,5 +1,6 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Cards.Abstractions;
 
 namespace HomeNet.Core.Modules.Cards.Commands;
@@ -22,7 +23,7 @@ public class UpdateCardExpiryCommandHandler : ICommandHandler<UpdateCardExpiryCo
 
         if (cardToUpdate is null)
         {
-            return Result.Failure($"Card with ID {command.CardId} not found.");
+            return new NotFoundError("Card", command.CardId).ToFailure();
         }
 
         cardToUpdate.ExpirationDate = command.NewExpiryDate;

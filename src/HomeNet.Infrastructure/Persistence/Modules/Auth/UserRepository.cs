@@ -1,4 +1,5 @@
 using HomeNet.Core.Common;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Auth.Abstractions;
 using HomeNet.Core.Modules.Auth.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -48,7 +49,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error occurred while adding user with username: {Username}", user.UserName);
-            return Result.Failure($"An error occurred while adding the user: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 
@@ -83,11 +84,11 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
             var affectedRows = await ExecuteAsync(query, cancellationToken);
             return affectedRows > 0 
                 ? Result.Success()
-                : Result.Failure("No user found with the specified ID.");
+                : new NotFoundError("User", userId).ToFailure();
         }
         catch (Exception ex)
         {
-            return Result.Failure($"An error occurred while updating the user: {ex.Message}");
+            return new DatabaseError(TableName, ex).ToFailure();
         }
     }
 }
