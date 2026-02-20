@@ -47,15 +47,38 @@ CREATE TABLE IF NOT EXISTS finances.transactions (
     store VARCHAR(255) NULL,
     income_source VARCHAR(255) NULL,
 
-    CONSTRAINT fk_category
-        FOREIGN KEY(category_id)
-        REFERENCES finances.categories(id),
-
     CONSTRAINT check_year
         CHECK (year >= 2000 AND year <= 3000),
     
     CONSTRAINT check_month
         CHECK (month >= 1 AND month <= 12)
+);
+
+CREATE TABLE IF NOT EXISTS finances.fixed_costs (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS finances.fixed_costs_intervals (
+    id SERIAL PRIMARY KEY,
+    fixed_cost_id INT REFERENCES finances.fixed_costs(id),
+    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
+    start_year int NOT NULL,
+    start_month int NOT NULL,
+    end_year int NOT NULL,
+    end_month int NOT NULL,
+
+    CONSTRAINT check_start_year
+        CHECK (start_year >= 2000 AND start_year <= 3000),
+    
+    CONSTRAINT check_end_year
+        CHECK (end_year >= 2000 AND end_year <= 3000),
+    
+    CONSTRAINT check_start_month
+        CHECK (start_month >= 1 AND start_month <= 12),
+    
+    CONSTRAINT check_end_month
+        CHECK (end_month >= 1 AND end_month <= 12)
 );
 
 COMMIT;
