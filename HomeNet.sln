@@ -17,6 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeNet.Infrastructure", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeNet.Infrastructure.Test", "test\HomeNet.Infrastructure.Test\HomeNet.Infrastructure.Test.csproj", "{E3149F1C-7D8F-4EC9-BB3A-F73FC36F4C3D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{E1D8A8F4-1A43-CA6F-969C-EEA7A4C90B8A}"
+	ProjectSection(SolutionItems) = preProject
+		sql\postgres.initdb.sql = sql\postgres.initdb.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
