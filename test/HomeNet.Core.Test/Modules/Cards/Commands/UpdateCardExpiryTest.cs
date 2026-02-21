@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 namespace HomeNet.Core.Test.Modules.Cards.Commands;
 
-public class UpdateCardExpiryCommandHandlerTest
+public class UpdateCardExpiryTest
 {
-    private UpdateCardExpiryCommandHandler _handler;
+    private UpdateCardExpiry.CommandHandler _handler;
 
     private Mock<ICardRepository> _cardRepository;
 
@@ -17,7 +17,7 @@ public class UpdateCardExpiryCommandHandlerTest
     {
         _cardRepository = new Mock<ICardRepository>();
 
-        _handler = new UpdateCardExpiryCommandHandler(_cardRepository.Object);
+        _handler = new UpdateCardExpiry.CommandHandler(_cardRepository.Object);
     }
 
     [Test]
@@ -35,7 +35,7 @@ public class UpdateCardExpiryCommandHandlerTest
             PersonId = 1,
         };
 
-        var command = new UpdateCardExpiryCommand
+        var command = new UpdateCardExpiry.Command
         {
             CardId = card.Id,
             NewExpiryDate = newDate,
@@ -87,7 +87,7 @@ public class UpdateCardExpiryCommandHandlerTest
             PersonId = 1,
         };
 
-        var command = new UpdateCardExpiryCommand
+        var command = new UpdateCardExpiry.Command
         {
             CardId = card.Id,
             NewExpiryDate = newDate,

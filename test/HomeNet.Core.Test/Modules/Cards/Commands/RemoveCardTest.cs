@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Cards.Commands;
 
-public class RemoveCardCommandHandlerTest
+public class RemoveCardTest
 {
-    private RemoveCardCommandHandler _handler;
+    private RemoveCard.CommandHandler _handler;
 
     private Mock<ICardRepository> _cardRepositoryMock;
 
@@ -16,7 +16,7 @@ public class RemoveCardCommandHandlerTest
     {
         _cardRepositoryMock = new Mock<ICardRepository>();
 
-        _handler = new RemoveCardCommandHandler(_cardRepositoryMock.Object);
+        _handler = new RemoveCard.CommandHandler(_cardRepositoryMock.Object);
     }
 
     [Test]
@@ -24,7 +24,7 @@ public class RemoveCardCommandHandlerTest
     {
         // Arrange
         var cardId = 1;
-        var command = new RemoveCardCommand
+        var command = new RemoveCard.Command
         {
             CardId = cardId,
         };

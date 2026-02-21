@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Cards.Commands;
 
-public class AddCardCommandHandlerTest
+public class AddCardTest
 {
-    private AddCardCommandHandler _handler;
+    private AddCard.CommandHandler _handler;
 
     private Mock<ICardRepository> _cardRepositoryMock;
 
@@ -16,14 +16,14 @@ public class AddCardCommandHandlerTest
     {
         _cardRepositoryMock = new Mock<ICardRepository>();
 
-        _handler = new AddCardCommandHandler(_cardRepositoryMock.Object);
+        _handler = new AddCard.CommandHandler(_cardRepositoryMock.Object);
     }
 
     [Test]
     public async Task Should_HandleAsync_ReturnsSuccess()
     {
         // Arrange
-        var command = new AddCardCommand
+        var command = new AddCard.Command
         {
             Name = "Test Card",
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(7)),
@@ -57,13 +57,13 @@ public class AddCardCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
-        var commandInvalidName = new AddCardCommand
+        var commandInvalidName = new AddCard.Command
         {
             Name = string.Empty,
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow),
             PersonId = 1,
         };
-        var commandInvalidDate = new AddCardCommand
+        var commandInvalidDate = new AddCard.Command
         {
             Name = "Valid Name",
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),

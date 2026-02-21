@@ -15,23 +15,23 @@ public static class CardModuleExtensions
         services.AddScoped<ICardRepository, CardRepository>();
 
         services
-            .AddTransient<AddCardCommandHandler>()
-            .AddTransient<RemoveCardCommandHandler>();
+            .AddTransient<AddCard.CommandHandler>()
+            .AddTransient<RemoveCard.CommandHandler>();
 
         services
-            .AddTransient<CardsQueryHandler>()
-            .AddTransient<CardsExpiringBeforeQueryHandler>();
+            .AddTransient<AllCards.QueryHandler>()
+            .AddTransient<AllCardsExpiringBefore.QueryHandler>();
 
         return services;
     }
 
     public static ICqrsBuilder AddCardsModule(this ICqrsBuilder builder)
     {
-        builder.AddCommand<AddCardCommand, AddCardCommandHandler>();
-        builder.AddCommand<RemoveCardCommand, RemoveCardCommandHandler>();
+        builder.AddCommand<AddCard.Command, AddCard.CommandHandler>();
+        builder.AddCommand<RemoveCard.Command, RemoveCard.CommandHandler>();
 
-        builder.AddQuery<CardsQuery, CardsQueryHandler, IReadOnlyList<Card>>();
-        builder.AddQuery<CardsExpiringBeforeQuery, CardsExpiringBeforeQueryHandler, IReadOnlyList<Card>>();
+        builder.AddQuery<AllCards.Query, AllCards.QueryHandler, IReadOnlyList<Card>>();
+        builder.AddQuery<AllCardsExpiringBefore.Query, AllCardsExpiringBefore.QueryHandler, IReadOnlyList<Card>>();
 
         return builder;
     }
