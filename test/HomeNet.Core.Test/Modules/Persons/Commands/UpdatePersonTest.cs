@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Persons.Commands;
 
-public class UpdatePersonCommandHandlerTest
+public class UpdatePersonTest
 {
-    private UpdatePersonCommandHandler _handler;
+    private UpdatePerson.CommandHandler _handler;
 
     private Mock<IPersonRepository> _personRepositoryMock;
 
@@ -16,7 +16,7 @@ public class UpdatePersonCommandHandlerTest
     {
         _personRepositoryMock = new Mock<IPersonRepository>();
 
-        _handler = new UpdatePersonCommandHandler(_personRepositoryMock.Object);
+        _handler = new UpdatePerson.CommandHandler(_personRepositoryMock.Object);
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class UpdatePersonCommandHandlerTest
             IsInactive = false,
         };
 
-        var command = new UpdatePersonCommand
+        var command = new UpdatePerson.Command
         {
             PersonId = person.Id,
             UpdatedFirstName = "Jane",
@@ -77,7 +77,7 @@ public class UpdatePersonCommandHandlerTest
         string? updatedAliasName)
     {
         // Arrange
-        var command = new UpdatePersonCommand
+        var command = new UpdatePerson.Command
         {
             PersonId = 1,
             UpdatedFirstName = updatedFirstName,
@@ -103,7 +103,7 @@ public class UpdatePersonCommandHandlerTest
         // Arrange
         var invalidId = 999;
 
-        var command = new UpdatePersonCommand
+        var command = new UpdatePerson.Command
         {
             PersonId = invalidId,
             UpdatedFirstName = "Jane",

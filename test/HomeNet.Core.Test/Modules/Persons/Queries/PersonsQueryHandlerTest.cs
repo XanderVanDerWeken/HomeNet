@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Persons.Queries;
 
-public class PersonsQueryHandlerTest
+public class AllPersonsTest
 {
-    private PersonsQueryHandler _handler;
+    private AllPersons.QueryHandler _handler;
 
     private Mock<IPersonRepository> _personRepositoryMock;
 
@@ -16,17 +16,17 @@ public class PersonsQueryHandlerTest
     {
         _personRepositoryMock = new Mock<IPersonRepository>();
 
-        _handler = new PersonsQueryHandler(_personRepositoryMock.Object);
+        _handler = new AllPersons.QueryHandler(_personRepositoryMock.Object);
     }
 
     [Test]
     public async Task Should_HandleAsync()
     {
         // Arrange
-        var query = new PersonsQuery();
-        var queryWithInactive = new PersonsQuery
+        var query = new AllPersons.Query();
+        var queryWithInactive = new AllPersons.Query
         {
-            includeInactivePersons = true,
+            IncludeInactivePersons = true,
         };
 
         var person1 = new Person
