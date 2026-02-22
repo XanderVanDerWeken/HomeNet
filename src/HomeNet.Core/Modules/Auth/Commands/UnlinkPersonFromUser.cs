@@ -50,7 +50,7 @@ public static class UnlinkPersonFromUser
         }
     }
 
-    public sealed class CommandValidator : BaseValidator<Command>
+    private sealed class CommandValidator : BaseValidator<Command>
     {
         protected override void ValidateInternal(Command entity)
         {

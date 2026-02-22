@@ -56,7 +56,7 @@ public static class UserWithCredentials
         }
     }
 
-    public sealed class QueryValidator : BaseValidator<Query>
+    private sealed class QueryValidator : BaseValidator<Query>
     {
         protected override void ValidateInternal(Query entity)
         {

@@ -72,7 +72,7 @@ public static class UpdatePerson
         }
     }
 
-    public sealed class CommandValidator : BaseValidator<Command>
+    private sealed class CommandValidator : BaseValidator<Command>
     {
         protected override void ValidateInternal(Command entity)
         {
