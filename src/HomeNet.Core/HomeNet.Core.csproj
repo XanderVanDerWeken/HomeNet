@@ -6,4 +6,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Modules/Finances/" />
+    <Folder Include="Modules/Finances/Abstractions/" />
+    <Folder Include="Modules/Finances/Commands/" />
+    <Folder Include="Modules/Finances/Models/" />
+    <Folder Include="Modules/Finances/Queries/" />
+  </ItemGroup>
+
 </Project>

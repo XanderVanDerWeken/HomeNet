@@ -37,25 +37,37 @@ CREATE TABLE IF NOT EXISTS finances.categories (
     name VARCHAR(100) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS finances.transactions (
+CREATE TABLE IF NOT EXISTS finances.transactions(
     id SERIAL PRIMARY KEY,
-    amount NUMERIC(12, 2) NOT NULL CHECK (amount >= 0),
-    year int NOT NULL,
-    month int NOT NULL,
     category_id INT REFERENCES finances.categories(id),
-    transaction_type int NOT NULL CHECK (transaction_type IN (0, 1)),
-    store VARCHAR(255) NULL,
-    income_source VARCHAR(255) NULL,
-
-    CONSTRAINT fk_category
-        FOREIGN KEY(category_id)
-        REFERENCES finances.categories(id),
-
-    CONSTRAINT check_year
-        CHECK (year >= 2000 AND year <= 3000),
-    
-    CONSTRAINT check_month
-        CHECK (month >= 1 AND month <= 12)
+    amount DECIMAL(18, 2) NOT NULL CHECK (amount > 0),
+    type VARCHAR(10) NOT NULL CHECK (type IN ('Income', 'Expense')),
+    source VARCHAR(20) NOT NULL DEFAULT 'Manual' CHECK (source IN ('Manual', 'FixedCost')),
+    description TEXT NULL,
+    date DATE NOT NULL
 );
+
+CREATE INDEX idx_transactions_date ON finances.transactions(date);
+CREATE INDEX idx_transactions_category_id ON finances.transactions(category_id);
+
+CREATE TABLE IF NOT EXISTS finances.fixed_costs (
+    id SERIAL PRIMARY KEY,
+    category_id INT REFERENCES finances.categories(id),
+    name VARCHAR(100) NOT NULL,
+    day_of_month INT NOT NULL CHECK (day_of_month BETWEEN 1 AND 28),
+);
+
+CREATE TABLE IF NOT EXISTS finances.fixed_cost_versions (
+    id SERIAL PRIMARY KEY,
+    fixed_cost_id INT REFERENCES finances.fixed_costs(id),
+    amount DECIMAL(18, 2) NOT NULL CHECK (amount > 0),
+    valid_from DATE NOT NULL,
+    valid_to DATE NULL,
+
+    CONSTRAINT valid_range CHECK (valid_to IS NULL OR valid_to > valid_from
+);
+
+CREATE INDEX idx_fixed_cost_versions_fixed_cost_id ON finances.fixed_cost_versions(fixed_cost_id);
+CREATE INDEX idx_fixed_cost_versions_valid_range ON finances.fixed_cost_versions(fixed_cost_id, valid_from, valid_to);
 
 COMMIT;
