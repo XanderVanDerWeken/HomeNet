@@ -8,7 +8,7 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Auth.Commands;
 
-public class LinkPersonToUserCommandHandlerTest
+public class LinkPersonToUserTest
 {
     private static readonly Person person = new()
     {
@@ -28,7 +28,7 @@ public class LinkPersonToUserCommandHandlerTest
         PersonId = person.Id,
     };
 
-    private LinkPersonToUserCommandHandler _handler;
+    private LinkPersonToUser.CommandHandler _handler;
 
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IPersonRepository> _personRepositoryMock;
@@ -39,7 +39,7 @@ public class LinkPersonToUserCommandHandlerTest
         _userRepositoryMock = new Mock<IUserRepository>();
         _personRepositoryMock = new Mock<IPersonRepository>();
 
-        _handler = new LinkPersonToUserCommandHandler(
+        _handler = new LinkPersonToUser.CommandHandler(
             _userRepositoryMock.Object, 
             _personRepositoryMock.Object);
     }
@@ -50,7 +50,7 @@ public class LinkPersonToUserCommandHandlerTest
         // Arrange
         var ct = new CancellationToken();
 
-        var command = new LinkPersonToUserCommand
+        var command = new LinkPersonToUser.Command
         {
             UserName = user.UserName,
             PersonId = user.PersonId!.Value,
@@ -97,7 +97,7 @@ public class LinkPersonToUserCommandHandlerTest
         // Arrange
         var ct = new CancellationToken();
 
-        var command = new LinkPersonToUserCommand
+        var command = new LinkPersonToUser.Command
         {
             UserName = user.UserName,
             PersonId = user.PersonId!.Value,
@@ -130,7 +130,7 @@ public class LinkPersonToUserCommandHandlerTest
         // Arrange
         var ct = new CancellationToken();
 
-        var command = new LinkPersonToUserCommand
+        var command = new LinkPersonToUser.Command
         {
             UserName = user.UserName,
             PersonId = user.PersonId!.Value,
@@ -171,12 +171,12 @@ public class LinkPersonToUserCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
-        var commandInvalidUsername = new LinkPersonToUserCommand
+        var commandInvalidUsername = new LinkPersonToUser.Command
         {
             UserName = string.Empty,
             PersonId = 1,
         };
-        var commandInvalidPersonId = new LinkPersonToUserCommand
+        var commandInvalidPersonId = new LinkPersonToUser.Command
         {
             UserName = "testuser",
             PersonId = 0,

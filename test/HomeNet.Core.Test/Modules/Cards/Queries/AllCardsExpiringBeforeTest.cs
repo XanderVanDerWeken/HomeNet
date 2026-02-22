@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Cards.Queries;
 
-public class CardsQueryHandlerTest
+public class AllCardsExpiringBeforeTest
 {
-    private CardsQueryHandler _handler;
+    private AllCardsExpiringBefore.QueryHandler _handler;
 
     private Mock<ICardRepository> _cardRepositoryMock;
 
@@ -16,14 +16,18 @@ public class CardsQueryHandlerTest
     {
         _cardRepositoryMock = new Mock<ICardRepository>();
 
-        _handler = new CardsQueryHandler(_cardRepositoryMock.Object);
+        _handler = new AllCardsExpiringBefore.QueryHandler(_cardRepositoryMock.Object);
     }
 
     [Test]
     public async Task Should_HandleAsync()
     {
         // Arrange
-        var query = new CardsQuery();
+        var expiryDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(30));
+        var query = new AllCardsExpiringBefore.Query
+        {
+            ExpiryDate = expiryDate,
+        };
 
         var card = new Card
         {
@@ -34,7 +38,7 @@ public class CardsQueryHandlerTest
         };
 
         _cardRepositoryMock
-            .Setup(x => x.GetAllCardsAsync(It.IsAny<CancellationToken>()))
+            .Setup(x => x.GetAllCardsWithExpiryBeforeAsync(expiryDate, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new[] { card });
 
         // Act
@@ -49,7 +53,8 @@ public class CardsQueryHandlerTest
         });
 
         _cardRepositoryMock.Verify(
-            r => r.GetAllCardsAsync(
+            r => r.GetAllCardsWithExpiryBeforeAsync(
+                expiryDate,
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }

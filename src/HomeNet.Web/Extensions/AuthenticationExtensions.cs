@@ -33,7 +33,7 @@ public static class AuthenticationExtensions
         // Signup endpoint
         app.MapPost("/api/auth/signup", async (HttpContext context, HttpRequest request, IEventBus bus) =>
         {
-            var command = new AddUserCommand
+            var command = new AddUser.Command
             {
                 UserName = request.Form["username"]!,
                 Password = request.Form["password"]!,
@@ -66,7 +66,7 @@ public static class AuthenticationExtensions
         // Login endpoint
         app.MapPost("/api/auth/login", async (HttpContext context, HttpRequest request, IEventBus bus) =>
         {
-            var query = new UserWithCredentialsQuery
+            var query = new UserWithCredentials.Query
             {
                 UserName = request.Form["username"]!,
                 Password = request.Form["password"]!,

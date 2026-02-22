@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 namespace HomeNet.Core.Test.Modules.Persons.Commands;
 
-public class AddPersonCommandHandlerTest
+public class AddPersonTest
 {
-    private AddPersonCommandHandler _handler;
+    private AddPerson.CommandHandler _handler;
 
     private Mock<IPersonRepository> _personRepositoryMock;
 
@@ -17,7 +17,7 @@ public class AddPersonCommandHandlerTest
     {
         _personRepositoryMock = new Mock<IPersonRepository>();
 
-        _handler = new AddPersonCommandHandler(_personRepositoryMock.Object);
+        _handler = new AddPerson.CommandHandler(_personRepositoryMock.Object);
     }
 
     [TestCase("JD")]
@@ -25,7 +25,7 @@ public class AddPersonCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsSuccess(string? aliasName)
     {
         // Arrange
-        var command = new AddPersonCommand
+        var command = new AddPerson.Command
         {
             FirstName = "John",
             LastName = "Doe",
@@ -60,13 +60,13 @@ public class AddPersonCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
-        var commandInvalidFirstName = new AddPersonCommand
+        var commandInvalidFirstName = new AddPerson.Command
         {
             FirstName = "",
             LastName = "Doe",
             AliasName = null,
         };
-        var commandInvalidLastName = new AddPersonCommand
+        var commandInvalidLastName = new AddPerson.Command
         {
             FirstName = "John",
             LastName = "",

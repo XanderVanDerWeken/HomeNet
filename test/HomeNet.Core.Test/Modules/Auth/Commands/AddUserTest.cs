@@ -6,9 +6,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Auth.Commands;
 
-public class AddUserCommandHandlerTest
+public class AddUserTest
 {
-    private AddUserCommandHandler _handler;
+    private AddUser.CommandHandler _handler;
 
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IPasswordService> _passwordServiceMock;
@@ -19,7 +19,7 @@ public class AddUserCommandHandlerTest
         _userRepositoryMock = new Mock<IUserRepository>();
         _passwordServiceMock = new Mock<IPasswordService>();
 
-        _handler = new AddUserCommandHandler(
+        _handler = new AddUser.CommandHandler(
             _userRepositoryMock.Object, 
             _passwordServiceMock.Object);
     }
@@ -28,13 +28,13 @@ public class AddUserCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsSuccess()
     {
         // Arrange
-        var command1 = new AddUserCommand
+        var command1 = new AddUser.Command
         {
             UserName = "testuser",
             Password = "password",
             Role = "User",
         };
-        var command2 = new AddUserCommand
+        var command2 = new AddUser.Command
         {
             UserName = "otherUser",
             Password = "otherPassword",
@@ -92,19 +92,19 @@ public class AddUserCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
-        var commandInvalidUserName = new AddUserCommand
+        var commandInvalidUserName = new AddUser.Command
         {
             UserName = string.Empty,
             Password = "hashedpassword",
             Role = "User",
         };
-        var commandInvalidPassword = new AddUserCommand
+        var commandInvalidPassword = new AddUser.Command
         {
             UserName = "testuser",
             Password = string.Empty,
             Role = "User",
         };
-        var commandInvalidRole = new AddUserCommand
+        var commandInvalidRole = new AddUser.Command
         {
             UserName = "testuser",
             Password = "hashedpassword",

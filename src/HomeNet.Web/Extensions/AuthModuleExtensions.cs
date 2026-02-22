@@ -21,23 +21,23 @@ public static class AuthModuleExtensions
         services.TryAddScoped<IPersonRepository, PersonRepository>();
 
         services
-            .AddTransient<AddUserCommandHandler>()
-            .AddTransient<LinkPersonToUserCommandHandler>()
-            .AddTransient<UnlinkPersonFromUserCommandHandler>();
+            .AddTransient<AddUser.CommandHandler>()
+            .AddTransient<LinkPersonToUser.CommandHandler>()
+            .AddTransient<UnlinkPersonFromUser.CommandHandler>();
         services.TryAddScoped<IPersonRepository, PersonRepository>();
 
-        services.AddTransient<UserWithCredentialsQueryHandler>();
+        services.AddTransient<UserWithCredentials.QueryHandler>();
 
         return services;
     }
 
     public static ICqrsBuilder AddAuthModule(this ICqrsBuilder builder)
     {
-        builder.AddCommand<AddUserCommand, AddUserCommandHandler>();
-        builder.AddCommand<LinkPersonToUserCommand, LinkPersonToUserCommandHandler>();
-        builder.AddCommand<UnlinkPersonFromUserCommand, UnlinkPersonFromUserCommandHandler>();
+        builder.AddCommand<AddUser.Command, AddUser.CommandHandler>();
+        builder.AddCommand<LinkPersonToUser.Command, LinkPersonToUser.CommandHandler>();
+        builder.AddCommand<UnlinkPersonFromUser.Command, UnlinkPersonFromUser.CommandHandler>();
 
-        builder.AddQuery<UserWithCredentialsQuery, UserWithCredentialsQueryHandler, bool>();
+        builder.AddQuery<UserWithCredentials.Query, UserWithCredentials.QueryHandler, bool>();
 
         return builder;
     }

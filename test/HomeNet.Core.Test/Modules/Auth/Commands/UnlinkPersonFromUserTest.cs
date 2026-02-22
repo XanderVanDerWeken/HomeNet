@@ -6,7 +6,7 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Auth.Commands;
 
-public class UnlinkPersonFromUserCommandHandlerTest
+public class UnlinkPersonFromUserTest
 {
     private static readonly User user = new()
     {
@@ -17,7 +17,7 @@ public class UnlinkPersonFromUserCommandHandlerTest
         PersonId = 1,
     };
 
-    private UnlinkPersonFromUserCommandHandler _handler;
+    private UnlinkPersonFromUser.CommandHandler _handler;
 
     private Mock<IUserRepository> _userRepositoryMock;
 
@@ -26,7 +26,7 @@ public class UnlinkPersonFromUserCommandHandlerTest
     {
         _userRepositoryMock = new Mock<IUserRepository>();
 
-        _handler = new UnlinkPersonFromUserCommandHandler(
+        _handler = new UnlinkPersonFromUser.CommandHandler(
             _userRepositoryMock.Object);
     }
 
@@ -36,7 +36,7 @@ public class UnlinkPersonFromUserCommandHandlerTest
         // Arrange
         var ct = new CancellationToken();
         
-        var command = new UnlinkPersonFromUserCommand
+        var command = new UnlinkPersonFromUser.Command
         {
             UserName = user.UserName,
         };
@@ -74,7 +74,7 @@ public class UnlinkPersonFromUserCommandHandlerTest
         // Arrange
         var ct = new CancellationToken();
         
-        var command = new UnlinkPersonFromUserCommand
+        var command = new UnlinkPersonFromUser.Command
         {
             UserName = user.UserName,
         };
@@ -106,7 +106,7 @@ public class UnlinkPersonFromUserCommandHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidCommand()
     {
         // Arrange
-        var commandInvalidUsername = new UnlinkPersonFromUserCommand
+        var commandInvalidUsername = new UnlinkPersonFromUser.Command
         {
             UserName = string.Empty,
         };

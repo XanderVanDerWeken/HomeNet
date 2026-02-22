@@ -5,9 +5,9 @@ using Moq;
 
 namespace HomeNet.Core.Test.Modules.Auth.Queries;
 
-public class UserWithCredentialsQueryHandlerTest
+public class UserWithCredentialsTest
 {
-    private UserWithCredentialsQueryHandler _handler;
+    private UserWithCredentials.QueryHandler _handler;
 
     private Mock<IUserRepository> _userRepositoryMock;
     private Mock<IPasswordService> _passwordServiceMock;
@@ -18,7 +18,7 @@ public class UserWithCredentialsQueryHandlerTest
         _userRepositoryMock = new Mock<IUserRepository>();
         _passwordServiceMock = new Mock<IPasswordService>();
 
-        _handler = new UserWithCredentialsQueryHandler(
+        _handler = new UserWithCredentials.QueryHandler(
             _userRepositoryMock.Object, 
             _passwordServiceMock.Object);
     }
@@ -36,7 +36,7 @@ public class UserWithCredentialsQueryHandlerTest
             PasswordHash = "hashedpassword",
         };
 
-        var query = new UserWithCredentialsQuery
+        var query = new UserWithCredentials.Query
         {
             UserName = "testuser",
             Password = "password123",
@@ -84,7 +84,7 @@ public class UserWithCredentialsQueryHandlerTest
             PasswordHash = "hashedpassword",
         };
 
-        var query = new UserWithCredentialsQuery
+        var query = new UserWithCredentials.Query
         {
             UserName = "testuser",
             Password = "password123",
@@ -128,7 +128,7 @@ public class UserWithCredentialsQueryHandlerTest
             PasswordHash = "hashedpassword",
         };
 
-        var query = new UserWithCredentialsQuery
+        var query = new UserWithCredentials.Query
         {
             UserName = "testuser",
             Password = "notSamePassword1",
@@ -167,12 +167,12 @@ public class UserWithCredentialsQueryHandlerTest
     public async Task Should_HandleAsync_ReturnsFailure_InvalidQuery()
     {
         // Arrange
-        var queryInvalidUserName = new UserWithCredentialsQuery
+        var queryInvalidUserName = new UserWithCredentials.Query
         {
             UserName = string.Empty,
             Password = "password123",
         };
-        var queryInvalidPassword = new UserWithCredentialsQuery
+        var queryInvalidPassword = new UserWithCredentials.Query
         {
             UserName = "testuser",
             Password = string.Empty,

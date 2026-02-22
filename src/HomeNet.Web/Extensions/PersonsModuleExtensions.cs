@@ -16,21 +16,21 @@ public static class PersonsModuleExtensions
         services.TryAddScoped<IPersonRepository, PersonRepository>();
 
         services
-            .AddTransient<AddPersonCommandHandler>()
-            .AddTransient<UpdatePersonCommandHandler>();
+            .AddTransient<AddPerson.CommandHandler>()
+            .AddTransient<UpdatePerson.CommandHandler>();
         
         services
-            .AddTransient<PersonsQueryHandler>();
+            .AddTransient<AllPersons.QueryHandler>();
 
         return services;
     }
 
     public static ICqrsBuilder AddPersonsModule(this ICqrsBuilder builder)
     {
-        builder.AddCommand<AddPersonCommand, AddPersonCommandHandler>();
-        builder.AddCommand<UpdatePersonCommand, UpdatePersonCommandHandler>();
+        builder.AddCommand<AddPerson.Command, AddPerson.CommandHandler>();
+        builder.AddCommand<UpdatePerson.Command, UpdatePerson.CommandHandler>();
 
-        builder.AddQuery<PersonsQuery, PersonsQueryHandler, IReadOnlyList<Person>>();
+        builder.AddQuery<AllPersons.Query, AllPersons.QueryHandler, IReadOnlyList<Person>>();
 
         return builder;
     }
