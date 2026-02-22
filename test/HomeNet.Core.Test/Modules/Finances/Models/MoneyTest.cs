@@ -50,6 +50,7 @@ public class MoneyTest
     }
 
     [TestCase(10, 10)]
+    [TestCase(100, 200)]
     [TestCase(200, 100)]
     [TestCase(45.05, 10)]
     public void Should_SubtractMoney(decimal amount1, decimal amount2)

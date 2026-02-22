@@ -6,9 +6,6 @@ public readonly struct Money : IEquatable<Money>, IComparable<Money>
 
     public Money(decimal amount)
     {
-        if (amount < 0)
-            throw new ArgumentOutOfRangeException(nameof(amount), "Amount cannot be negative.");
-
         Amount = decimal.Round(amount, 2, MidpointRounding.AwayFromZero);
     }
 

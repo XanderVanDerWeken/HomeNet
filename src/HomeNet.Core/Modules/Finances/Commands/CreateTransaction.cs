@@ -66,6 +66,8 @@ public static class CreateTransaction
         protected override void ValidateInternal(Command entity)
         {
             IsGreaterThanZero(entity.CategoryId, "CategoryId must be greater than zero.");
+
+            IsPositiveMoneyAmount(entity.Amount, "Amount must be a positive value.");
         }
     }
 }
