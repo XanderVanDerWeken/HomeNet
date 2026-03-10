@@ -12,4 +12,9 @@ public interface ITransactionRepository
     public Task<Result> AddTransactionAsync(
         Transaction transaction, 
         CancellationToken cancellationToken = default);
+
+    public Task<MonthlySummary> GetMonthlySummaryAsync(
+        int year,
+        int month,
+        CancellationToken cancellationToken = default);
 }
