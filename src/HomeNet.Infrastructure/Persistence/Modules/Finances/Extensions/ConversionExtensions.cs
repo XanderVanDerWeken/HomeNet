@@ -5,6 +5,13 @@ namespace HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 
 public static class ConversionExtensions
 {
+    public static Category ToCategory(this CategoryEntity entity)
+        => new Category
+        {
+            Id = entity.Id,
+            Name = entity.Name
+        };
+
     public static Transaction ToTransaction(this TransactionEntity entity)
         => new Transaction
         {
