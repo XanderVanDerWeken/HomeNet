@@ -109,4 +109,45 @@ public sealed class TransactionRepository : SqlKataRepository,  ITransactionRepo
             ByCategory = byCategory,
         };
     }
+
+    public async Task<YearlySummary> GetYearlySummaryAsync(
+        int year, CancellationToken cancellationToken = default)
+    {
+        var transactions = (await _db.Query($"{TransactionsTableName} as t")
+            .Join($"{CategoriesTableName} as c", "c.id", "t.category_id")
+            .WhereRaw("DATE_TRUNC('year', t.date) = ?", new DateTime(year, 1, 1))
+            .Select("t.*", "c.name as category_name")
+            .OrderBy("t.date")
+            .GetAsync<TransactionEntity>(cancellationToken: cancellationToken))
+            .ToList();
+        
+        var byCategory = transactions
+            .GroupBy(t => new { t.CategoryId, t.CategoryName, t.Type })
+            .Select(g => new CategorySummary
+            {
+                CategoryId = g.Key.CategoryId,
+                CategoryName = g.Key.CategoryName ?? string.Empty,
+                TransactionType = g.Key.Type,
+                TransactionCount = g.Count(),
+                TotalAmount = new Money(g.Sum(t => t.Amount)),
+            })
+            .OrderByDescending(c => c.TotalAmount)
+            .ToList();
+        
+        var totalIncome = transactions
+            .Where(t => t.Type == TransactionType.Income)
+            .Sum(t => t.Amount);
+        
+        var totalExpense = transactions
+            .Where(t => t.Type == TransactionType.Expense)
+            .Sum(t => t.Amount);
+        
+        return new YearlySummary
+        {
+            Year = year,
+            TotalIncome = new Money(totalIncome),
+            TotalExpenses = new Money(totalExpense),
+            ByCategory = byCategory,
+        };
+    }
 }

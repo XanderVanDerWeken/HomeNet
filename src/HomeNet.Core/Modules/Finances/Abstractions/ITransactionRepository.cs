@@ -17,4 +17,8 @@ public interface ITransactionRepository
         int year,
         int month,
         CancellationToken cancellationToken = default);
+
+    public Task<YearlySummary> GetYearlySummaryAsync(
+        int year, 
+        CancellationToken cancellationToken = default);
 }
