@@ -1,6 +1,4 @@
-using Castle.Components.DictionaryAdapter;
 using HomeNet.Core.Common.Validation;
-using NUnit.Framework;
 
 namespace HomeNet.Core.Test.Common.Validation;
 
@@ -28,7 +26,29 @@ public class BaseValidatorTest
     }
 
     [TestCase(500, true)]
-    [TestCase(0f, true)]
+    [TestCase(1, true)]
+    [TestCase(0, false)]
+    [TestCase(-500, false)]
+    public void Should_Validate_IntProperty(
+        int someNumber,
+        bool expectedIsValid)
+    {
+        // Arrange
+        var entity = new DummyEntity
+        {
+            SomeIntNumber = someNumber,
+        };
+
+        // Act
+        var result = entity.Validate();
+
+        // Assert
+        Assert.That(result.IsValid, Is.EqualTo(expectedIsValid));
+    }
+
+    [TestCase(500, true)]
+    [TestCase(1, true)]
+    [TestCase(0f, false)]
     [TestCase(-500, false)]
     public void Should_Validate_FloatProperty(
         float someNumber,
@@ -37,7 +57,7 @@ public class BaseValidatorTest
         // Arrange
         var entity = new DummyEntity
         {
-            SomeNumber = someNumber,
+            SomeFloatNumber = someNumber,
         };
 
         // Act
@@ -51,7 +71,9 @@ public class BaseValidatorTest
     {
         public string StringValue { get; set; } = "NotEmpty";
 
-        public float SomeNumber { get; set; }
+        public float SomeFloatNumber { get; set; } = 1.0f;
+
+        public float SomeIntNumber { get; set; } = 1.0f;
 
         public ValidationResult Validate()
             => new DummValidator().Validate(this);
@@ -63,7 +85,9 @@ public class BaseValidatorTest
         {
             IsNotEmpty(entity.StringValue, "StringValue cannot be null or empty.");
         
-            IsGreaterThanZero(entity.SomeNumber, "SomeNumber must be greater than zero.");
+            IsGreaterThanZero(entity.SomeFloatNumber, "SomeFloatNumber must be greater than zero.");
+
+            IsGreaterThanZero(entity.SomeIntNumber, "SomeIntNumber must be greater than zero.");
         }
     }
 }

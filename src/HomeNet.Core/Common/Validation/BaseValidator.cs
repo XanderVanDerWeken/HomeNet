@@ -22,9 +22,17 @@ public abstract class BaseValidator<T> : IValidator<T>
         }
     }
 
+    protected void IsGreaterThanZero(int value, string errorMessage)
+    {
+        if (value <= 0)
+        {
+            Errors.Add(errorMessage);
+        }
+    }
+
     protected void IsGreaterThanZero(float value, string errorMessage)
     {
-        if (value < 0.0f)
+        if (value <= 0.0f)
         {
             Errors.Add(errorMessage);
         }
