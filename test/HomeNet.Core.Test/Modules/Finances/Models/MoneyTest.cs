@@ -10,17 +10,12 @@ public class MoneyTest
         // Arrange
         var amount = 100;
         var zeroAmount = 0;
-        var invalidAmount = -50;
+        var negativeAmount = -50;
 
         // Act
         var money = new Money(amount);
         var zeroMoney = new Money(zeroAmount);
-
-        Money invalidMoney;
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-        {
-            invalidMoney = new Money(invalidAmount);
-        });
+        var negativeMoney = new Money(negativeAmount);
 
         // Assert
         Assert.Multiple(() =>
@@ -29,6 +24,8 @@ public class MoneyTest
 
             Assert.That(zeroMoney.Amount, Is.EqualTo(zeroAmount));
             Assert.That(zeroMoney, Is.EqualTo(Money.Zero));
+
+            Assert.That(negativeMoney.Amount, Is.EqualTo(negativeAmount));
         });
     }
 
@@ -65,20 +62,5 @@ public class MoneyTest
         // Assert
         var expectedMoney = new Money(amount1 - amount2);
         Assert.That(result, Is.EqualTo(expectedMoney));
-    }
-
-    [TestCase(20, 40)]
-    [TestCase(50.99, 100.01)]
-    public void Should_NotSubtractMoney_SecondIsBigger(decimal amount1, decimal amount2)
-    {
-        // Arrange
-        var money1 = new Money(amount1);
-        var money2 = new Money(amount2);
-
-        // Act & Assert
-        Assert.Throws<ArgumentOutOfRangeException>(() =>
-        {
-            var result = money1 - money2;
-        });
     }
 }
