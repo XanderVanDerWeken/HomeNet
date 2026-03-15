@@ -39,7 +39,7 @@ public static class CreateCategory
                 Name = command.Name,
             };
 
-            return _categoryRepository.AddAsync(newCategory, cancellationToken);
+            return _categoryRepository.AddCategoryAsync(newCategory, cancellationToken);
         }
     }
 

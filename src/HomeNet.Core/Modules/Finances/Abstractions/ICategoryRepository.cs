@@ -12,7 +12,7 @@ public interface ICategoryRepository
         string name,
         CancellationToken cancellationToken = default);
 
-    public Task<Result> AddAsync(
+    public Task<Result> AddCategoryAsync(
         Category category, 
         CancellationToken cancellationToken = default);
 }

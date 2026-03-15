@@ -33,7 +33,7 @@ public class CreateCategoryTest
         };
 
         _categoryRepositoryMock
-            .Setup(x => x.AddAsync(It.IsAny<Category>(), ct))
+            .Setup(x => x.AddCategoryAsync(It.IsAny<Category>(), ct))
             .ReturnsAsync(Result.Success());
 
         // Act
@@ -47,7 +47,7 @@ public class CreateCategoryTest
         });
 
         _categoryRepositoryMock.Verify(
-            x => x.AddAsync(
+            x => x.AddCategoryAsync(
                 It.Is<Category>(c =>
                     c.Name == command.Name),
                 ct),
@@ -75,7 +75,7 @@ public class CreateCategoryTest
         });
 
         _categoryRepositoryMock.Verify(
-            x => x.AddAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()),
+            x => x.AddCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()),
             Times.Never());
     }
 }

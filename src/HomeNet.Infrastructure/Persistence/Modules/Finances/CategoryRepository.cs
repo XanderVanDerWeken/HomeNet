@@ -45,7 +45,7 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
             .ToList();
     }
 
-    public async Task<Result> AddAsync(Category category, CancellationToken cancellationToken = default)
+    public async Task<Result> AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
     {
         try
         {
