@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS finances.fixed_costs (
     id SERIAL PRIMARY KEY,
     category_id INT REFERENCES finances.categories(id),
     name VARCHAR(100) NOT NULL,
-    day_of_month INT NOT NULL CHECK (day_of_month BETWEEN 1 AND 28),
+    day_of_month INT NOT NULL CHECK (day_of_month BETWEEN 1 AND 28)
 );
 
 CREATE TABLE IF NOT EXISTS finances.fixed_cost_versions (
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS finances.fixed_cost_versions (
     valid_from DATE NOT NULL,
     valid_to DATE NULL,
 
-    CONSTRAINT valid_range CHECK (valid_to IS NULL OR valid_to > valid_from
+    CONSTRAINT valid_range CHECK (valid_to IS NULL OR valid_to > valid_from)
 );
 
 CREATE INDEX idx_fixed_cost_versions_fixed_cost_id ON finances.fixed_cost_versions(fixed_cost_id);
