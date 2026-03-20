@@ -48,10 +48,10 @@ public sealed class TransactionRepository : SqlKataRepository,  ITransactionRepo
             _logger.LogInformation("Inserting new transaction");
             var query = new Query(TransactionsTableName).AsInsert(new
             {
-                date = transaction.Date,
-                amount = transaction.Amount,
-                type = transaction.Type,
                 category_id = transaction.CategoryId,
+                amount = transaction.Amount.Amount,
+                date = transaction.Date,
+                type = transaction.Type.ToString(),
             });
 
             var transactionId = await InsertAndReturnIdAsync(query);
