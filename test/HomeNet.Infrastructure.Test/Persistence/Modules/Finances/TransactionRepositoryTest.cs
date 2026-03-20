@@ -83,6 +83,7 @@ public class TransactionRepositoryTest
     }
 
     [Test]
+    [Explicit("Needs Docker running")]
     public async Task Should_GetTransactionsWithCategoryIdAsync()
     {
         // Arrange
@@ -127,6 +128,7 @@ public class TransactionRepositoryTest
     }
 
     [Test]
+    [Explicit("Needs Docker running")]
     public async Task Should_AddTransactionAsync()
     {
         // Arrange
@@ -164,6 +166,7 @@ public class TransactionRepositoryTest
     }
 
     [Test]
+    [Explicit("Needs Docker running")]
     public async Task Should_GetMonthlySummaryAsync()
     {
         // Arrange
