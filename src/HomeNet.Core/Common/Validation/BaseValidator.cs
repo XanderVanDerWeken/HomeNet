@@ -1,3 +1,4 @@
+using System.Net;
 using HomeNet.Core.Modules.Finances.Models;
 
 namespace HomeNet.Core.Common.Validation;
@@ -22,14 +23,25 @@ public abstract class BaseValidator<T> : IValidator<T>
         }
     }
 
-    protected void IsGreaterThanZero(int value, string errorMessage)
+    protected void IsGreaterThan(int value, int minValue, string errorMessage)
     {
-        if (value <= 0)
+        if (value <= minValue)
         {
             Errors.Add(errorMessage);
         }
     }
 
+    protected void IsLessThan(int value, int maxValue, string errorMessage)
+    {
+        if (value >= maxValue)
+        {
+            Errors.Add(errorMessage);
+        }
+    }
+
+    protected void IsGreaterThanZero(int value, string errorMessage)
+        => IsGreaterThan(value, 0, errorMessage);
+    
     protected void IsGreaterThanZero(float value, string errorMessage)
     {
         if (value <= 0.0f)

@@ -12,4 +12,20 @@ public interface IFixedCostRepository
     public Task<Result<IReadOnlyList<FixedCostVersion>>> GetFixedCostHistoryAsync(
         int fixedCostId, 
         CancellationToken cancellationToken = default);
+
+    public Task<Result> AddFixedCostWithVersionAsync(
+        FixedCost fixedCost, 
+        FixedCostVersion fixedCostVersion, 
+        CancellationToken cancellationToken = default);
+
+    public Task<Result> CreateNewVersionAsync(
+        int fixedCostId, 
+        Money newAmount, 
+        DateOnly validFrom, 
+        CancellationToken cancellationToken = default);
+
+    public Task<Result> DeactivateLastVersionAsync(
+        int fixedCostId, 
+        DateOnly validTo, 
+        CancellationToken cancellationToken = default);
 }

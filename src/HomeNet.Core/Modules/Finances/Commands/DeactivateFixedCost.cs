@@ -1,30 +1,33 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Common.Validation;
+using HomeNet.Core.Modules.Finances.Abstractions;
 
 namespace HomeNet.Core.Modules.Finances.Commands;
 
 public static class DeactivateFixedCost
 {
-    public sealed record Command : ICommand, IValidatable<Command>
+    public sealed record Command : ICommand
     {
-        public ValidationResult Validate()
-            => new CommandValidator().Validate(this);
+        public int FixedCostId { get; init; }
     }
 
     public sealed class CommandHandler : ICommandHandler<Command>
     {
-        public Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
-        {
-            throw new NotImplementedException();
-        }
-    }
+        private readonly IFixedCostRepository _fixedCostRepository;
 
-    private sealed class CommandValidator : BaseValidator<Command>
-    {
-        protected override void ValidateInternal(Command entity)
+        public CommandHandler(IFixedCostRepository fixedCostRepository)
         {
-            throw new NotImplementedException();
+            _fixedCostRepository = fixedCostRepository;
+        }
+
+        public Task<Result> HandleAsync(
+            Command command, CancellationToken cancellationToken = default)
+        {
+            var today = DateOnly.FromDateTime(DateTime.Today);
+
+            return _fixedCostRepository.DeactivateLastVersionAsync(
+                command.FixedCostId, today, cancellationToken);
         }
     }
 }
