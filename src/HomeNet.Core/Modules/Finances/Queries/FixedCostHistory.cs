@@ -1,31 +1,31 @@
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
-using HomeNet.Core.Common.Validation;
+using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 
 namespace HomeNet.Core.Modules.Finances.Queries;
 
 public static class FixedCostHistory
 {
-    public sealed record Query : IQuery, IValidatable<Query>
+    public sealed record Query : IQuery
     {
-        public ValidationResult Validate()
-            => new QueryValidator().Validate(this);
+        public int FixedCostId { get; init; }
     }
 
-    public sealed class QueryHandler : IQueryHandler<Query, IReadOnlyList<FixedCost>>
+    public sealed class QueryHandler : IQueryHandler<Query, IReadOnlyList<FixedCostVersion>>
     {
-        public Task<Result<IReadOnlyList<FixedCost>>> HandleAsync(Query query, CancellationToken cancellationToken = default)
+        private readonly IFixedCostRepository _fixedCostRepository;
+
+        public QueryHandler(IFixedCostRepository fixedCostRepository)
         {
-            throw new NotImplementedException();
+            _fixedCostRepository = fixedCostRepository;
         }
-    }
 
-    private sealed class QueryValidator : BaseValidator<Query>
-    {
-        protected override void ValidateInternal(Query entity)
+        public async Task<Result<IReadOnlyList<FixedCostVersion>>> HandleAsync(
+            Query query, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            return await _fixedCostRepository.GetFixedCostHistoryAsync(
+                query.FixedCostId, cancellationToken);
         }
     }
 }
