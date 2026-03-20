@@ -1,7 +1,9 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Finances.Enums;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Infrastructure.Persistence.Modules.Finances;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
 using HomeNet.Infrastructure.Test.Containers;
 using Microsoft.Extensions.Logging.Abstractions;
 using Npgsql;
@@ -40,9 +42,7 @@ public class TransactionRepositoryTest
         Amount = new Money(50.00m),
         Type = TransactionType.Expense,
         Source = TransactionSource.Manual,
-    }; 
-
-    
+    };
 
     private TransactionRepository _transactionRepository;
 
@@ -205,6 +205,13 @@ public class TransactionRepositoryTest
             Assert.That(resultJanuary.Balance, Is.EqualTo(new Money(100.00m)));
             Assert.That(resultJanuary.ByCategory, Has.Count.EqualTo(1));
 
+            var category1January = resultJanuary.ByCategory.FirstOrDefault(g => g.CategoryId == _category1.Id);
+            Assert.That(category1January, Is.Not.Null);
+            Assert.That(category1January!.CategoryName, Is.EqualTo(_category1.Name));
+            Assert.That(category1January.TransactionType, Is.EqualTo(TransactionType.Income));
+            Assert.That(category1January.TransactionCount, Is.EqualTo(1));
+            Assert.That(category1January.TotalAmount, Is.EqualTo(new Money(100.00m)));
+
             // February
             Assert.That(resultFebruary.Year, Is.EqualTo(2026));
             Assert.That(resultFebruary.Month, Is.EqualTo(2));
@@ -213,6 +220,20 @@ public class TransactionRepositoryTest
             Assert.That(resultFebruary.Balance, Is.EqualTo(new Money(50.00m)));
             Assert.That(resultFebruary.ByCategory, Has.Count.EqualTo(2));
 
+            var category1February = resultFebruary.ByCategory.FirstOrDefault(g => g.CategoryId == _category1.Id);
+            Assert.That(category1February, Is.Not.Null);
+            Assert.That(category1February!.CategoryName, Is.EqualTo(_category1.Name));
+            Assert.That(category1February.TransactionType, Is.EqualTo(TransactionType.Income));
+            Assert.That(category1February.TransactionCount, Is.EqualTo(1));
+            Assert.That(category1February.TotalAmount, Is.EqualTo(new Money(100.00m)));
+
+            var category2February = resultFebruary.ByCategory.FirstOrDefault(g => g.CategoryId == _category2.Id);
+            Assert.That(category2February, Is.Not.Null);
+            Assert.That(category2February!.CategoryName, Is.EqualTo(_category2.Name));
+            Assert.That(category2February.TransactionType, Is.EqualTo(TransactionType.Expense));
+            Assert.That(category2February.TransactionCount, Is.EqualTo(1));
+            Assert.That(category2February.TotalAmount, Is.EqualTo(new Money(50.00m)));
+
             // March
             Assert.That(resultMarch.Year, Is.EqualTo(2026));
             Assert.That(resultMarch.Month, Is.EqualTo(3));
@@ -220,6 +241,67 @@ public class TransactionRepositoryTest
             Assert.That(resultMarch.TotalExpenses, Is.EqualTo(Money.Zero));
             Assert.That(resultMarch.Balance, Is.EqualTo(Money.Zero));
             Assert.That(resultMarch.ByCategory, Is.Empty);
+        });
+    }
+
+    [Test]
+    [Explicit("Needs Docker running")]
+    public async Task Should_GetYearlySummaryAsync()
+    {
+        // Arrange
+        var addCategory1Result = await _categoryRepository.AddCategoryAsync(_category1);
+        var addCategory2Result = await _categoryRepository.AddCategoryAsync(_category2);
+
+        _transaction1.CategoryId = _category1.Id;
+        var addTransaction1Result = await _transactionRepository.AddTransactionAsync(_transaction1);
+
+        _transaction2.CategoryId = _category1.Id;
+        var addTransaction2Result = await _transactionRepository.AddTransactionAsync(_transaction2);
+
+        _transaction3.CategoryId = _category2.Id;
+        var addTransaction3Result = await _transactionRepository.AddTransactionAsync(_transaction3);
+
+        // Act
+        var result2026 = await _transactionRepository.GetYearlySummaryAsync(2026);
+        var result2025 = await _transactionRepository.GetYearlySummaryAsync(2025);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(addCategory1Result.IsSuccess, Is.True);
+            Assert.That(addCategory2Result.IsSuccess, Is.True);
+
+            Assert.That(addTransaction1Result.IsSuccess, Is.True);
+            Assert.That(addTransaction2Result.IsSuccess, Is.True);
+            Assert.That(addTransaction3Result.IsSuccess, Is.True);
+
+            // 2026
+            Assert.That(result2026.Year, Is.EqualTo(2026));
+            Assert.That(result2026.TotalIncome, Is.EqualTo(new Money(200.00m)));
+            Assert.That(result2026.TotalExpenses, Is.EqualTo(new Money(50.00m)));
+            Assert.That(result2026.Balance, Is.EqualTo(new Money(150.00m)));
+            Assert.That(result2026.ByCategory, Has.Count.EqualTo(2));
+
+            var category1Group = result2026.ByCategory.FirstOrDefault(g => g.CategoryId == _category1.Id);
+            Assert.That(category1Group, Is.Not.Null);
+            Assert.That(category1Group!.CategoryName, Is.EqualTo(_category1.Name));
+            Assert.That(category1Group.TransactionType, Is.EqualTo(TransactionType.Income));
+            Assert.That(category1Group.TransactionCount, Is.EqualTo(2));
+            Assert.That(category1Group.TotalAmount, Is.EqualTo(new Money(200.00m)));
+
+            var category2Group = result2026.ByCategory.FirstOrDefault(g => g.CategoryId == _category2.Id);
+            Assert.That(category2Group, Is.Not.Null);
+            Assert.That(category2Group!.CategoryName, Is.EqualTo(_category2.Name));
+            Assert.That(category2Group.TransactionType, Is.EqualTo(TransactionType.Expense));
+            Assert.That(category2Group.TransactionCount, Is.EqualTo(1));
+            Assert.That(category2Group.TotalAmount, Is.EqualTo(new Money(50.00m)));
+
+            // 2025
+            Assert.That(result2025.Year, Is.EqualTo(2025));
+            Assert.That(result2025.TotalIncome, Is.EqualTo(Money.Zero));
+            Assert.That(result2025.TotalExpenses, Is.EqualTo(Money.Zero));
+            Assert.That(result2025.Balance, Is.EqualTo(Money.Zero));
+            Assert.That(result2025.ByCategory, Is.Empty);
         });
     }
 }
