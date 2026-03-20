@@ -70,4 +70,15 @@ CREATE TABLE IF NOT EXISTS finances.fixed_cost_versions (
 CREATE INDEX idx_fixed_cost_versions_fixed_cost_id ON finances.fixed_cost_versions(fixed_cost_id);
 CREATE INDEX idx_fixed_cost_versions_valid_range ON finances.fixed_cost_versions(fixed_cost_id, valid_from, valid_to);
 
+CREATE TABLE IF NOT EXISTS finances.fixed_cost_transactions (
+    id SERIAL PRIMARY KEY,
+    fixed_cost_id INT NOT NULL REFERENCES finances.fixed_costs(id),
+    fixed_cost_version_id INT NOT NULL REFERENCES finances.fixed_cost_versions(id),
+    transaction_id INT NOT NULL UNIQUE REFERENCES finances.transactions(id),
+    period DATE NOT NULL
+);
+
+CREATE INDEX idx_fixed_cost_transactions_period ON finances.fixed_cost_transactions(period);
+CREATE INDEX idx_fixed_cost_transactions_cost ON finances.fixed_cost_transactions(fixed_cost_id);
+
 COMMIT;
