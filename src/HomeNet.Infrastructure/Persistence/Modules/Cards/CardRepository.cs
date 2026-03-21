@@ -51,7 +51,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
         
         var entity = await FirstOrDefaultAsync<CardEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entity?.ToCard();
     }
@@ -63,7 +63,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
 
         var entities = await GetMultipleAsync<CardEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entities
             .Select(e => e.ToCard())
@@ -79,7 +79,7 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
 
         var entities = await GetMultipleAsync<CardEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entities
             .Select(e => e.ToCard())
@@ -100,7 +100,9 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
                     expiration_date = card.ExpirationDate,
                 });
 
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(
+                query, 
+                cancellationToken: cancellationToken);
 
             return affectedRows > 0
                 ? Result.Success()
@@ -122,7 +124,9 @@ public sealed class CardRepository : SqlKataRepository, ICardRepository
                 .Where("id", cardId)
                 .AsDelete();
 
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(
+                query, 
+                cancellationToken: cancellationToken);
 
             return affectedRows > 0
                 ? Result.Success()

@@ -33,7 +33,9 @@ public sealed class TransactionRepository : SqlKataRepository,  ITransactionRepo
         var query = new Query(TransactionsTableName)
             .Where("category_id", categoryId);
         
-        var entities = await GetMultipleAsync<TransactionEntity>(query, cancellationToken);
+        var entities = await GetMultipleAsync<TransactionEntity>(
+            query, 
+            cancellationToken: cancellationToken);
 
         return entities
             .Select(e => e.ToTransaction())
@@ -57,13 +59,18 @@ public sealed class TransactionRepository : SqlKataRepository,  ITransactionRepo
             var transactionId = await InsertAndReturnIdAsync(query);
             transaction.Id = transactionId;
 
-            _logger.LogInformation("Transaction inserted successfully with ID: {TransactionId}", transactionId);
+            _logger.LogInformation(
+                "Transaction inserted successfully with ID: {TransactionId}", 
+                transactionId);
 
             return Result.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while adding transaction with amount: {Amount}", transaction.Amount);
+            _logger.LogError(
+                ex, 
+                "Error occurred while adding transaction with amount: {Amount}", 
+                transaction.Amount);
             return new DatabaseError(TransactionsTableName, ex).ToFailure();
         }
     }

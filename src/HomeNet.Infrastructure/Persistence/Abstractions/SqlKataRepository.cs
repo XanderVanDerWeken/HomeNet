@@ -1,3 +1,4 @@
+using System.Data;
 using Dapper;
 using SqlKata;
 using SqlKata.Execution;
@@ -23,35 +24,43 @@ public abstract class SqlKataRepository : IDisposable
 
     protected Task<int> ExecuteAsync(
         Query query, 
+        IDbTransaction? transaction = null,
         CancellationToken cancellationToken = default)
         => _db.ExecuteAsync(
-            query, 
+            query,
+            transaction: transaction,
             cancellationToken: cancellationToken);
     
     protected Task<int> InsertAndReturnIdAsync(
-        Query query)
+        Query query,
+        IDbTransaction? transaction = null)
     {
         var compiled = _db.Compiler.Compile(query);
 
         var id = _db.Connection.QuerySingleAsync<int>(
             compiled.Sql + " RETURNING id",
-            compiled.NamedBindings);
+            compiled.NamedBindings,
+            transaction: transaction);
         
         return id;
     }
 
     protected Task<T> FirstOrDefaultAsync<T>(
-        Query query, 
+        Query query,
+        IDbTransaction? transaction = null,
         CancellationToken cancellationToken = default)
         => _db.FirstOrDefaultAsync<T>(
-            query, 
+            query,
+            transaction: transaction,
             cancellationToken: cancellationToken);
 
     protected Task<IEnumerable<T>> GetMultipleAsync<T>(
-        Query query, 
+        Query query,
+        IDbTransaction? transaction = null,
         CancellationToken cancellationToken = default)
         => _db.GetAsync<T>(
-            query, 
+            query,
+            transaction: transaction,
             cancellationToken: cancellationToken);
 
     public void Dispose()

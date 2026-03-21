@@ -52,7 +52,7 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
         
         var entity = await FirstOrDefaultAsync<PersonEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entity?.ToPerson();
     }
@@ -70,7 +70,7 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
 
         var entities = await GetMultipleAsync<PersonEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entities
             .Select(entity => entity.ToPerson())
@@ -93,7 +93,8 @@ public sealed class PersonRepository : SqlKataRepository, IPersonRepository
                     is_inactive = person.IsInactive,
                 });
 
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(
+                query, cancellationToken: cancellationToken);
 
             return affectedRows > 0
                 ? Result.Success()
