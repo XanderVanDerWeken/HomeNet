@@ -37,8 +37,4 @@ public interface IFixedCostRepository
         int fixedCostId, 
         DateOnly validTo, 
         CancellationToken cancellationToken = default);
-    
-    public Task<Result> AddFixedCostTransactionAsync(
-        FixedCostTransaction fixedCostTransaction, 
-        CancellationToken cancellationToken = default);
 }
