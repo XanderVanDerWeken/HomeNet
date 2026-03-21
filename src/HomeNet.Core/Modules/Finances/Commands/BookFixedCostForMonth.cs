@@ -24,13 +24,16 @@ public static class BookFixedCostForMonth
     {
         private readonly IFixedCostRepository _fixedCostRepository;
         private readonly IFixedCostTransactionRepository _fixedCostTransactionRepository;
+        private readonly IDbTransactionFactory _dbTransactionFactory;
 
         public CommandHandler(
             IFixedCostRepository fixedCostRepository,
-            IFixedCostTransactionRepository fixedCostTransactionRepository)
+            IFixedCostTransactionRepository fixedCostTransactionRepository,
+            IDbTransactionFactory dbTransactionFactory)
         {
             _fixedCostRepository = fixedCostRepository;
             _fixedCostTransactionRepository = fixedCostTransactionRepository;
+            _dbTransactionFactory = dbTransactionFactory;
         }
 
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
@@ -57,7 +60,7 @@ public static class BookFixedCostForMonth
             var fixedCostsToCreate = fixedCostsWithVersions
                 .Where(fcv => !fixedCostTransactions.Any(fct => fcv.FixedCostId == fct.FixedCostId));
 
-            using var tx = await _fixedCostTransactionRepository.BeginAsync();
+            using var tx = await _dbTransactionFactory.BeginAsync();
 
             try
             {

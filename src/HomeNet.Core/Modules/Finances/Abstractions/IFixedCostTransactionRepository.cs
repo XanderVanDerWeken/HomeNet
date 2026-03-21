@@ -5,9 +5,6 @@ namespace HomeNet.Core.Modules.Finances.Abstractions;
 
 public interface IFixedCostTransactionRepository
 {
-    public Task<IDbTransaction> BeginAsync(
-        CancellationToken cancellationToken = default);
-
     public Task AddFixedCostTransactionAsync(
         FixedCostTransaction fixedCostTransaction, 
         IDbTransaction dbTransaction,

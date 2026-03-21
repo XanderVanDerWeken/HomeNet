@@ -25,16 +25,6 @@ public sealed class FixedCostTransactionRepository : SqlKataRepository, IFixedCo
         _dbConnection = db.Connection;
     }
 
-    public async Task<IDbTransaction> BeginAsync(CancellationToken cancellationToken = default)
-    {
-        if (_dbConnection.State != ConnectionState.Open)
-        {
-            _dbConnection.Open();
-        }
-
-        return _dbConnection.BeginTransaction();
-    }
-
     public async Task AddFixedCostTransactionAsync(
         FixedCostTransaction fixedCostTransaction,
         IDbTransaction dbTransaction,
