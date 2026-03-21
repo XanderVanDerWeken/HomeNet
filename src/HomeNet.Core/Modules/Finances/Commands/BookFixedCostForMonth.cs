@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Common.Errors;
@@ -24,14 +23,17 @@ public static class BookFixedCostForMonth
     public sealed class CommandHandler : ICommandHandler<Command>
     {
         private readonly IFixedCostRepository _fixedCostRepository;
-        private readonly ITransactionRepository _transactionRepository;
+        private readonly IFixedCostTransactionRepository _fixedCostTransactionRepository;
+        private readonly IDbTransactionFactory _dbTransactionFactory;
 
         public CommandHandler(
             IFixedCostRepository fixedCostRepository,
-            ITransactionRepository transactionRepository)
+            IFixedCostTransactionRepository fixedCostTransactionRepository,
+            IDbTransactionFactory dbTransactionFactory)
         {
             _fixedCostRepository = fixedCostRepository;
-            _transactionRepository = transactionRepository;
+            _fixedCostTransactionRepository = fixedCostTransactionRepository;
+            _dbTransactionFactory = dbTransactionFactory;
         }
 
         public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
@@ -57,50 +59,46 @@ public static class BookFixedCostForMonth
             
             var fixedCostsToCreate = fixedCostsWithVersions
                 .Where(fcv => !fixedCostTransactions.Any(fct => fcv.FixedCostId == fct.FixedCostId));
-            
-            var errors = new List<string>();
 
-            foreach (var fc in fixedCostsToCreate)
+            using var tx = await _dbTransactionFactory.BeginAsync();
+
+            try
             {
-                var transaction = new Transaction
+                foreach (var fc in fixedCostsToCreate)
                 {
-                    CategoryId = fc.CategoryId,
-                    Amount = fc.Amount,
-                    Type = TransactionType.Expense,
-                    Source = TransactionSource.FixedCost,
-                    Description = fc.Name,
-                    Date = new DateOnly(command.Year, command.Month, fc.DayOfMonth),
-                };
+                    var transaction = new Transaction
+                    {
+                        CategoryId = fc.CategoryId,
+                        Amount = fc.Amount,
+                        Type = TransactionType.Expense,
+                        Source = TransactionSource.FixedCost,
+                        Description = fc.Name,
+                        Date = new DateOnly(command.Year, command.Month, fc.DayOfMonth),
+                    };
 
-                var addTransactionResult = await _transactionRepository
-                    .AddTransactionAsync(transaction, cancellationToken);
-                
-                if (!addTransactionResult.IsSuccess)
-                {
-                    errors.Add($"Failed to create transaction for fixed cost '{fc.Name}' with amount {fc.Amount}. Error: {addTransactionResult.Error}");
-                    continue;
+                    await _fixedCostTransactionRepository.AddTransactionAsync(
+                        transaction, tx, cancellationToken);
+                    
+                    var fixedCostTransaction = new FixedCostTransaction
+                    {
+                        FixedCostId = fc.FixedCostId,
+                        FixedCostVersionId = fc.FixedCostVersionId,
+                        TransactionId = transaction.Id,
+                        Period = period,
+                    };
+
+                    await _fixedCostTransactionRepository.AddFixedCostTransactionAsync(
+                        fixedCostTransaction, tx, cancellationToken);
                 }
 
-                var fixedCostTransaction = new FixedCostTransaction
-                {
-                    FixedCostId = fc.FixedCostId,
-                    FixedCostVersionId = fc.FixedCostVersionId,
-                    TransactionId = transaction.Id,
-                    Period = period,
-                };
-
-                var linkResult = await _fixedCostRepository
-                    .AddFixedCostTransactionAsync(fixedCostTransaction, cancellationToken);
-
-                if (!linkResult.IsSuccess)
-                {
-                    errors.Add($"Failed to link transaction for fixed cost '{fc.Name}' with amount {fc.Amount}. Error: {linkResult.Error}");
-                }
+                tx.Commit();
+                return Result.Success();
             }
-
-            return errors.Count == 0
-                ? Result.Success()
-                : Result.Failure(new FinanceBookingError(string.Join(Environment.NewLine, errors)));
+            catch
+            {
+                tx.Rollback();
+                return Result.Failure(new FinanceBookingError("An unexpected error occurred while booking fixed costs. Please try again."));
+            }
         }
     }
 

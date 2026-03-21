@@ -1,16 +1,16 @@
 namespace HomeNet.Core.Modules.Finances.Models;
 
-public sealed record FixedCostWithVersion
+public sealed class FixedCostWithVersion
 {
-    public int FixedCostId { get; init; }
+    public int FixedCostId { get; set; }
 
-    public int FixedCostVersionId { get; init; }
+    public int FixedCostVersionId { get; set; }
 
-    public int CategoryId { get; init; }
+    public int CategoryId { get; set; }
 
-    public required string Name { get; init; }
+    public required string Name { get; set; }
 
-    public int DayOfMonth { get; init; }
+    public int DayOfMonth { get; set; }
 
-    public Money Amount { get; init; }
+    public Money Amount { get; set; }
 }

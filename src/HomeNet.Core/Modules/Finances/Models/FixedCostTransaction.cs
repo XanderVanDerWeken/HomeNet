@@ -1,14 +1,14 @@
 namespace HomeNet.Core.Modules.Finances.Models;
 
-public sealed record FixedCostTransaction
+public sealed class FixedCostTransaction
 {
-    public int Id { get; init; }
+    public int Id { get; set; }
 
-    public int FixedCostId { get; init; }
+    public int FixedCostId { get; set; }
 
-    public int FixedCostVersionId { get; init; }
+    public int FixedCostVersionId { get; set; }
 
-    public int TransactionId { get; init; }
+    public int TransactionId { get; set; }
 
-    public DateOnly Period { get; init; }
+    public DateOnly Period { get; set; }
 }

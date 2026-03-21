@@ -30,7 +30,9 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
     {
         try
         {
-            _logger.LogInformation("Inserting new user with username: {Username}", user.UserName);
+            _logger.LogInformation(
+                "Inserting new user with username: {Username}",
+                user.UserName);
             var query = new Query(TableName).AsInsert(new
             {
                 username = user.UserName,
@@ -42,13 +44,18 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
             var userId = await InsertAndReturnIdAsync(query);
             user.Id = userId;
 
-            _logger.LogInformation("User inserted successfully with ID: {UserId}", userId);
+            _logger.LogInformation(
+                "User inserted successfully with ID: {UserId}", 
+                userId);
 
             return Result.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while adding user with username: {Username}", user.UserName);
+            _logger.LogError(
+                ex, 
+                "Error occurred while adding user with username: {Username}", 
+                user.UserName);
             return new DatabaseError(TableName, ex).ToFailure();
         }
     }
@@ -62,7 +69,7 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
         
         var entity = await FirstOrDefaultAsync<UserEntity>(
             query, 
-            cancellationToken);
+            cancellationToken: cancellationToken);
         
         return entity?.ToUser();
     }
@@ -81,7 +88,10 @@ public sealed class UserRepository : SqlKataRepository, IUserRepository
                     person_id = personId
                 });
 
-            var affectedRows = await ExecuteAsync(query, cancellationToken);
+            var affectedRows = await ExecuteAsync(
+                query, 
+                cancellationToken: cancellationToken);
+            
             return affectedRows > 0 
                 ? Result.Success()
                 : new NotFoundError("User", userId).ToFailure();

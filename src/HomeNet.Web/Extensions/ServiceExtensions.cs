@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Common.Events;
 using HomeNet.Infrastructure.Events;
 using HomeNet.Infrastructure.Persistence.Abstractions;
@@ -22,6 +23,8 @@ public static class ServiceExtensions
 
             return new PostgresQueryFactory(connection, compiler);
         });
+
+        services.AddScoped<IDbTransactionFactory, PostgresTransactionFactory>();
 
         return services;
     }

@@ -24,28 +24,37 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         _logger = logger;
     }
 
-    public async Task<Category?> GetCategoryByNameAsync(string name, CancellationToken cancellationToken = default)
+    public async Task<Category?> GetCategoryByNameAsync(
+        string name, 
+        CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName)
             .Where("name", name);
         
-        var entities = await FirstOrDefaultAsync<CategoryEntity>(query, cancellationToken);
+        var entities = await FirstOrDefaultAsync<CategoryEntity>(
+            query, 
+            cancellationToken: cancellationToken);
 
         return entities?.ToCategory();
     }
 
-    public async Task<IReadOnlyList<Category>> GetAllCategoriesAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Category>> GetAllCategoriesAsync(
+        CancellationToken cancellationToken = default)
     {
         var query = new Query(TableName);
 
-        var entities = await GetMultipleAsync<CategoryEntity>(query, cancellationToken);
+        var entities = await GetMultipleAsync<CategoryEntity>(
+            query, 
+            cancellationToken: cancellationToken);
 
         return entities
             .Select(e => e.ToCategory())
             .ToList();
     }
 
-    public async Task<Result> AddCategoryAsync(Category category, CancellationToken cancellationToken = default)
+    public async Task<Result> AddCategoryAsync(
+        Category category, 
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -58,13 +67,18 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
             var categoryId = await InsertAndReturnIdAsync(query);
             category.Id = categoryId;
 
-            _logger.LogInformation("Category inserted successfully with ID: {CategoryId}", categoryId);
+            _logger.LogInformation(
+                "Category inserted successfully with ID: {CategoryId}", 
+                categoryId);
 
             return Result.Success();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while adding category with name: {Name}", category.Name);
+            _logger.LogError(
+                ex, 
+                "Error occurred while adding category with name: {Name}",
+                category.Name);
             return new DatabaseError(TableName, ex).ToFailure();
         }
     }
