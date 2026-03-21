@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
+using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Enums;
@@ -53,10 +55,12 @@ public static class BookFixedCostForMonth
             var fixedCostTransactions = await _fixedCostRepository.GetFixedCostTransactionWithPeriodAsync(
                 period, cancellationToken); 
             
-            var fixedCostToCreate = fixedCostsWithVersions
+            var fixedCostsToCreate = fixedCostsWithVersions
                 .Where(fcv => !fixedCostTransactions.Any(fct => fcv.FixedCostId == fct.FixedCostId));
             
-            foreach (var fc in fixedCostToCreate)
+            var errors = new List<string>();
+
+            foreach (var fc in fixedCostsToCreate)
             {
                 var transaction = new Transaction
                 {
@@ -65,14 +69,16 @@ public static class BookFixedCostForMonth
                     Type = TransactionType.Expense,
                     Source = TransactionSource.FixedCost,
                     Description = fc.Name,
-                    Date = new DateOnly(command.Year, command.Month, fc.DayOfMonth)
+                    Date = new DateOnly(command.Year, command.Month, fc.DayOfMonth),
                 };
 
-                var addTransactionResult = await _transactionRepository.AddTransactionAsync(transaction, cancellationToken);
-
+                var addTransactionResult = await _transactionRepository
+                    .AddTransactionAsync(transaction, cancellationToken);
+                
                 if (!addTransactionResult.IsSuccess)
                 {
-                    return;
+                    errors.Add($"Failed to create transaction for fixed cost '{fc.Name}' with amount {fc.Amount}. Error: {addTransactionResult.Error}");
+                    continue;
                 }
 
                 var fixedCostTransaction = new FixedCostTransaction
@@ -80,13 +86,21 @@ public static class BookFixedCostForMonth
                     FixedCostId = fc.FixedCostId,
                     FixedCostVersionId = fc.FixedCostVersionId,
                     TransactionId = transaction.Id,
-                    Period = period
+                    Period = period,
                 };
 
-                await _fixedCostRepository.AddFixedCostTransactionAsync(fixedCostTransaction, cancellationToken);
+                var linkResult = await _fixedCostRepository
+                    .AddFixedCostTransactionAsync(fixedCostTransaction, cancellationToken);
+
+                if (!linkResult.IsSuccess)
+                {
+                    errors.Add($"Failed to link transaction for fixed cost '{fc.Name}' with amount {fc.Amount}. Error: {linkResult.Error}");
+                }
             }
 
-            return Result.Success();
+            return errors.Count == 0
+                ? Result.Success()
+                : Result.Failure(new FinanceBookingError(string.Join(Environment.NewLine, errors)));
         }
     }
 

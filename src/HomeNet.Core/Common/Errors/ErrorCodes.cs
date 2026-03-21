@@ -6,4 +6,5 @@ public static class ErrorCodes
     public const string Validation = "VALIDATION_ERROR";
     public const string Database = "DATABASE_ERROR";
     public const string EventBus = "EVENT_BUS_ERROR";
+    public const string FinanceBooking = "FINANCE_BOOKING_ERROR";
 }
