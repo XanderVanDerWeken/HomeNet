@@ -5,6 +5,10 @@ namespace HomeNet.Core.Modules.Finances.Abstractions;
 
 public interface IFixedCostTransactionRepository
 {
+    public Task<IReadOnlyList<FixedCostTransaction>> GetFixedCostTransactionWithPeriodAsync(
+        DateOnly period,
+        CancellationToken cancellationToken = default);
+    
     public Task AddFixedCostTransactionAsync(
         FixedCostTransaction fixedCostTransaction, 
         IDbTransaction dbTransaction,

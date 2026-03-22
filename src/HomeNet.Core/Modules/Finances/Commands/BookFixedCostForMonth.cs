@@ -54,7 +54,7 @@ public static class BookFixedCostForMonth
             }
             
             var period = new DateOnly(command.Year, command.Month, 1);
-            var fixedCostTransactions = await _fixedCostRepository.GetFixedCostTransactionWithPeriodAsync(
+            var fixedCostTransactions = await _fixedCostTransactionRepository.GetFixedCostTransactionWithPeriodAsync(
                 period, cancellationToken); 
             
             var fixedCostsToCreate = fixedCostsWithVersions

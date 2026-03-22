@@ -17,10 +17,6 @@ public interface IFixedCostRepository
         int year, 
         int month, 
         CancellationToken cancellationToken = default);
-    
-    public Task<IReadOnlyList<FixedCostTransaction>> GetFixedCostTransactionWithPeriodAsync(
-        DateOnly period,
-        CancellationToken cancellationToken = default);
 
     public Task<Result> AddFixedCostWithVersionAsync(
         FixedCost fixedCost, 
