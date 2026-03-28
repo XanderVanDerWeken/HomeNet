@@ -16,7 +16,7 @@ public static class UnlinkPersonFromUser
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly IUserRepository _userRepository;
 
@@ -25,14 +25,14 @@ public static class UnlinkPersonFromUser
             _userRepository = userRepository;
         }
 
-        public async Task<Result> HandleAsync(
+        public async Task<Result<Unit>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Unit>();
             }
 
             var user = await _userRepository.GetUserByUsernameAsync(
@@ -40,7 +40,7 @@ public static class UnlinkPersonFromUser
 
             if (user is null)
             {
-                return new NotFoundError("User", command.UserName).ToFailure();
+                return new NotFoundError("User", command.UserName).ToFailure<Unit>();
             }
 
             return await _userRepository.UpdatePersonLinkAsync(

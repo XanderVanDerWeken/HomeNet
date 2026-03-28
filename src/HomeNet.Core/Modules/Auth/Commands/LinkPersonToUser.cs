@@ -19,7 +19,7 @@ public static class LinkPersonToUser
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly IUserRepository _userRepository;
         private readonly IPersonRepository _personRepository;
@@ -32,14 +32,14 @@ public static class LinkPersonToUser
             _personRepository = personRepository;
         }
 
-        public async Task<Result> HandleAsync(
+        public async Task<Result<Unit>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Unit>();
             }
 
             var userToLink = await _userRepository.GetUserByUsernameAsync(
@@ -47,7 +47,7 @@ public static class LinkPersonToUser
             
             if (userToLink is null)
             {
-                return new NotFoundError("User", command.UserName).ToFailure();
+                return new NotFoundError("User", command.UserName).ToFailure<Unit>();
             }
 
             var personToLink = await _personRepository.GetPersonByIdAsync(
@@ -55,7 +55,7 @@ public static class LinkPersonToUser
             
             if (personToLink is null)
             {
-                return new NotFoundError("Person", command.PersonId).ToFailure();
+                return new NotFoundError("Person", command.PersonId).ToFailure<Unit>();
             }
 
             return await _userRepository.UpdatePersonLinkAsync(

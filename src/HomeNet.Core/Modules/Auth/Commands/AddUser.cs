@@ -20,7 +20,7 @@ public static class AddUser
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, User>
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordService _passwordService;
@@ -33,14 +33,14 @@ public static class AddUser
             _passwordService = passwordService;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<User>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<User>();
             }
 
             var hashedPassword = _passwordService.HashPassword(

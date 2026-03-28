@@ -5,15 +5,15 @@ namespace HomeNet.Core.Modules.Auth.Abstractions;
 
 public interface IUserRepository
 {
-    Task<Result> AddUserAsync(
+    public Task<Result<User>> AddUserAsync(
         User user,
         CancellationToken cancellationToken = default);
     
-    Task<User?> GetUserByUsernameAsync(
+    public Task<User?> GetUserByUsernameAsync(
         string username,
         CancellationToken cancellationToken = default);
     
-    Task<Result> UpdatePersonLinkAsync(
+    public Task<Result<Unit>> UpdatePersonLinkAsync(
         int userId, 
         int? personId, 
         CancellationToken cancellationToken = default);
