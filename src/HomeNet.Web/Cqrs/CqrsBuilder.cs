@@ -9,9 +9,9 @@ internal sealed class CqrsBuilder : ICqrsBuilder
     internal Dictionary<Type, Type> Queries { get; } = new();
     internal Dictionary<Type, List<Type>> Events { get; } = new();
 
-    public void AddCommand<TCommand, THandler>()
+    public void AddCommand<TCommand, THandler, TResult>()
         where TCommand : ICommand
-        where THandler : class, ICommandHandler<TCommand>
+        where THandler : class, ICommandHandler<TCommand, TResult>
         => Commands[typeof(TCommand)] = typeof(THandler);
 
     public void AddQuery<TQuery, THandler, TResult>()

@@ -5,9 +5,9 @@ namespace HomeNet.Web.Cqrs;
 
 public interface ICqrsBuilder
 {
-    public void AddCommand<TCommand, THandler>()
+    public void AddCommand<TCommand, THandler, TResult>()
         where TCommand : ICommand
-        where THandler : class, ICommandHandler<TCommand>;
+        where THandler : class, ICommandHandler<TCommand, TResult>;
     
     public void AddQuery<TQuery, THandler, TResult>()
         where TQuery : IQuery

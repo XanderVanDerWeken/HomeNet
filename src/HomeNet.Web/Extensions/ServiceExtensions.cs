@@ -1,6 +1,5 @@
 using HomeNet.Core.Common.Events;
 using HomeNet.Infrastructure.Events;
-using HomeNet.Infrastructure.Persistence.Abstractions;
 using HomeNet.Web.Cqrs;
 using Npgsql;
 using SqlKata.Compilers;
@@ -13,15 +12,15 @@ public static class ServiceExtensions
         this IServiceCollection services,
         IConfiguration config)
     {
-        services.AddSingleton<PostgresQueryFactory>(sp =>
-        {
-            var connectionString = config.GetConnectionString("Default");
+        // services.AddSingleton<PostgresQueryFactory>(sp =>
+        // {
+        //     var connectionString = config.GetConnectionString("Default");
 
-            var connection = new NpgsqlConnection(connectionString);
-            var compiler = new PostgresCompiler();
+        //     var connection = new NpgsqlConnection(connectionString);
+        //     var compiler = new PostgresCompiler();
 
-            return new PostgresQueryFactory(connection, compiler);
-        });
+        //     return new PostgresQueryFactory(connection, compiler);
+        // });
 
         return services;
     }

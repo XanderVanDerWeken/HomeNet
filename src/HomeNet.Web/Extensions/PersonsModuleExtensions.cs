@@ -2,7 +2,6 @@ using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Commands;
 using HomeNet.Core.Modules.Persons.Models;
 using HomeNet.Core.Modules.Persons.Queries;
-using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Web.Cqrs;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -13,24 +12,24 @@ public static class PersonsModuleExtensions
     public static IServiceCollection AddPersonsModule(
         this IServiceCollection services)
     {
-        services.TryAddScoped<IPersonRepository, PersonRepository>();
+        // services.TryAddScoped<IPersonRepository, PersonRepository>();
 
-        services
-            .AddTransient<AddPerson.CommandHandler>()
-            .AddTransient<UpdatePerson.CommandHandler>();
+        // services
+        //     .AddTransient<AddPerson.CommandHandler>()
+        //     .AddTransient<UpdatePerson.CommandHandler>();
         
-        services
-            .AddTransient<AllPersons.QueryHandler>();
+        // services
+        //     .AddTransient<AllPersons.QueryHandler>();
 
         return services;
     }
 
     public static ICqrsBuilder AddPersonsModule(this ICqrsBuilder builder)
     {
-        builder.AddCommand<AddPerson.Command, AddPerson.CommandHandler>();
-        builder.AddCommand<UpdatePerson.Command, UpdatePerson.CommandHandler>();
+        // builder.AddCommand<AddPerson.Command, AddPerson.CommandHandler>();
+        // builder.AddCommand<UpdatePerson.Command, UpdatePerson.CommandHandler>();
 
-        builder.AddQuery<AllPersons.Query, AllPersons.QueryHandler, IReadOnlyList<Person>>();
+        // builder.AddQuery<AllPersons.Query, AllPersons.QueryHandler, IReadOnlyList<Person>>();
 
         return builder;
     }

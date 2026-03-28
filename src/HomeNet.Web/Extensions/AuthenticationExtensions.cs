@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using HomeNet.Core.Common.Events;
 using HomeNet.Core.Modules.Auth.Commands;
+using HomeNet.Core.Modules.Auth.Models;
 using HomeNet.Core.Modules.Auth.Queries;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -39,14 +40,16 @@ public static class AuthenticationExtensions
                 Password = request.Form["password"]!,
             };
 
-            var commandResult = await bus.SendAsync(command);
+            var commandResult = await bus.SendAsync<User>(command);
 
             if (commandResult.IsSuccess)
             {
+                var user = commandResult.Value!;
+
                 var claims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, command.UserName),
-                    new Claim(ClaimTypes.Role, command.Role),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Role, user.Role),
                 };
 
                 var identity = new ClaimsIdentity(
