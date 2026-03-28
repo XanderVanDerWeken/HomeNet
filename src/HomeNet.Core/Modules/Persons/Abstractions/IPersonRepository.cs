@@ -5,7 +5,7 @@ namespace HomeNet.Core.Modules.Persons.Abstractions;
 
 public interface IPersonRepository
 {
-    Task<Result> AddPersonAsync(
+    Task<Result<Person>> AddPersonAsync(
         Person person, 
         CancellationToken cancellationToken = default);
     
@@ -17,7 +17,7 @@ public interface IPersonRepository
         bool includeInactive = false,
         CancellationToken cancellationToken = default);
 
-    Task<Result> UpdatePersonAsync(
+    Task<Result<Person>> UpdatePersonAsync(
         Person person, 
         CancellationToken cancellationToken = default);
 }

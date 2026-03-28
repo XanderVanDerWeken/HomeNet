@@ -20,7 +20,7 @@ public static class AddPerson
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Person>
     {
         private readonly IPersonRepository _personRepository;
 
@@ -29,14 +29,14 @@ public static class AddPerson
             _personRepository = personRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<Person>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Person>();
             }
 
             var newPerson = new Person

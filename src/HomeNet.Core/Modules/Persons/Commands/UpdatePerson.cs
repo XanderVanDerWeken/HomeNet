@@ -3,6 +3,7 @@ using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Persons.Abstractions;
+using HomeNet.Core.Modules.Persons.Models;
 
 namespace HomeNet.Core.Modules.Persons.Commands;
 
@@ -24,7 +25,7 @@ public static class UpdatePerson
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Person>
     {
         private readonly IPersonRepository _personRepository;
 
@@ -33,14 +34,14 @@ public static class UpdatePerson
             _personRepository = personRepository;
         }
 
-        public async Task<Result> HandleAsync(
+        public async Task<Result<Person>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Person>();
             }
 
             var person = await _personRepository.GetPersonByIdAsync(
@@ -48,7 +49,7 @@ public static class UpdatePerson
 
             if (person == null)
             {
-                return new NotFoundError("Person", command.PersonId).ToFailure();
+                return new NotFoundError("Person", command.PersonId).ToFailure<Person>();
             }
 
             if (command.UpdatedFirstName != null)
