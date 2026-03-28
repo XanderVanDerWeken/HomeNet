@@ -27,7 +27,7 @@ public static class CreateTransaction
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Transaction>
     {
         private readonly ITransactionRepository _transactionRepository;
 
@@ -36,14 +36,14 @@ public static class CreateTransaction
             _transactionRepository = transactionRepository;
         }
         
-        public Task<Result> HandleAsync(
+        public Task<Result<Transaction>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Transaction>();
             }
 
             var newTransaction = new Transaction

@@ -21,7 +21,7 @@ public static class BookFixedCostForMonth
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly IFixedCostRepository _fixedCostRepository;
         private readonly ITransactionRepository _transactionRepository;
@@ -34,13 +34,13 @@ public static class BookFixedCostForMonth
             _transactionRepository = transactionRepository;
         }
 
-        public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
+        public async Task<Result<Unit>> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Unit>();
             }
 
             var fixedCostsWithVersions = await _fixedCostRepository.GetAllFixedCostsWithVersionsInMonthAsync(
@@ -48,7 +48,7 @@ public static class BookFixedCostForMonth
             
             if (fixedCostsWithVersions.Count == 0)
             {
-                return Result.Success();
+                return Result.Success(Unit.Value);
             }
             
             var period = new DateOnly(command.Year, command.Month, 1);
@@ -99,8 +99,8 @@ public static class BookFixedCostForMonth
             }
 
             return errors.Count == 0
-                ? Result.Success()
-                : Result.Failure(new FinanceBookingError(string.Join(Environment.NewLine, errors)));
+                ? Result.Success(Unit.Value)
+                : Result.Failure<Unit>(new FinanceBookingError(string.Join(Environment.NewLine, errors)));
         }
     }
 

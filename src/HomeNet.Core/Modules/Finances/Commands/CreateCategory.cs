@@ -2,6 +2,7 @@ using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Common.Validation;
 using HomeNet.Core.Modules.Finances.Abstractions;
+using HomeNet.Core.Modules.Finances.Models;
 
 namespace HomeNet.Core.Modules.Finances.Commands;
 
@@ -15,7 +16,7 @@ public static class CreateCategory
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Category>
     {
         private readonly ICategoryRepository _categoryRepository;
 
@@ -24,17 +25,17 @@ public static class CreateCategory
             _categoryRepository = categoryRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<Category>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Category>();
             }
 
-            var newCategory = new Models.Category
+            var newCategory = new Category
             {
                 Name = command.Name,
             };

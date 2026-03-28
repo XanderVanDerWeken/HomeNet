@@ -9,7 +9,7 @@ public interface ITransactionRepository
         int categoryId, 
         CancellationToken cancellationToken = default);
 
-    public Task<Result> AddTransactionAsync(
+    public Task<Result<Transaction>> AddTransactionAsync(
         Transaction transaction, 
         CancellationToken cancellationToken = default);
 

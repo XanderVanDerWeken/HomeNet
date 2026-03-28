@@ -12,7 +12,7 @@ public static class DeactivateFixedCost
         public int FixedCostId { get; init; }
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly IFixedCostRepository _fixedCostRepository;
 
@@ -21,7 +21,7 @@ public static class DeactivateFixedCost
             _fixedCostRepository = fixedCostRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<Unit>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);

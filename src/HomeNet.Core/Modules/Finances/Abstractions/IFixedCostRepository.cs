@@ -22,23 +22,23 @@ public interface IFixedCostRepository
         DateOnly period,
         CancellationToken cancellationToken = default);
 
-    public Task<Result> AddFixedCostWithVersionAsync(
+    public Task<Result<FixedCost>> AddFixedCostWithVersionAsync(
         FixedCost fixedCost, 
         FixedCostVersion fixedCostVersion, 
         CancellationToken cancellationToken = default);
 
-    public Task<Result> CreateNewVersionAsync(
+    public Task<Result<FixedCostVersion>> CreateNewVersionAsync(
         int fixedCostId, 
         Money newAmount, 
         DateOnly validFrom, 
         CancellationToken cancellationToken = default);
 
-    public Task<Result> DeactivateLastVersionAsync(
+    public Task<Result<Unit>> DeactivateLastVersionAsync(
         int fixedCostId, 
         DateOnly validTo, 
         CancellationToken cancellationToken = default);
     
-    public Task<Result> AddFixedCostTransactionAsync(
+    public Task<Result<FixedCostTransaction>> AddFixedCostTransactionAsync(
         FixedCostTransaction fixedCostTransaction, 
         CancellationToken cancellationToken = default);
 }

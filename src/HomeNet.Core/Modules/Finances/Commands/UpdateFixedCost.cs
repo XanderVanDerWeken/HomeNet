@@ -20,7 +20,7 @@ public static class UpdateFixedCost
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly IFixedCostRepository _fixedCostRepository;
 
@@ -29,13 +29,13 @@ public static class UpdateFixedCost
             _fixedCostRepository = fixedCostRepository;
         }
 
-        public async Task<Result> HandleAsync(Command command, CancellationToken cancellationToken = default)
+        public async Task<Result<Unit>> HandleAsync(Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Unit>();
             }
 
             var deactivationResult = await _fixedCostRepository.DeactivateLastVersionAsync(
@@ -46,8 +46,12 @@ public static class UpdateFixedCost
                 return deactivationResult;
             }
 
-            return await _fixedCostRepository.CreateNewVersionAsync(
+            var result = await _fixedCostRepository.CreateNewVersionAsync(
                 command.FixedCostId, command.Amount, command.ValidFrom, cancellationToken);
+            
+            return result.IsSuccess
+                ? Result.Success(Unit.Value)
+                : Result.Failure<Unit>(result.Error!);
         }
     }
 

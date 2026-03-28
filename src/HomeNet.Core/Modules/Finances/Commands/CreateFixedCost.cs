@@ -24,7 +24,7 @@ public static class CreateFixedCost
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, FixedCost>
     {
         private readonly IFixedCostRepository _fixedCostRepository;
 
@@ -33,14 +33,14 @@ public static class CreateFixedCost
             _fixedCostRepository = fixedCostRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<FixedCost>> HandleAsync(
             Command command, CancellationToken cancellationToken = default)
         {
             var validationResult = command.Validate();
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<FixedCost>();
             }
 
             var newFixedCost = new FixedCost
