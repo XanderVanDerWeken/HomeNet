@@ -44,14 +44,18 @@ public class EventBusTest
             .Setup(s => s.ServiceProvider)
             .Returns(serviceProvider);
 
-        _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
+        _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler, Unit>();
 
         // Act
-        var result = await _eventBus.SendAsync(command);
+        var result = await _eventBus.SendAsync<Unit>(command);
 
         // Assert
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.IsSuccess, Is.True);
+        Assert.Multiple(() =>
+        {
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.IsSuccess, Is.True);
+            Assert.That(result.Value, Is.EqualTo(Unit.Value)); 
+        });
     }
 
     [Test]
@@ -133,7 +137,7 @@ public class EventBusTest
         var query = new TestQuery();
 
         // Act
-        var resultSendCommand = await _eventBus.SendAsync(command);
+        var resultSendCommand = await _eventBus.SendAsync<Unit>(command);
         var resultSendQuery = await _eventBus.SendAsync<int>(query);
 
         // Assert
@@ -170,11 +174,11 @@ public class EventBusTest
         // Act & Assert
         Assert.DoesNotThrow(() =>
         {
-            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
+            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler, Unit>();
         });
         Assert.Throws<InvalidOperationException>(() =>
         {
-            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler>();
+            _eventBus.RegisterCommandHandler<TestCommand, TestCommandHandler, Unit>();
         });
     }
 
@@ -200,12 +204,12 @@ public class EventBusTest
 
     public class TestEvent : IEvent;
 
-    public class TestCommandHandler : ICommandHandler<TestCommand>
+    public class TestCommandHandler : ICommandHandler<TestCommand, Unit>
     {
-        public Task<Result> HandleAsync(
+        public Task<Result<Unit>> HandleAsync(
             TestCommand command, 
             CancellationToken cancellationToken = default)
-            => Result.Success();
+            => Result.Success(Unit.Value);
     }
 
     public class TestQueryHandler : IQueryHandler<TestQuery, int>

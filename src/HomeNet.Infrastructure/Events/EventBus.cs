@@ -30,14 +30,14 @@ public class EventBus : IEventBus
         _eventHandlers = eventHandlers;
     }
 
-    public async Task<Result> SendAsync(
+    public async Task<Result<TResult>> SendAsync<TResult>(
         ICommand command, 
         CancellationToken cancellationToken = default)
     {
         var commandType = command.GetType();
 
         if (!_commandHandlers.TryGetValue(commandType, out var handlerType))
-            return new EventBusError("No command handler registered.").ToFailure();
+            return new EventBusError("No command handler registered.").ToFailure<TResult>();
 
         using var scope = _scopeFactory.CreateScope();
         var provider = scope.ServiceProvider;
@@ -91,9 +91,9 @@ public class EventBus : IEventBus
         }
     }
     
-    public void RegisterCommandHandler<TCommand, TCommandHandler>()
+    public void RegisterCommandHandler<TCommand, TCommandHandler, TResult>()
         where TCommand : ICommand
-        where TCommandHandler : ICommandHandler<TCommand>
+        where TCommandHandler : ICommandHandler<TCommand, TResult>
     {
         var commandType = typeof(TCommand);
 
