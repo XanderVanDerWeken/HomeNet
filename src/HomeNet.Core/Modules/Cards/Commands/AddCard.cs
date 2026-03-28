@@ -20,7 +20,7 @@ public static class AddCard
             => new CommandValidator().Validate(this);
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Card>
     {
         private readonly ICardRepository _cardRepository;
 
@@ -29,7 +29,7 @@ public static class AddCard
             _cardRepository = cardRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<Card>> HandleAsync(
             Command command, 
             CancellationToken cancellationToken = default)
         {
@@ -37,7 +37,7 @@ public static class AddCard
 
             if (!validationResult.IsValid)
             {
-                return validationResult.ToFailure();
+                return validationResult.ToFailure<Card>();
             }
 
             var newCard = new Card

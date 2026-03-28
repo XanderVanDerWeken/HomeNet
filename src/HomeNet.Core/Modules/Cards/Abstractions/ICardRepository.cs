@@ -5,15 +5,15 @@ namespace HomeNet.Core.Modules.Cards.Abstractions;
 
 public interface ICardRepository
 {
-    Task<Result> AddCardAsync(
+    Task<Result<Card>> AddCardAsync(
         Card card, 
         CancellationToken cancellationToken = default);
     
-    Task<Result> UpdateCardAsync(
+    Task<Result<Card>> UpdateCardAsync(
         Card card, 
         CancellationToken cancellationToken = default);
 
-    Task<Result> RemoveCardAsync(
+    Task<Result<Unit>> RemoveCardAsync(
         int cardId, 
         CancellationToken cancellationToken = default);
 

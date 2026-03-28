@@ -11,7 +11,7 @@ public static class RemoveCard
         public int CardId { get; init; }
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Unit>
     {
         private readonly ICardRepository _cardRepository;
 
@@ -20,7 +20,7 @@ public static class RemoveCard
             _cardRepository = cardRepository;
         }
 
-        public Task<Result> HandleAsync(
+        public Task<Result<Unit>> HandleAsync(
             Command command,
             CancellationToken cancellationToken = default)
         {

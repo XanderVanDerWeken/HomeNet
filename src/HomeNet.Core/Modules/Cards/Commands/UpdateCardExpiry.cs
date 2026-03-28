@@ -2,6 +2,7 @@ using HomeNet.Core.Common;
 using HomeNet.Core.Common.Cqrs;
 using HomeNet.Core.Common.Errors;
 using HomeNet.Core.Modules.Cards.Abstractions;
+using HomeNet.Core.Modules.Cards.Models;
 
 namespace HomeNet.Core.Modules.Cards.Commands;
 
@@ -14,7 +15,7 @@ public static class UpdateCardExpiry
         public required DateOnly NewExpiryDate { get; init; }
     }
 
-    public sealed class CommandHandler : ICommandHandler<Command>
+    public sealed class CommandHandler : ICommandHandler<Command, Card>
     {
         private readonly ICardRepository _cardRepository;
 
@@ -23,7 +24,7 @@ public static class UpdateCardExpiry
             _cardRepository = cardRepository;
         }
 
-        public async Task<Result> HandleAsync(
+        public async Task<Result<Card>> HandleAsync(
             Command command, 
             CancellationToken cancellationToken = default)
         {
@@ -32,7 +33,7 @@ public static class UpdateCardExpiry
 
             if (cardToUpdate is null)
             {
-                return new NotFoundError("Card", command.CardId).ToFailure();
+                return new NotFoundError("Card", command.CardId).ToFailure<Card>();
             }
 
             cardToUpdate.ExpirationDate = command.NewExpiryDate;
