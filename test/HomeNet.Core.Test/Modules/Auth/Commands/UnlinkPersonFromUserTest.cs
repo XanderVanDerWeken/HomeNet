@@ -47,7 +47,7 @@ public class UnlinkPersonFromUserTest
         
         _userRepositoryMock
             .Setup(x => x.UpdatePersonLinkAsync(user.Id, null, ct))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Success(Unit.Value));
 
         // Act
         var result = await _handler.HandleAsync(command, ct);

@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
 using HomeNet.Core.Modules.Cards.Models;
@@ -30,9 +31,17 @@ public class AddCardTest
             PersonId = 1,
         };
 
+        var card = new Card
+        {
+            Id = 1,
+            Name = command.Name,
+            ExpirationDate = command.ExpirationDate,
+            PersonId = command.PersonId,
+        };
+
         _cardRepositoryMock
             .Setup(r => r.AddCardAsync(It.IsAny<Card>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
+            .ReturnsAsync(Result.Success(card));
 
         // Act
         var result = await _handler.HandleAsync(command);
@@ -69,10 +78,6 @@ public class AddCardTest
             ExpirationDate = DateOnly.FromDateTime(DateTime.UtcNow.AddMonths(-6)),
             PersonId = 1,
         };
-
-        _cardRepositoryMock
-            .Setup(r => r.AddCardAsync(It.IsAny<Card>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
 
         // Act
         var resultInvalidName = await _handler.HandleAsync(commandInvalidName);

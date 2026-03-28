@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Cards.Abstractions;
 using HomeNet.Core.Modules.Cards.Commands;
 using HomeNet.Core.Modules.Cards.Models;
@@ -45,9 +46,17 @@ public class UpdateCardExpiryTest
             .Setup(r => r.GetCardByIdAsync(command.CardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(card);
         
+        var updatedCard = new Card
+        {
+            Id = card.Id,
+            Name = card.Name,
+            ExpirationDate = newDate,
+            PersonId = card.PersonId,
+        };
+
         _cardRepository
             .Setup(r => r.UpdateCardAsync(It.IsAny<Card>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
+            .ReturnsAsync(Result.Success(updatedCard));
 
         // Act
         var result = await _handler.HandleAsync(command);
@@ -96,10 +105,6 @@ public class UpdateCardExpiryTest
         _cardRepository
             .Setup(r => r.GetCardByIdAsync(command.CardId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Card?)null);
-        
-        _cardRepository
-            .Setup(r => r.UpdateCardAsync(It.IsAny<Card>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
 
         // Act
         var result = await _handler.HandleAsync(command);

@@ -25,65 +25,99 @@ public class AddUserTest
     }
 
     [Test]
-    public async Task Should_HandleAsync_ReturnsSuccess()
+    public async Task Should_HandleAsync_ReturnsSuccess_User()
     {
         // Arrange
-        var command1 = new AddUser.Command
+        var command = new AddUser.Command
         {
             UserName = "testuser",
             Password = "password",
             Role = "User",
         };
-        var command2 = new AddUser.Command
+
+        var hashedPassword = "hashedpassword1";
+
+        _passwordServiceMock
+            .Setup(x => x.HashPassword(command.Password))
+            .Returns(hashedPassword);
+
+        var user = new User
+        {
+            Id = 1,
+            UserName = command.UserName,
+            PasswordHash = hashedPassword,
+            Role = command.Role
+        };
+
+        _userRepositoryMock
+            .Setup(x => x.AddUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Result.Success(user));
+
+        // Act
+        var resultCommand = await _handler.HandleAsync(command);
+
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.That(resultCommand.IsSuccess, Is.True);
+            Assert.That(resultCommand.Error, Is.Null);
+        });
+
+        _userRepositoryMock.Verify(
+            x => x.AddUserAsync(
+                It.Is<User>(u =>
+                    u.UserName == command.UserName &&
+                    u.PasswordHash == hashedPassword &&
+                    u.Role == command.Role),
+                It.IsAny<CancellationToken>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task Should_HandleAsync_ReturnsSuccess_Admin()
+    {
+        // Arrange
+        var command = new AddUser.Command
         {
             UserName = "otherUser",
             Password = "otherPassword",
             Role = "Admin",
         };
 
-        var hashedPassword1 = "hashedpassword1";
-        var hashedPassword2 = "hashedpassword2";
+        var hashedPassword = "hashedpassword";
 
         _passwordServiceMock
-            .Setup(x => x.HashPassword(command1.Password))
-            .Returns(hashedPassword1);
-        _passwordServiceMock
-            .Setup(x => x.HashPassword(command2.Password))
-            .Returns(hashedPassword2);
+            .Setup(x => x.HashPassword(command.Password))
+            .Returns(hashedPassword);
+
+        var user = new User
+        {
+            Id = 1,
+            UserName = command.UserName,
+            PasswordHash = hashedPassword,
+            Role = command.Role
+        };
 
         _userRepositoryMock
             .Setup(x => x.AddUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Success(user));
 
         // Act
-        var resultCommand1 = await _handler.HandleAsync(command1);
-        var resultCommand2 = await _handler.HandleAsync(command2);
+        var resultCommand1 = await _handler.HandleAsync(command);
 
         // Assert
         Assert.Multiple(() =>
         {
             Assert.That(resultCommand1.IsSuccess, Is.True);
             Assert.That(resultCommand1.Error, Is.Null);
-
-            Assert.That(resultCommand2.IsSuccess, Is.True);
-            Assert.That(resultCommand2.Error, Is.Null);
         });
 
         _userRepositoryMock.Verify(
             x => x.AddUserAsync(
                 It.Is<User>(u =>
-                    u.UserName == command1.UserName &&
-                    u.PasswordHash == hashedPassword1 &&
-                    u.Role == command1.Role),
-                It.IsAny<CancellationToken>()),
-            Times.Once);
-        
-        _userRepositoryMock.Verify(
-            x => x.AddUserAsync(
-                It.Is<User>(u =>
-                    u.UserName == command2.UserName &&
-                    u.PasswordHash == hashedPassword2 &&
-                    u.Role == command2.Role),
+                    u.UserName == command.UserName &&
+                    u.PasswordHash == hashedPassword &&
+                    u.Role == command.Role),
                 It.IsAny<CancellationToken>()),
             Times.Once);
     }
@@ -110,10 +144,6 @@ public class AddUserTest
             Password = "hashedpassword",
             Role = "SuperUser",
         };
-
-        _userRepositoryMock
-            .Setup(x => x.AddUserAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success());
 
         // Act
         var resultInvalidUserName = await _handler.HandleAsync(commandInvalidUserName);

@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Commands;
 using HomeNet.Core.Modules.Persons.Models;
@@ -32,9 +33,18 @@ public class AddPersonTest
             AliasName = aliasName,
         };
 
+        var person = new Person
+        {
+            Id = 1,
+            FirstName = command.FirstName,
+            LastName = command.LastName,
+            AliasName = command.AliasName,
+            IsInactive = false,
+        };
+
         _personRepositoryMock
             .Setup(r => r.AddPersonAsync(It.IsAny<Person>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
+            .ReturnsAsync(Result.Success(person));
 
         // Act
         var result = await _handler.HandleAsync(command);
@@ -72,10 +82,6 @@ public class AddPersonTest
             LastName = "",
             AliasName = null,
         };
-
-        _personRepositoryMock
-            .Setup(r => r.AddPersonAsync(It.IsAny<Person>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
 
         // Act
         var resultInvalidFirstName = await _handler.HandleAsync(commandInvalidFirstName);

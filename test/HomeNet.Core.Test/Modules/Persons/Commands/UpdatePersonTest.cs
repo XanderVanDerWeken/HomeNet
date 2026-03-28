@@ -1,3 +1,4 @@
+using HomeNet.Core.Common;
 using HomeNet.Core.Modules.Persons.Abstractions;
 using HomeNet.Core.Modules.Persons.Commands;
 using HomeNet.Core.Modules.Persons.Models;
@@ -41,13 +42,22 @@ public class UpdatePersonTest
             UpdatedIsInactive = true,
         };
 
+        var updatedPerson = new Person
+        {
+            Id = person.Id,
+            FirstName = command.UpdatedFirstName!,
+            LastName = command.UpdatedLastName!,
+            AliasName = command.UpdatedAliasName,
+            IsInactive = command.UpdatedIsInactive.Value,
+        };
+
         _personRepositoryMock
             .Setup(r => r.GetPersonByIdAsync(person.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(person);
 
         _personRepositoryMock
             .Setup(r => r.UpdatePersonAsync(It.IsAny<Person>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Core.Common.Result.Success());
+            .ReturnsAsync(Result.Success(updatedPerson));
 
         // Act
         var result = await _handler.HandleAsync(command);

@@ -32,9 +32,15 @@ public class CreateCategoryTest
             Name = "Test Category",
         };
 
+        var category = new Category
+        {
+            Id = 1,
+            Name = command.Name,
+        };
+
         _categoryRepositoryMock
             .Setup(x => x.AddCategoryAsync(It.IsAny<Category>(), ct))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Success(category));
 
         // Act
         var result = await _handler.HandleAsync(command, ct);

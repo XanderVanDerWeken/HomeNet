@@ -38,9 +38,20 @@ public class CreateTransactionTest
             Date = DateOnly.FromDateTime(DateTime.Now),
         };
 
+        var transaction = new Transaction
+        {
+            Id = 1,
+            CategoryId = command.CategoryId,
+            Amount = command.Amount,
+            Type = command.Type,
+            Source = command.Source,
+            Description = command.Description,
+            Date = command.Date,
+        };
+
         _transactionRepositoryMock
             .Setup(x => x.AddTransactionAsync(It.IsAny<Transaction>(), ct))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Success(transaction));
 
         // Act
         var result = await _handler.HandleAsync(command, ct);

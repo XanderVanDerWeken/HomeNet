@@ -31,7 +31,7 @@ public class RemoveCardTest
 
         _cardRepositoryMock
             .Setup(r => r.RemoveCardAsync(cardId, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(Result.Success());
+            .ReturnsAsync(Result.Success(Unit.Value));
 
         // Act
         var result = await _handler.HandleAsync(command);
