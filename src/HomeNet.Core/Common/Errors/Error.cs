@@ -11,6 +11,6 @@ public abstract class Error
         Message = message;
     }
 
-    public Result ToFailure()
-        => Result.Failure(this);
+    public Result<T> ToFailure<T>()
+        => Result.Failure<T>(this);
 }

@@ -1,9 +1,9 @@
 namespace HomeNet.Core.Common.Cqrs;
 
-public interface ICommandHandler<in TCommand>
+public interface ICommandHandler<in TCommand, TResult>
     where TCommand : ICommand
 {
-    Task<Result> HandleAsync(
+    Task<Result<TResult>> HandleAsync(
         TCommand command,
         CancellationToken cancellationToken = default);
 }
