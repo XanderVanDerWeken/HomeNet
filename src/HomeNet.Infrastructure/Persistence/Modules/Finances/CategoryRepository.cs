@@ -31,11 +31,11 @@ public sealed class CategoryRepository : SqlKataRepository, ICategoryRepository
         var query = new Query(TableName)
             .Where("name", name);
         
-        var entities = await FirstOrDefaultAsync<CategoryEntity>(
+        var entity = await FirstOrDefaultAsync<CategoryEntity>(
             query, 
             cancellationToken: cancellationToken);
 
-        return entities?.ToCategory();
+        return entity?.ToCategory();
     }
 
     public async Task<IReadOnlyList<Category>> GetAllCategoriesAsync(

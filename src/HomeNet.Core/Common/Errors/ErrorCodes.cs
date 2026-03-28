@@ -7,4 +7,5 @@ public static class ErrorCodes
     public const string Database = "DATABASE_ERROR";
     public const string EventBus = "EVENT_BUS_ERROR";
     public const string FinanceBooking = "FINANCE_BOOKING_ERROR";
+    public static string InvalidOperation = "INVALID_OPERATION_ERROR";
 }

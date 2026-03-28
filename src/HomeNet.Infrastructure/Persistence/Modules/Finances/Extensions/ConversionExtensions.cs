@@ -9,7 +9,7 @@ public static class ConversionExtensions
         => new Category
         {
             Id = entity.Id,
-            Name = entity.Name
+            Name = entity.Name,
         };
 
     public static Transaction ToTransaction(this TransactionEntity entity)
@@ -19,6 +19,34 @@ public static class ConversionExtensions
             Date = entity.Date,
             Amount = new Money(entity.Amount),
             Type = entity.Type,
-            CategoryId = entity.CategoryId
+            CategoryId = entity.CategoryId,
+        };
+    
+    public static FixedCost ToFixedCost(this FixedCostEntity entity)
+        => new FixedCost
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            CategoryId = entity.CategoryId,
+            DayOfMonth = entity.DayOfMonth,
+        };
+    
+    public static FixedCostVersion ToFixedCostVersion(this FixedCostVersionEntity entity)
+        => new FixedCostVersion
+        {
+            Id = entity.Id,
+            FixedCostId = entity.FixedCostId,
+            Amount = new Money(entity.Amount),
+            ValidFrom = entity.ValidFrom,
+            ValidTo = entity.ValidTo,
+        };
+    public static FixedCostTransaction ToFixedCostTransaction(this FixedCostTransactionEntity entity)
+        => new FixedCostTransaction
+        {
+            Id = entity.Id,
+            FixedCostId = entity.FixedCostId,
+            FixedCostVersionId = entity.FixedCostVersionId,
+            TransactionId = entity.TransactionId,
+            Period = entity.Period,
         };
 }

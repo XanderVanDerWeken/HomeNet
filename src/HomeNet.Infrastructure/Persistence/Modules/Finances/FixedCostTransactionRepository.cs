@@ -2,9 +2,10 @@ using System.Data;
 using HomeNet.Core.Modules.Finances.Abstractions;
 using HomeNet.Core.Modules.Finances.Models;
 using HomeNet.Infrastructure.Persistence.Abstractions;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Entities;
+using HomeNet.Infrastructure.Persistence.Modules.Finances.Extensions;
 using Microsoft.Extensions.Logging;
 using SqlKata;
-using SqlKata.Execution;
 
 namespace HomeNet.Infrastructure.Persistence.Modules.Finances;
 
@@ -23,6 +24,22 @@ public sealed class FixedCostTransactionRepository : SqlKataRepository, IFixedCo
     {
         _logger = logger;
         _dbConnection = db.Connection;
+    }
+
+    public async Task<IReadOnlyList<FixedCostTransaction>> GetFixedCostTransactionWithPeriodAsync(
+        DateOnly period,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new Query(FixedCostTransactionsTableName)
+            .Where("period", period);
+        
+        var entities = await GetMultipleAsync<FixedCostTransactionEntity>(
+            query, 
+            cancellationToken: cancellationToken);
+        
+        return entities
+            .Select(e => e.ToFixedCostTransaction())
+            .ToList();
     }
 
     public async Task AddFixedCostTransactionAsync(
