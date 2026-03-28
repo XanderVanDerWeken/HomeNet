@@ -4,7 +4,7 @@ namespace HomeNet.Core.Common.Events;
 
 public interface IEventBus
 {
-    Task<Result> SendAsync(
+    Task<Result<TResult>> SendAsync<TResult>(
         ICommand command, 
         CancellationToken cancellationToken = default);
     
@@ -16,9 +16,9 @@ public interface IEventBus
         IEvent @event,
         CancellationToken cancellationToken = default);
     
-    void RegisterCommandHandler<TCommand, TCommandHandler>()
+    void RegisterCommandHandler<TCommand, TCommandHandler, TResult>()
         where TCommand : ICommand
-        where TCommandHandler : ICommandHandler<TCommand>;
+        where TCommandHandler : ICommandHandler<TCommand, TResult>;
 
     void RegisterQueryHandler<TQuery, TQueryHandler, TResult>()
         where TQuery : IQuery

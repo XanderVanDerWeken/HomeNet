@@ -1,4 +1,3 @@
-using System.Net;
 using HomeNet.Core.Modules.Finances.Models;
 
 namespace HomeNet.Core.Common.Validation;
