@@ -10,6 +10,6 @@ public class CardEntity
 
     public required DateOnly ExpirationDate { get; set; }
 
-    public required Person Person { get; set; }
+    public Person Person { get; set; }
     public required int PersonId { get; set; }
 }
