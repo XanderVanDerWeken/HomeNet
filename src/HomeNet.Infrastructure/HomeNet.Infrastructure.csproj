@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="Persistence/Modules/" />
     <Folder Include="Persistence/Modules/Auth/" />
-    <Folder Include="Persistence/Modules/Auth/Entities/" />
     <Folder Include="Persistence/Modules/Cards/" />
     <Folder Include="Persistence/Modules/Persons/" />
   </ItemGroup>
