@@ -1,5 +1,10 @@
+using HomeNet.Infrastructure.Persistence.Modules.Auth;
+using HomeNet.Infrastructure.Persistence.Modules.Cards;
+using HomeNet.Infrastructure.Persistence.Modules.Persons;
 using HomeNet.Web.Components;
 using HomeNet.Web.Extensions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using MudBlazor.Services;
 using Serilog;
 
@@ -28,6 +33,27 @@ public class Program
 
         builder.Services.AddDatabase(builder.Configuration);
         
+        builder.Services.AddDbContext<CardDbContext>(options => 
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Cards"),
+                o => o.MigrationsHistoryTable(
+                    tableName: HistoryRepository.DefaultTableName,
+                    schema: "cards")));
+        
+        builder.Services.AddDbContext<PersonDbContext>(options => 
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Persons"),
+                o => o.MigrationsHistoryTable(
+                    tableName: HistoryRepository.DefaultTableName,
+                    schema: "persons")));
+                
+        builder.Services.AddDbContext<UserDbContext>(options => 
+            options.UseNpgsql(
+                builder.Configuration.GetConnectionString("Users"),
+                o => o.MigrationsHistoryTable(
+                    tableName: HistoryRepository.DefaultTableName,
+                    schema: "users")));
+
         builder.Services
             .AddCardsModule()
             .AddFinancesModule()

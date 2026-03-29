@@ -2,7 +2,6 @@ using HomeNet.Core.Common.Events;
 using HomeNet.Infrastructure.Events;
 using HomeNet.Web.Cqrs;
 using Npgsql;
-using SqlKata.Compilers;
 
 namespace HomeNet.Web.Extensions;
 
