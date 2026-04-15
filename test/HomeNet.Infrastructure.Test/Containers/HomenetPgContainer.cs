@@ -1,4 +1,8 @@
 using DotNet.Testcontainers.Builders;
+using HomeNet.Infrastructure.Persistence.Modules.Auth;
+using HomeNet.Infrastructure.Persistence.Modules.Cards;
+using HomeNet.Infrastructure.Persistence.Modules.Persons;
+using Microsoft.EntityFrameworkCore;
 using Testcontainers.PostgreSql;
 
 namespace HomeNet.Infrastructure.Test.Containers;
@@ -29,4 +33,16 @@ public class HomenetPgContainer : IAsyncDisposable
     public Task StopAsync() => _container.StopAsync();
 
     public ValueTask DisposeAsync() => _container.DisposeAsync();
+
+    public CardDbContext CreateCardDbContext()
+        =>  new CardDbContext(new DbContextOptionsBuilder<CardDbContext>()
+            .UseNpgsql(GetConnectionString()).Options);
+    
+    public UserDbContext CreateUserDbContext()
+        => new UserDbContext(new DbContextOptionsBuilder<UserDbContext>()
+            .UseNpgsql(GetConnectionString()).Options);
+    
+    public PersonDbContext CreatePersonDbContext()
+        => new PersonDbContext(new DbContextOptionsBuilder<PersonDbContext>()
+            .UseNpgsql(GetConnectionString()).Options);
 }
