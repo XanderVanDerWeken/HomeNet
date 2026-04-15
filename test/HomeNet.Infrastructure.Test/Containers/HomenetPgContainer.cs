@@ -5,8 +5,6 @@ namespace HomeNet.Infrastructure.Test.Containers;
 
 public class HomenetPgContainer : IAsyncDisposable
 {
-    private static readonly string initdbPath = Path.GetFullPath("postgres.initdb.sql");
-
     private PostgreSqlContainer _container;
 
     public HomenetPgContainer()
@@ -16,7 +14,6 @@ public class HomenetPgContainer : IAsyncDisposable
             .WithDatabase("homenet")
             .WithUsername("homenet_user")
             .WithPassword("homenet_password")
-            .WithResourceMapping(initdbPath, "/docker-entrypoint-initdb.d")
             .WithCleanUp(true)
             .WithWaitStrategy(
                  Wait.ForUnixContainer()
